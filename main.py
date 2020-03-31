@@ -1,13 +1,11 @@
-import os
-import requests  # noqa We are just importing this to prove the dependency installed correctly
+from json import dump, load
+from os import makedirs
 
 
 def main():
-    my_input = os.environ["INPUT_MYINPUT"]
-
-    my_output = f"Hello {my_input}"
-
-    print(f"::set-output name=myOutput::{my_output}")
+    makedirs('data/mini', exist_ok=True)
+    data = load(open('data/covid19-cuba.json'))
+    dump(data, open('data/mini/covid19-cuba.json', 'w'))
 
 
 if __name__ == "__main__":

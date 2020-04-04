@@ -59,11 +59,31 @@ def distribution_by_age_ranges(data):
 
 
 def cases_by_nationality(data):
-    pass
+    result = {'Extranjeros': 0, 'Cubanos': 0, 'No reportados': 0,}
+    days = list(data['casos']['dias'].values())
+    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+        for item in diagnosed:
+            country = item.get('pais')
+            if country is None:
+                result['No reportados'] +=1
+            elif country == 'cu':
+                result['Cubanos'] += 1
+            else:
+                result['Extranjeros'] += 1
+    return result
 
 
 def distribution_by_nationality_of_foreign_cases(data):
-    pass
+    result = {}
+    days = list(data['casos']['dias'].values())
+    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+        for item in diagnosed:
+            country = item['pais']
+            if country not in result.keys():
+                result[country] = 1
+            else:
+                result[country] += 1
+    return result
 
 
 def list_of_tests_performed(data):

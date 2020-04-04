@@ -1,4 +1,5 @@
 from json import load, dump
+from os import mkdir
 from .checker import check
 from .generator import resume, cases_by_sex, cases_by_mode_of_contagion, \
     evolution_of_cases_by_days, distribution_by_age_ranges, \
@@ -10,6 +11,7 @@ from .generator import resume, cases_by_sex, cases_by_mode_of_contagion, \
 def run():
     if not check():
         return
+    makedirs('api/v1', exist_ok=True)
     data = load(open('data/covid19-cuba.json', encoding='utf-8'))
     function_list = [
         resume,

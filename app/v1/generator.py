@@ -71,7 +71,16 @@ def cases_by_nationality(data):
 
 
 def distribution_by_nationality_of_foreign_cases(data):
-    pass
+    result = {}
+    days = list(data['casos']['dias'].values())
+    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+        for item in diagnosed:
+            country = item['pais']
+            if country not in result.keys():
+                result[country] = 1
+            else:
+                result[country] += 1
+    return result
 
 
 def list_of_tests_performed(data):

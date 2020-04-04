@@ -52,8 +52,22 @@ def evolution_of_cases_by_days(data):
 
 
 def distribution_by_age_ranges(data):
-    pass
-
+    result = [0] * 5
+    days = list(data['casos']['dias'].values())
+    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+        for item in diagnosed:
+            age = item.get('edad') 
+            if age is None:
+                result[4] += 1
+            elif 0 <= age <= 18:
+                result[0] += 1
+            elif 18 < age <= 40:
+                result[1] += 1
+            elif 40 < age <= 60:
+                result[2] += 1
+            else:
+                result[3] += 1
+    return result
 
 def cases_by_nationality(data):
     pass

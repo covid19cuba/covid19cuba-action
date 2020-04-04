@@ -1,5 +1,5 @@
 from json import load, dump
-from os import mkdir
+from os import makedirs
 from .checker import check
 from .generator import resume, cases_by_sex, cases_by_mode_of_contagion, \
     evolution_of_cases_by_days, distribution_by_age_ranges, \

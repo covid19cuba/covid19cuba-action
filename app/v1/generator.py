@@ -1,3 +1,6 @@
+import itertools
+from collections import defaultdict
+
 def resume(data):
     pass
 
@@ -72,11 +75,41 @@ def tests_for_days(data):
 
 
 def top_10_affected_provinces(data):
-    pass
+    counter=defaultdict(lambda : {'total':0, 'name': '', 'gtotal': 0})
+    gtotal=0
+    data=map(lambda y: y['diagnosticados'] ,filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values()))
+    # in order to avoid double for we use itertools.chain with expanded data (*data)
+    data = itertools.chain(*data)
+    for i in data:
+        counter[i['dpacode_provincia_deteccion']]['total']+=1
+        # take province name from data, assumen that checker fix previosly
+        counter[i['dpacode_provincia_deteccion']]['name']=i['provincia_detección']
+        gtotal+=1
+    res = []
+    for i in itertools.islice(sorted(counter.values(), key=lambda x: x['total'], reverse=True), 10):
+        i['gtotal']=gtotal
+        res.append(i)
+    return res
 
 
 def top_10_affected_municipalities(data):
-    pass
+    counter=defaultdict(lambda : {'total':0, 'name': '', 'gtotal': 0, 'province_belong': ''})
+    gtotal=0
+    data=map(lambda y: y['diagnosticados'] ,filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values()))
+    # in order to avoid double for we use itertools.chain with expanded data (*data)
+    data = itertools.chain(*data)
+    for i in data:
+        counter[i['dpacode_municipio_deteccion']]['total']+=1
+        # take municipality name from data, assumen that checker fix previosly
+        counter[i['dpacode_municipio_deteccion']]['name']=i['municipio_detección']
+        # take province name from data, assumen that checker fix previosly
+        counter[i['dpacode_municipio_deteccion']]['province_belong']=i['provincia_detección']
+        gtotal+=1
+    res = []
+    for i in itertools.islice(sorted(counter.values(), key=lambda x: x['total'], reverse=True), 10):
+        i['gtotal']=gtotal
+        res.append(i)
+    return res
 
 
 def comparison_of_accumulated_cases(data):

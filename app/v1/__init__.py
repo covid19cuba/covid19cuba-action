@@ -25,14 +25,14 @@ def run():
         top_10_affected_municipalities,
         comparison_of_accumulated_cases
     ]
-    result_dict = {}
-    for function in function_list:
-        result = dump_util(function, data)
-        result_dict[function.__name__] = result
-    dump(result_dict, open(f'api/v1/data.json', mode='w', encoding='utf-8'), ensure_ascii=False)
+    dump({f.__name__: dump_util(f, data) for f in function_list},
+         open(f'api/v1/data.json', mode='w', encoding='utf-8'),
+         ensure_ascii=False)
 
 
-def dump_util(function, data):
-    result = function(data)
-    dump(result, open(f'api/v1/{function.__name__}.json', mode='w', encoding='utf-8'), ensure_ascii=False)
+def dump_util(func, data):
+    result = func(data)
+    dump(result,
+         open(f'api/v1/{func.__name__}.json', mode='w', encoding='utf-8'),
+         ensure_ascii=False)
     return result

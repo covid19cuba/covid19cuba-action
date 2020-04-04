@@ -71,7 +71,36 @@ def list_of_tests_performed(data):
 
 
 def tests_for_days(data):
-    pass
+    ntest_days = ['Fecha']
+    ntest_negative = ['Tests Negativos']
+    ntest_positive = ['Tests Positivos']
+    ntest_cases = ['Total de Tests']
+    prev_test_cases=0
+    prev_test_negative=0
+    prev_test_positive=0
+    total=0
+    data=filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values())
+    for day in data:
+        total+=len(day['diagnosticados'])
+        if 'tests_total' in day:
+            prev_test_cases=day['tests_total']
+            test_negative=day['tests_total']-total
+            prev_test_negative=test_negative
+            prev_test_positive=total
+            break
+    for day in data:
+        total+=len(day['diagnosticados'])
+        if 'tests_total' in day:
+            ntest_days.append(day['fecha'].replace('2020/', ''))
+            ntest_cases.append(day['tests_total']-prev_test_cases)
+            prev_test_cases=day['tests_total']
+            test_negative=day['tests_total']-total
+            ntest_negative.append(test_negative-prev_test_negative)
+            prev_test_negative=test_negative
+            ntest_positive.append(total-prev_test_positive)
+            prev_test_positive=total
+    return {'ntest_days': ntest_days, 'ntest_negative': ntest_negative,
+            'ntest_positive': ntest_positive, 'ntest_cases': ntest_cases}
 
 
 def top_10_affected_provinces(data):

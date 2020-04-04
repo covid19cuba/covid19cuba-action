@@ -67,7 +67,18 @@ def distribution_by_nationality_of_foreign_cases(data):
 
 
 def list_of_tests_performed(data):
-    pass
+    data=filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values())
+    total=0
+    positive=0
+    for day in data:
+        positive+=len(day['diagnosticados'])
+        if 'tests_total' in day:
+            total=max(total,day['tests_total'])
+    return {'positivos': ['Tests Positivos', positive],
+            'negative': ['Tests Negativos', total-positive],
+            'total': total}
+
+
 
 
 def tests_for_days(data):

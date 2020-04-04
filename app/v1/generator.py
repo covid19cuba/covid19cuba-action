@@ -48,7 +48,15 @@ def cases_by_mode_of_contagion(data):
 
 
 def evolution_of_cases_by_days(data):
-    pass
+    result = [0]
+    days = list(data['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        result.append(result[-1])
+        if x.get('diagnosticados'):
+            result[-1] += len(x['diagnosticados'])
+    
+    return result[1:]
 
 
 def distribution_by_age_ranges(data):

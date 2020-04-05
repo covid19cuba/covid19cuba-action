@@ -8,7 +8,7 @@ from .generator import resume, cases_by_sex, cases_by_mode_of_contagion, \
     top_10_affected_municipalities, comparison_of_accumulated_cases
 
 
-def run():
+def run(debug=False):
     if not check():
         return
     makedirs('api/v1', exist_ok=True)
@@ -27,14 +27,18 @@ def run():
         top_10_affected_municipalities,
         comparison_of_accumulated_cases
     ]
-    dump({f.__name__: dump_util(f, data) for f in function_list},
+    dump({f.__name__: dump_util(f, data, debug) for f in function_list},
          open(f'api/v1/data.json', mode='w', encoding='utf-8'),
-         ensure_ascii=False)
+         ensure_ascii=False,
+         indent=2 if debug else None,
+         separators=(',', ': ') if debug else (',', ':'))
 
 
-def dump_util(func, data):
+def dump_util(func, data, debug=False):
     result = func(data)
     dump(result,
          open(f'api/v1/{func.__name__}.json', mode='w', encoding='utf-8'),
-         ensure_ascii=False)
+         ensure_ascii=False,
+         indent=2 if debug else None,
+         separators=(',', ': ') if debug else (',', ':'))
     return result

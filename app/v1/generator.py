@@ -223,7 +223,7 @@ def list_of_tests_performed(data):
     }
 
 
-def tests_for_days(data):
+def tests_by_days(data):
     ntest_days = []
     ntest_negative = []
     ntest_positive = []
@@ -272,7 +272,7 @@ def tests_for_days(data):
     }
 
 
-def top_10_affected_provinces(data):
+def affected_provinces(data):
     counter = {}
     total = 0
     days = list(data['data_cuba']['casos']['dias'].values())
@@ -292,14 +292,13 @@ def top_10_affected_provinces(data):
     result = []
     result_list = list(counter.values())
     result_list.sort(key=lambda x: x['value'], reverse=True)
-    result_list = result_list[:10]
     for item in result_list:
         item['total'] = total
         result.append(item)
     return result
 
 
-def top_10_affected_municipalities(data):
+def affected_municipalities(data):
     counter = {}
     total = 0
     days = list(data['data_cuba']['casos']['dias'].values())

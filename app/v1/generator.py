@@ -2,7 +2,7 @@ from .utils import countries
 
 
 def resume(data):
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     diagnosed = sum((
         len(x['diagnosticados'])
         for x in days
@@ -35,7 +35,7 @@ def resume(data):
 
 def cases_by_sex(data):
     result = {'hombre': 0, 'mujer': 0, 'no reportado': 0}
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
@@ -72,7 +72,7 @@ def cases_by_mode_of_contagion(data):
         'autoctono': 0,
         'desconocido': 0
     }
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
@@ -107,7 +107,7 @@ def cases_by_mode_of_contagion(data):
 def evolution_of_cases_by_days(data):
     accumulated = [0]
     daily = [0]
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for x in days:
         accumulated.append(accumulated[-1])
@@ -131,7 +131,7 @@ def distribution_by_age_ranges(data):
     result = [0] * 5
     keys = ['0-18', '19-40', '41-60', '>=61', 'Desconocido']
     hard = ['0-18', '19-40', '41-60', '>=61', 'unknown']
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             age = item.get('edad')
@@ -158,7 +158,7 @@ def cases_by_nationality(data):
         'unknown': 'No reportados'
     }
     result = {'foreign': 0, 'cubans': 0, 'unknown': 0}
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             country = item.get('pais')
@@ -179,7 +179,7 @@ def cases_by_nationality(data):
 
 def distribution_by_nationality_of_foreign_cases(data):
     result = {}
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             country = item['pais']
@@ -202,7 +202,7 @@ def distribution_by_nationality_of_foreign_cases(data):
 def list_of_tests_performed(data):
     total = 0
     positive = 0
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     for day in (x for x in days if 'diagnosticados' in x):
         positive += len(day['diagnosticados'])
         if 'tests_total' in day:
@@ -232,7 +232,7 @@ def tests_for_days(data):
     prev_test_negative = 0
     prev_test_positive = 0
     total = 0
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     for day in (x for x in days if 'diagnosticados' in x):
         total += len(day['diagnosticados'])
         if 'tests_total' in day:
@@ -275,7 +275,7 @@ def tests_for_days(data):
 def top_10_affected_provinces(data):
     counter = {}
     total = 0
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
     for patients in diagnosed:
         for p in patients:
@@ -302,7 +302,7 @@ def top_10_affected_provinces(data):
 def top_10_affected_municipalities(data):
     counter = {}
     total = 0
-    days = list(data['casos']['dias'].values())
+    days = list(data['data_cuba']['casos']['dias'].values())
     diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
     for patients in diagnosed:
         for p in patients:

@@ -12,7 +12,8 @@ def run(debug=False):
     if not check():
         return
     makedirs('api/v1', exist_ok=True)
-    data = load(open('data/covid19-cuba.json', encoding='utf-8'))
+    data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
+    data_world = load(open('data/paises-info-dias.json', encoding='utf-8'))
     function_list = [
         resume,
         cases_by_sex,
@@ -27,18 +28,23 @@ def run(debug=False):
         top_10_affected_municipalities,
         comparison_of_accumulated_cases
     ]
-    dump({f.__name__: dump_util(f, data, debug) for f in function_list},
-         open(f'api/v1/data.json', mode='w', encoding='utf-8'),
-         ensure_ascii=False,
-         indent=2 if debug else None,
-         separators=(',', ': ') if debug else (',', ':'))
+    dump({
+        f.__name__: dump_util(f,
+                              data_cuba=data_cuba,
+                              data_world=data_world,
+                              debug=debug)
+        for f in function_list},
+        open(f'api/v1/data.json', mode='w', encoding='utf-8'),
+        ensure_ascii=False,
+        indent=2 if debug else None,
+        separators=(',', ': ') if debug else (',', ':'))
 
 
-def dump_util(func, data, debug=False):
+def dump_util(func, **data):
     result = func(data)
     dump(result,
          open(f'api/v1/{func.__name__}.json', mode='w', encoding='utf-8'),
          ensure_ascii=False,
-         indent=2 if debug else None,
-         separators=(',', ': ') if debug else (',', ':'))
+         indent=2 if data['debug'] else None,
+         separators=(',', ': ') if data['debug'] else (',', ':'))
     return result

@@ -335,9 +335,6 @@ def comparison_of_accumulated_cases(data):
     for cases in diagnosed:
         accum = accum_cuba[len(accum_cuba) - 1] + len(cases) 
         accum_cuba.append(accum)
-    accum_cuba = accum_cuba[:-1]
-    try:
-        world['Cuba'] = accum_cuba
-    except KeyError:
-        pass
+    accum_cuba = accum_cuba[1:]
+    world['paises']['Cuba'] = accum_cuba
     return world

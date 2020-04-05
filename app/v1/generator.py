@@ -1,5 +1,5 @@
-import itertools
-from collections import defaultdict
+from .utils import countries
+
 
 def resume(data):
     pass
@@ -9,7 +9,7 @@ def cases_by_sex(data):
     result = {'hombre': 0, 'mujer': 0, 'no reportado': 0}
     days = list(data['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
-    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             if item.get('sexo') is None:
                 result['no reportado'] += 1
@@ -23,15 +23,30 @@ def cases_by_sex(data):
         'mujer': 'Mujeres',
         'no reportado': 'No Reportados'
     }
-    result_list = [(pretty[key] if key in pretty else key.title(), result[key]) for key in result]
-    return result_list
+    hard = {
+        'hombre': 'men',
+        'mujer': 'women',
+        'no reportado': 'unknown'
+    }
+    return {
+        hard[key] if key in hard else key: {
+            'name': pretty[key] if key in pretty else key.title(),
+            'value': result[key]
+        }
+        for key in result
+    }
 
 
 def cases_by_mode_of_contagion(data):
-    result = {'importado': 0, 'introducido': 0, 'autoctono': 0, 'desconocido': 0}
+    result = {
+        'importado': 0,
+        'introducido': 0,
+        'autoctono': 0,
+        'desconocido': 0
+    }
     days = list(data['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
-    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             if item.get('contagio') is None:
                 result['desconocido'] += 1
@@ -46,28 +61,52 @@ def cases_by_mode_of_contagion(data):
         'autoctono': 'Autóctonos',
         'desconocido': 'Desconocidos'
     }
-    result_list = [(pretty[key] if key in pretty else key.title(), result[key]) for key in result]
-    return result_list
+    hard = {
+        'importado': 'imported',
+        'introducido': 'inserted',
+        'autoctono': 'autochthonous',
+        'desconocido': 'unknown'
+    }
+    return {
+        hard[key] if key in hard else key: {
+            'name': pretty[key] if key in pretty else key.title(),
+            'value': result[key]
+        }
+        for key in result
+    }
 
 
 def evolution_of_cases_by_days(data):
-    result = [0]
+    accumulated = [0]
+    daily = [0]
     days = list(data['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for x in days:
-        result.append(result[-1])
+        accumulated.append(accumulated[-1])
+        daily.append(0)
         if x.get('diagnosticados'):
-            result[-1] += len(x['diagnosticados'])
-    
-    return result[1:]
+            accumulated[-1] += len(x['diagnosticados'])
+            daily[-1] += len(x['diagnosticados'])
+    return {
+        'accumulated': {
+            'name': 'Casos acumulados',
+            'values': accumulated[1:]
+        },
+        'daily': {
+            'name': 'Casos en el día',
+            'values': daily[1:]
+        }
+    }
 
 
 def distribution_by_age_ranges(data):
     result = [0] * 5
+    keys = ['0-18', '19-40', '41-60', '>=61', 'Desconocido']
+    hard = ['0-18', '19-40', '41-60', '>=61', 'unknown']
     days = list(data['casos']['dias'].values())
-    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
-            age = item.get('edad') 
+            age = item.get('edad')
             if age is None:
                 result[4] += 1
             elif 0 <= age <= 18:
@@ -78,120 +117,187 @@ def distribution_by_age_ranges(data):
                 result[2] += 1
             else:
                 result[3] += 1
-    return result
+    return [
+        {'code': item[0], 'name': item[1][0], 'value': item[1][1]}
+        for item in zip(hard, zip(keys, result))
+    ]
+
 
 def cases_by_nationality(data):
-    result = {'Extranjeros': 0, 'Cubanos': 0, 'No reportados': 0,}
+    pretty = {
+        'foreign': 'Extranjeros',
+        'cubans': 'Cubanos',
+        'unknown': 'No reportados'
+    }
+    result = {'foreign': 0, 'cubans': 0, 'unknown': 0}
     days = list(data['casos']['dias'].values())
-    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             country = item.get('pais')
             if country is None:
-                result['No reportados'] +=1
+                result['unknown'] += 1
             elif country == 'cu':
-                result['Cubanos'] += 1
+                result['cubans'] += 1
             else:
-                result['Extranjeros'] += 1
-    return result
+                result['foreign'] += 1
+    return {
+        key: {
+            'name': pretty[key] if key in pretty else key.title(),
+            'value': result[key]
+        }
+        for key in result
+    }
 
 
 def distribution_by_nationality_of_foreign_cases(data):
     result = {}
     days = list(data['casos']['dias'].values())
-    for diagnosed in (x['diagnosticados'] for x in days if x.get('diagnosticados')):
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             country = item['pais']
-            if country not in result.keys():
-                result[country] = 1
-            else:
+            if country == 'cu':
+                continue
+            try:
                 result[country] += 1
-    return result
+            except KeyError:
+                result[country] = 1
+    return [
+        {
+            'code': key,
+            'name': countries[key] if key in countries else key.title(),
+            'value': result[key]
+        }
+        for key in result
+    ]
 
 
 def list_of_tests_performed(data):
-    data=filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values())
-    total=0
-    positive=0
-    for day in data:
-        positive+=len(day['diagnosticados'])
+    total = 0
+    positive = 0
+    days = list(data['casos']['dias'].values())
+    for day in (x for x in days if 'diagnosticados' in x):
+        positive += len(day['diagnosticados'])
         if 'tests_total' in day:
-            total=max(total,day['tests_total'])
-    return {'positivos': ['Tests Positivos', positive],
-            'negative': ['Tests Negativos', total-positive],
-            'total': total}
-
-
+            total = max(total, day['tests_total'])
+    return {
+        'positive': {
+            'name': 'Tests Positivos',
+            'value': positive
+        },
+        'negative': {
+            'name': 'Tests Negativos',
+            'value': total - positive
+        },
+        'total': {
+            'name': 'Total de Tests',
+            'value': total
+        }
+    }
 
 
 def tests_for_days(data):
-    ntest_days = ['Fecha']
-    ntest_negative = ['Tests Negativos']
-    ntest_positive = ['Tests Positivos']
-    ntest_cases = ['Total de Tests']
-    prev_test_cases=0
-    prev_test_negative=0
-    prev_test_positive=0
-    total=0
-    data=filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values())
-    for day in data:
-        total+=len(day['diagnosticados'])
+    ntest_days = []
+    ntest_negative = []
+    ntest_positive = []
+    ntest_cases = []
+    prev_test_cases = 0
+    prev_test_negative = 0
+    prev_test_positive = 0
+    total = 0
+    days = list(data['casos']['dias'].values())
+    for day in (x for x in days if 'diagnosticados' in x):
+        total += len(day['diagnosticados'])
         if 'tests_total' in day:
-            prev_test_cases=day['tests_total']
-            test_negative=day['tests_total']-total
-            prev_test_negative=test_negative
-            prev_test_positive=total
+            prev_test_cases = day['tests_total']
+            test_negative = day['tests_total'] - total
+            prev_test_negative = test_negative
+            prev_test_positive = total
             break
-    for day in data:
-        total+=len(day['diagnosticados'])
+    for day in (x for x in days if 'diagnosticados' in x):
+        total += len(day['diagnosticados'])
         if 'tests_total' in day:
             ntest_days.append(day['fecha'].replace('2020/', ''))
-            ntest_cases.append(day['tests_total']-prev_test_cases)
-            prev_test_cases=day['tests_total']
-            test_negative=day['tests_total']-total
-            ntest_negative.append(test_negative-prev_test_negative)
-            prev_test_negative=test_negative
-            ntest_positive.append(total-prev_test_positive)
-            prev_test_positive=total
-    return {'ntest_days': ntest_days, 'ntest_negative': ntest_negative,
-            'ntest_positive': ntest_positive, 'ntest_cases': ntest_cases}
+            ntest_cases.append(day['tests_total'] - prev_test_cases)
+            prev_test_cases = day['tests_total']
+            test_negative = day['tests_total'] - total
+            ntest_negative.append(test_negative - prev_test_negative)
+            prev_test_negative = test_negative
+            ntest_positive.append(total - prev_test_positive)
+            prev_test_positive = total
+    return {
+        'date': {
+            'name': 'Fecha',
+            'values': ntest_days[1:]
+        },
+        'negative': {
+            'name': 'Tests Negativos',
+            'values': ntest_negative[1:]
+        },
+        'positive': {
+            'name': 'Tests Positivos',
+            'values': ntest_positive[1:]
+        },
+        'total': {
+            'name': 'Total de Tests',
+            'values': ntest_cases[1:]
+        }
+    }
 
 
 def top_10_affected_provinces(data):
-    counter=defaultdict(lambda : {'total':0, 'name': '', 'gtotal': 0})
-    gtotal=0
-    data=map(lambda y: y['diagnosticados'] ,filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values()))
-    # in order to avoid double for we use itertools.chain with expanded data (*data)
-    data = itertools.chain(*data)
-    for i in data:
-        counter[i['dpacode_provincia_deteccion']]['total']+=1
-        # take province name from data, assumen that checker fix previosly
-        counter[i['dpacode_provincia_deteccion']]['name']=i['provincia_detección']
-        gtotal+=1
-    res = []
-    for i in itertools.islice(sorted(counter.values(), key=lambda x: x['total'], reverse=True), 10):
-        i['gtotal']=gtotal
-        res.append(i)
-    return res
+    counter = {}
+    total = 0
+    days = list(data['casos']['dias'].values())
+    diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
+    for patients in diagnosed:
+        for p in patients:
+            dpacode = 'dpacode_provincia_deteccion'
+            try:
+                counter[p[dpacode]]['value'] += 1
+                counter[p[dpacode]]['name'] = p['provincia_detección']
+            except KeyError:
+                counter[p[dpacode]] = {
+                    'value': 1,
+                    'name': p['provincia_detección']
+                }
+            total += 1
+    result = []
+    result_list = list(counter.values())
+    result_list.sort(key=lambda x: x['value'], reverse=True)
+    result_list = result_list[:10]
+    for item in result_list:
+        item['total'] = total
+        result.append(item)
+    return result
 
 
 def top_10_affected_municipalities(data):
-    counter=defaultdict(lambda : {'total':0, 'name': '', 'gtotal': 0, 'province_belong': ''})
-    gtotal=0
-    data=map(lambda y: y['diagnosticados'] ,filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values()))
-    # in order to avoid double for we use itertools.chain with expanded data (*data)
-    data = itertools.chain(*data)
-    for i in data:
-        counter[i['dpacode_municipio_deteccion']]['total']+=1
-        # take municipality name from data, assumen that checker fix previosly
-        counter[i['dpacode_municipio_deteccion']]['name']=i['municipio_detección']
-        # take province name from data, assumen that checker fix previosly
-        counter[i['dpacode_municipio_deteccion']]['province_belong']=i['provincia_detección']
-        gtotal+=1
-    res = []
-    for i in itertools.islice(sorted(counter.values(), key=lambda x: x['total'], reverse=True), 10):
-        i['gtotal']=gtotal
-        res.append(i)
-    return res
+    counter = {}
+    total = 0
+    days = list(data['casos']['dias'].values())
+    diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
+    for patients in diagnosed:
+        for p in patients:
+            dpacode = 'dpacode_municipio_deteccion'
+            try:
+                counter[p[dpacode]]['value'] += 1
+                counter[p[dpacode]]['name'] = p['municipio_detección']
+                counter[p[dpacode]]['province'] = p['provincia_detección']
+            except KeyError:
+                counter[p[dpacode]] = {
+                    'value': 1,
+                    'name': p['municipio_detección'],
+                    'province': p['provincia_detección']
+                }
+            total += 1
+    result = []
+    result_list = list(counter.values())
+    result_list.sort(key=lambda x: x['value'], reverse=True)
+    result_list = result_list[:10]
+    for item in result_list:
+        item['total'] = total
+        result.append(item)
+    return result
 
 
 def comparison_of_accumulated_cases(data):

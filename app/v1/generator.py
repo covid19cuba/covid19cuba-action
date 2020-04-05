@@ -326,6 +326,29 @@ def affected_municipalities(data):
         result.append(item)
     return result
 
+def map_data(data):
+    muns=defaultdict(lambda : 0)
+    pros=defaultdict(lambda : 0)
+    data=map(lambda y: y['diagnosticados'] ,filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values()))
+    # in order to avoid double for we use itertools.chain with expanded data (*data)
+    data = itertools.chain(*data)
+    for i in data:
+        muns[i['dpacode_municipio_deteccion']]+=1
+        pros[i['dpacode_provincia_deteccion']]+=1
+    max_pros=0
+    max_muns=0
+    total=0
+    for i in muns.values():
+        max_muns=max(i,max_muns)
+    for i in pros.values():
+        max_pros=max(i,max_pros)
+        total+=i
+    return {'muns': muns, 'pros': pros,
+            'genInfo': {
+                'max_muns': max_muns,
+                'max_pros': max_pros,
+                'total': total
+            }}
 
 def comparison_of_accumulated_cases(data):
     pass

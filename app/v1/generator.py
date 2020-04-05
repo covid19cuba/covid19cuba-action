@@ -2,7 +2,35 @@ from .utils import countries
 
 
 def resume(data):
-    pass
+    days = list(data['casos']['dias'].values())
+    diagnosed = sum((
+        len(x['diagnosticados'])
+        for x in days
+        if 'diagnosticados' in x
+    ))
+    deaths = sum((
+        x['muertes_numero']
+        for x in days
+        if 'muertes_numero' in x
+    ))
+    evacuees = sum((
+        x['evacuados_numero']
+        for x in days
+        if 'evacuados_numero' in x
+    ))
+    recovered = sum((
+        x['recuperados_numero']
+        for x in days
+        if 'recuperados_numero' in x
+    ))
+    active = diagnosed - deaths - evacuees - recovered
+    return [
+        {'name': 'Diagnosticados', 'value': diagnosed},
+        {'name': 'Activos', 'value': active},
+        {'name': 'Recuperados', 'value': recovered},
+        {'name': 'Evacuados', 'value': evacuees},
+        {'name': 'Muertos', 'value': deaths}
+    ]
 
 
 def cases_by_sex(data):

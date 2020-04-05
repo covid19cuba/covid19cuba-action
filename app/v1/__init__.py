@@ -34,7 +34,7 @@ def run(debug=False):
                               data_world=data_world,
                               debug=debug)
         for f in function_list},
-        open(f'api/v1/data.json', mode='w', encoding='utf-8'),
+        open(f'api/v1/all', mode='w', encoding='utf-8'),
         ensure_ascii=False,
         indent=2 if debug else None,
         separators=(',', ': ') if debug else (',', ':'))
@@ -43,7 +43,7 @@ def run(debug=False):
 def dump_util(func, **data):
     result = func(data)
     dump(result,
-         open(f'api/v1/{func.__name__}.json', mode='w', encoding='utf-8'),
+         open(f'api/v1/{func.__name__}', mode='w', encoding='utf-8'),
          ensure_ascii=False,
          indent=2 if data['debug'] else None,
          separators=(',', ': ') if data['debug'] else (',', ':'))

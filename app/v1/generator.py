@@ -1,4 +1,4 @@
-from .utils import countries
+from .countries import countries
 
 
 def resume(data):

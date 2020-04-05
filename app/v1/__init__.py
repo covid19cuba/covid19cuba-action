@@ -25,8 +25,8 @@ def run(debug=False):
         list_of_tests_performed,
         tests_by_days,
         affected_provinces,
-        top_10_affected_municipalities,
-        affected_municipalities
+        affected_municipalities,
+        comparison_of_accumulated_cases
     ]
     dump({
         f.__name__: dump_util(f,

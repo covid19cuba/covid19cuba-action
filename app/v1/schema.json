@@ -628,12 +628,19 @@
                                                 ]
                                             },
                                             "contagio": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "importado",
-                                                    "introducido",
-                                                    "autoctono",
-                                                    "desconocido"
+                                                "anyOf": [
+                                                    {
+                                                        "type": "string",
+                                                        "enum": [
+                                                            "importado",
+                                                            "introducido",
+                                                            "autoctono",
+                                                            "desconocido"
+                                                        ]
+                                                    },
+                                                    {
+                                                        "type": "null"
+                                                    }
                                                 ]
                                             },
                                             "contacto_focal": {

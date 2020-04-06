@@ -419,9 +419,17 @@ def map_data(data):
                 pros[p['dpacode_provincia_deteccion']] += 1
             except KeyError:
                 pros[p['dpacode_provincia_deteccion']] = 1
-    max_muns = max(muns.values())
-    max_pros = max(pros.values())
-    total = sum(pros.values())
+    total = 0
+    max_muns = 0
+    max_pros = 0
+    for key in muns:
+        if key and muns[key] > max_muns:
+            max_muns = muns[key]
+    for key in pros:
+        if key and pros[key] > max_muns:
+            max_pros = pros[key]
+        if key:
+            total += pros[key]
     return {
         'muns': muns,
         'pros': pros,

@@ -322,7 +322,7 @@ def tests_by_days(data):
     for day in (x for x in days if 'diagnosticados' in x):
         total += len(day['diagnosticados'])
         if 'tests_total' in day:
-            ntest_days.append(day['fecha'].replace('2020/', ''))
+            ntest_days.append(day['fecha'])
             ntest_cases.append(day['tests_total'] - prev_test_cases)
             prev_test_cases = day['tests_total']
             test_negative = day['tests_total'] - total

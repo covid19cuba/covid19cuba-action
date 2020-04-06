@@ -5,7 +5,7 @@ from .generator import resume, cases_by_sex, cases_by_mode_of_contagion, \
     evolution_of_cases_by_days, distribution_by_age_ranges, \
     cases_by_nationality, distribution_by_nationality_of_foreign_cases, \
     list_of_tests_performed, tests_by_days, affected_provinces, \
-    affected_municipalities, comparison_of_accumulated_cases
+    affected_municipalities, comparison_of_accumulated_cases, map_data
 
 
 def run(debug=False):
@@ -26,7 +26,8 @@ def run(debug=False):
         tests_by_days,
         affected_provinces,
         affected_municipalities,
-        comparison_of_accumulated_cases
+        comparison_of_accumulated_cases,
+        map_data
     ]
     dump({
         f.__name__: dump_util(f,

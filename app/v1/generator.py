@@ -327,28 +327,33 @@ def affected_municipalities(data):
     return result
 
 def map_data(data):
-    muns=defaultdict(lambda : 0)
-    pros=defaultdict(lambda : 0)
-    data=map(lambda y: y['diagnosticados'] ,filter(lambda x: 'diagnosticados' in x ,data['casos']['dias'].values()))
-    # in order to avoid double for we use itertools.chain with expanded data (*data)
-    data = itertools.chain(*data)
-    for i in data:
-        muns[i['dpacode_municipio_deteccion']]+=1
-        pros[i['dpacode_provincia_deteccion']]+=1
-    max_pros=0
-    max_muns=0
-    total=0
-    for i in muns.values():
-        max_muns=max(i,max_muns)
-    for i in pros.values():
-        max_pros=max(i,max_pros)
-        total+=i
-    return {'muns': muns, 'pros': pros,
-            'genInfo': {
-                'max_muns': max_muns,
-                'max_pros': max_pros,
-                'total': total
-            }}
+    muns = {}
+    pros = {}
+    days = list(data['data_cuba']['casos']['dias'].values())
+    diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
+    for patients in diagnosed:
+        for p in patients:
+            try:
+                muns[p['dpacode_municipio_deteccion']] += 1
+            except KeyError:
+                muns[p['dpacode_municipio_deteccion']] = 1
+            try:
+                pros[p['dpacode_provincia_deteccion']] += 1
+            except KeyError:
+                pros[p['dpacode_provincia_deteccion']] = 1
+    max_pros = max(muns.values())
+    max_muns = max(pros.values())
+    total = sum(pros.values())
+    return {
+        'muns': muns,
+        'pros': pros,
+        'genInfo': {
+            'max_muns': max_muns,
+            'max_pros': max_pros,
+            'total': total
+        }
+    }
+
 
 def comparison_of_accumulated_cases(data):
     world = data['data_world']

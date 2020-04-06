@@ -107,6 +107,11 @@ def cases_by_mode_of_contagion(data):
 def evolution_of_cases_by_days(data):
     accumulated = [0]
     daily = [0]
+    actives = []
+    total = 0
+    deaths = 0
+    recover = 0
+    evacuees = 0
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for x in days:
@@ -115,6 +120,11 @@ def evolution_of_cases_by_days(data):
         if x.get('diagnosticados'):
             accumulated[-1] += len(x['diagnosticados'])
             daily[-1] += len(x['diagnosticados'])
+        total += len(x['diagnosticados']) if 'diagnosticados' in x else 0
+        deaths += x['muertes_numero'] if 'muertes_numero' in x else 0
+        recover += x['recuperados_numero'] if 'recuperados_numero' in x else 0
+        evacuees += x['evacuados_numero'] if 'evacuados_numero' in x else 0
+        actives.append(total - deaths - recover - evacuees)
     return {
         'accumulated': {
             'name': 'Casos acumulados',
@@ -123,7 +133,57 @@ def evolution_of_cases_by_days(data):
         'daily': {
             'name': 'Casos en el día',
             'values': daily[1:]
+        },
+        'active': {
+            'name': 'Casos activos',
+            'values': actives
         }
+    }
+
+
+def evolution_of_deaths_by_days(data):
+    accumulated = [0]
+    daily = [0]
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        accumulated.append(accumulated[-1])
+        daily.append(0)
+        if x.get('muertes_numero'):
+            accumulated[-1] += x['muertes_numero']
+            daily[-1] += x['muertes_numero']
+    return {
+        'accumulated': {
+            'name': 'Muertes acumuladas',
+            'values': accumulated[1:]
+        },
+        'daily': {
+            'name': 'Muertes en el día',
+            'values': daily[1:]
+        },
+    }
+
+
+def evolution_of_recovered_by_days(data):
+    accumulated = [0]
+    daily = [0]
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        accumulated.append(accumulated[-1])
+        daily.append(0)
+        if x.get('recuperados_numero'):
+            accumulated[-1] += x['recuperados_numero']
+            daily[-1] += x['recuperados_numero']
+    return {
+        'accumulated': {
+            'name': 'Altas acumuladas',
+            'values': accumulated[1:]
+        },
+        'daily': {
+            'name': 'Altas en el día',
+            'values': daily[1:]
+        },
     }
 
 

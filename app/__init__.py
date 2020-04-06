@@ -11,5 +11,5 @@ def run(debug=False):
 
 def main_run():
     makedirs('api', exist_ok=True)
-    with open('api/app_version_code', mode='w') as file:
+    with open('api/app_version_code.json', mode='w') as file:
         file.write(str(APP_VERSION_CODE))

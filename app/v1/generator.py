@@ -351,4 +351,13 @@ def map_data(data):
             }}
 
 def comparison_of_accumulated_cases(data):
-    pass
+    world = data['data_world']
+    days = list(data['data_cuba']['casos']['dias'].values())
+    diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
+    accum_cuba = [0]
+    for cases in diagnosed:
+        accum = accum_cuba[-1] + len(cases) 
+        accum_cuba.append(accum)
+    accum_cuba = accum_cuba[1:]
+    world['paises']['Cuba'] = accum_cuba
+    return world

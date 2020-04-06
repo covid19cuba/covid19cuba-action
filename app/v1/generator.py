@@ -107,6 +107,7 @@ def cases_by_mode_of_contagion(data):
 def evolution_of_cases_by_days(data):
     accumulated = [0]
     daily = [0]
+    date = []
     actives = []
     total = 0
     deaths = 0
@@ -125,6 +126,7 @@ def evolution_of_cases_by_days(data):
         recover += x['recuperados_numero'] if 'recuperados_numero' in x else 0
         evacuees += x['evacuados_numero'] if 'evacuados_numero' in x else 0
         actives.append(total - deaths - recover - evacuees)
+        date.append(x['fecha'])
     return {
         'accumulated': {
             'name': 'Casos acumulados',
@@ -137,6 +139,10 @@ def evolution_of_cases_by_days(data):
         'active': {
             'name': 'Casos activos',
             'values': actives
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date
         }
     }
 
@@ -144,6 +150,7 @@ def evolution_of_cases_by_days(data):
 def evolution_of_deaths_by_days(data):
     accumulated = [0]
     daily = [0]
+    date = []
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for x in days:
@@ -152,6 +159,7 @@ def evolution_of_deaths_by_days(data):
         if x.get('muertes_numero'):
             accumulated[-1] += x['muertes_numero']
             daily[-1] += x['muertes_numero']
+        date.append(x['fecha'])
     return {
         'accumulated': {
             'name': 'Muertes acumuladas',
@@ -161,12 +169,17 @@ def evolution_of_deaths_by_days(data):
             'name': 'Muertes en el día',
             'values': daily[1:]
         },
+        'date': {
+            'name': 'Fecha',
+            'values': date
+        }
     }
 
 
 def evolution_of_recovered_by_days(data):
     accumulated = [0]
     daily = [0]
+    date = []
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for x in days:
@@ -175,6 +188,7 @@ def evolution_of_recovered_by_days(data):
         if x.get('recuperados_numero'):
             accumulated[-1] += x['recuperados_numero']
             daily[-1] += x['recuperados_numero']
+        date.append(x['fecha'])
     return {
         'accumulated': {
             'name': 'Altas acumuladas',
@@ -184,6 +198,10 @@ def evolution_of_recovered_by_days(data):
             'name': 'Altas en el día',
             'values': daily[1:]
         },
+        'date': {
+            'name': 'Fecha',
+            'values': date
+        }
     }
 
 
@@ -425,4 +443,7 @@ def comparison_of_accumulated_cases(data):
         accum_cuba.append(accum)
     accum_cuba = accum_cuba[1:]
     world['paises']['Cuba'] = accum_cuba
-    return world
+    return {
+        'countries': world['paises'],
+        'updated': world['dia-actualizacion']
+    }

@@ -2,8 +2,8 @@ from json import load, dump
 from os import makedirs
 from .checker import check
 from .generator import resume, cases_by_sex, cases_by_mode_of_contagion, \
-    evolution_of_cases_by_days, evolution_of_deaths_by_days, \
-    evolution_of_recovered_by_days, distribution_by_age_ranges, \
+    evolution_of_cases_by_days, evolution_of_deaths_by_days, updated, \
+    evolution_of_recovered_by_days, distribution_by_age_ranges, note, \
     cases_by_nationality, distribution_by_nationality_of_foreign_cases, \
     list_of_tests_performed, tests_by_days, affected_provinces, \
     affected_municipalities, comparison_of_accumulated_cases, map_data
@@ -30,7 +30,9 @@ def run(debug=False):
         affected_provinces,
         affected_municipalities,
         comparison_of_accumulated_cases,
-        map_data
+        map_data,
+        updated,
+        note
     ]
     dump({
         f.__name__: dump_util(f,

@@ -456,3 +456,13 @@ def comparison_of_accumulated_cases(data):
         'countries': world['paises'],
         'updated': world['dia-actualizacion']
     }
+
+
+def updated(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    return days[-1]['fecha']
+
+
+def note(data):
+    return data['data_cuba']['note-text'] if 'note-text' in data['data_cuba'] else ''

@@ -7,7 +7,7 @@ from .generator import resume, cases_by_sex, cases_by_mode_of_contagion, \
     cases_by_nationality, distribution_by_nationality_of_foreign_cases, \
     list_of_tests_performed, tests_by_days, affected_provinces, \
     affected_municipalities, comparison_of_accumulated_cases, map_data, \
-    top20accumulatedcountries
+    top_20_accumulated_countries
 
 
 def run(debug=False):
@@ -34,7 +34,7 @@ def run(debug=False):
         map_data,
         updated,
         note,
-        top20accumulatedcountries
+        top_20_accumulated_countries
     ]
     dump({
         f.__name__: dump_util(f,

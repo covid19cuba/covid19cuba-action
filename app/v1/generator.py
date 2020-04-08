@@ -441,7 +441,7 @@ def map_data(data):
     }
 
 
-def top20accumulatedcountries(data):
+def top_20_accumulated_countries(data):
     world = data['data_world']
     accum_cuba = [0]
     days = list(data['data_cuba']['casos']['dias'].values())

@@ -441,6 +441,29 @@ def map_data(data):
     }
 
 
+def top20accumulatedcountries(data):
+    world = data['data_world']
+    accum_cuba = [0]
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for day in days:
+        accum_cuba.append(accum_cuba[-1])
+        if day.get('diagnosticados'):
+            accum_cuba[-1] += len(day['diagnosticados'])
+    accum_cuba = accum_cuba[1:]
+    world['paises']['Cuba'] = accum_cuba
+    result = []
+    for key in world['paises']:
+        value = world['paises'][key]
+        accum = value[-1]
+        result.append((accum, key))
+    result.sort(reverse=True)
+    return list(map(lambda x: {
+        'name': x[1],
+        'value': x[0]
+    }, result[:20]))
+
+
 def comparison_of_accumulated_cases(data):
     world = data['data_world']
     accum_cuba = [0]

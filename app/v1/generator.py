@@ -475,8 +475,9 @@ def comparison_of_accumulated_cases(data):
             accum_cuba[-1] += len(day['diagnosticados'])
     accum_cuba = accum_cuba[1:]
     world['paises']['Cuba'] = accum_cuba
+    len_cuba = len(accum_cuba)
     return {
-        'countries': world['paises'],
+        'countries': {key: world['paises'][key] for key in world['paises'] if len(world['paises'][key]) >= len_cuba},
         'updated': world['dia-actualizacion']
     }
 

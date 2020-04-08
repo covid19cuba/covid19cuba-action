@@ -178,18 +178,11 @@ schema = {
                                                 ]
                                             },
                                             'sexo': {
-                                                'anyOf': [
-                                                    {
-                                                        'type': 'string',
-                                                        'enum': [
-                                                            'hombre',
-                                                            'mujer',
-                                                            'no reportado'
-                                                        ]
-                                                    },
-                                                    {
-                                                        'type': 'null'
-                                                    }
+                                                'type': 'string',
+                                                'enum': [
+                                                    'hombre',
+                                                    'mujer',
+                                                    'no reportado'
                                                 ]
                                             },
                                             'arribo_a_cuba_foco': {

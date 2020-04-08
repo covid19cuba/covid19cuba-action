@@ -1,4 +1,5 @@
 from .countries import countries
+from math import log10
 
 
 def resume(data):
@@ -490,3 +491,29 @@ def updated(data):
 
 def note(data):
     return data['data_cuba']['note-text'] if 'note-text' in data['data_cuba'] else ''
+
+def curves_evolution(data):
+    dataw=data['data_world']
+    ntop=20
+    curves = {}
+    scaleX = lambda x: 0 if x==0 else log10(x)
+    scaleY = lambda y: 0 if y==0 else log10(y)
+    for c, dat in dataw['paises'].items():
+        weeksum=0
+        weeks=[]
+        accum=[]
+        prevweek=0
+        total=0
+        ctotal = 0
+        for i, (day, day1) in enumerate(zip(dat[:-1],dat[1:])):
+            ctotal=day1
+            if (i+1)%7==0 and day>30:
+                total=day
+                weeksum=total-prevweek
+                weeks.append(scaleY(weeksum))
+                weeksum=0
+                prevweek=total
+                accum.append(scaleX(total))
+        curves[c]={'weeks': weeks, 'cummulative_sum':accum, 'total': total,'ctotal':ctotal}
+
+    return {i:j for i,j in list(sorted(curves.items(), key=lambda x: x[1]['ctotal'], reverse=True))[:ntop]}

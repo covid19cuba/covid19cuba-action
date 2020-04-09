@@ -3,12 +3,14 @@ from jsonschema import Draft7Validator
 from .schema import schema
 from .municipality_codes import municipality_codes
 from .province_codes import province_codes
+from ..send_message import send
 
 
 def check():
     data = load(open('data/covid19-cuba.json', encoding='utf-8'))
     validator = Draft7Validator(schema)
     index = 1
+    message_error = '\n'
     for error in sorted(validator.iter_errors(data), key=str):
         location = error.path
         try:
@@ -28,21 +30,22 @@ def check():
         except:
             pass
         end = f', {error.path}' if location != error.path else ''
-        print('============================================')
-        print(f'Error {index}:')
-        print(f'Cause: {error.message}')
-        print(f'Location: {location}{end}')
-        print('============================================')
+        message_error += '============================================\n'
+        message_error += f'Error {index}:\n'
+        message_error += f'Cause: {error.message}\n'
+        message_error += f'Location: {location}{end}\n'
+        message_error += '============================================\n'
         index += 1
     for message, path in check_provinces_and_municipalities(data):
-        print('============================================')
-        print(f'Error {index}:')
-        print(f'Cause: {message}')
-        print(f'Location: {path}')
-        print('============================================')
+        message_error += '============================================\n'
+        message_error += f'Error {index}:\n'
+        message_error += f'Cause: {message}\n'
+        message_error += f'Location: {path}\n'
+        message_error += '============================================\n'
         index += 1
     if index > 1:
-        raise Exception('Invalid JSON.')
+        send(message_error)
+        raise Exception(message_error)
     return True
 
 

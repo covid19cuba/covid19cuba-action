@@ -68,7 +68,7 @@ def resume(data):
         {'name': 'Activos', 'value': active},
         {'name': 'Recuperados', 'value': recovered},
         {'name': 'Evacuados', 'value': evacuees},
-        {'name': 'Muertos', 'value': deaths}
+        {'name': 'Fallecidos', 'value': deaths}
     ]
 
 
@@ -201,11 +201,11 @@ def evolution_of_deaths_by_days(data):
         date.append(x['fecha'])
     return {
         'accumulated': {
-            'name': 'Muertes acumuladas',
+            'name': 'Fallecimientos acumulados',
             'values': accumulated[1:]
         },
         'daily': {
-            'name': 'Muertes en el día',
+            'name': 'Fallecimientos en el día',
             'values': daily[1:]
         },
         'date': {

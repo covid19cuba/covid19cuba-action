@@ -8,6 +8,7 @@ from .utils import dump_util
 def generate(debug=False):
     data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
     function_list = [
+        updated,
         resume,
         cases_by_sex,
         cases_by_mode_of_contagion,
@@ -27,6 +28,12 @@ def generate(debug=False):
              ensure_ascii=False,
              indent=2 if debug else None,
              separators=(',', ': ') if debug else (',', ':'))
+
+
+def updated(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    return days[-1]['fecha']
 
 
 def resume(data):

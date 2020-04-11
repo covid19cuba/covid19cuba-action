@@ -15,7 +15,8 @@ def generate(debug=False):
         cases_by_nationality,
         distribution_by_nationality_of_foreign_cases,
         distribution_by_age_ranges,
-        evolution_of_cases_by_days
+        evolution_of_cases_by_days,
+        affected_municipalities
     ]
     for key in province_abbrs:
         value = province_abbrs[key]
@@ -233,3 +234,31 @@ def evolution_of_cases_by_days(data):
             'values': date
         }
     }
+
+
+def affected_municipalities(data):
+    counter = {}
+    total = 0
+    days = list(data['data_cuba']['casos']['dias'].values())
+    diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
+    for patients in diagnosed:
+        for p in patients:
+            if p.get('provincia_detección') != data['province']:
+                continue
+            dpacode = 'dpacode_municipio_deteccion'
+            try:
+                counter[p[dpacode]]['value'] += 1
+                counter[p[dpacode]]['name'] = p['municipio_detección']
+            except KeyError:
+                counter[p[dpacode]] = {
+                    'value': 1,
+                    'name': p['municipio_detección']
+                }
+            total += 1
+    result = []
+    result_list = list(counter.values())
+    result_list.sort(key=lambda x: x['value'], reverse=True)
+    for item in result_list:
+        item['total'] = total
+        result.append(item)
+    return result

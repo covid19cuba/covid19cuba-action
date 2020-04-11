@@ -1,10 +1,35 @@
-def cases_by_sex(data, province_code, province_name):
+from json import load, dump
+from math import log10
+from .countries import countries
+from .province_codes import province_abbrs
+from .utils import dump_util
+
+
+def generate(debug=False):
+    data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
+    function_list = [
+        cases_by_sex
+    ]
+    for key in province_abbrs:
+        value = province_abbrs[key]
+        dump({f.__name__: dump_util(f'api/v1/provinces/{key}', f,
+                                    data_cuba=data_cuba, province=value,
+                                    debug=debug)
+              for f in function_list},
+             open(f'api/v1/provinces/{key}/all.json',
+                  mode='w', encoding='utf-8'),
+             ensure_ascii=False,
+             indent=2 if debug else None,
+             separators=(',', ': ') if debug else (',', ':'))
+
+
+def cases_by_sex(data):
     result = {'hombre': 0, 'mujer': 0, 'no reportado': 0}
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
-            if item.get('provincia_detección') != province_name:
+            if item.get('provincia_detección') != data['province']:
                 continue
             if item.get('sexo') is None:
                 result['no reportado'] += 1

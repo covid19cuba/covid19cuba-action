@@ -565,11 +565,11 @@ def curves_evolution(data):
         }
     return {
         i: j
-        for i, j in list(
+        for i, j in (list(
             sorted(
                 curves.items(),
                 key=lambda x: x[1]['ctotal'],
                 reverse=True
             )
-        )[:ntop]
+        )[:ntop] + [('Cuba', curves['Cuba'])])
     }

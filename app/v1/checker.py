@@ -3,7 +3,6 @@ from jsonschema import Draft7Validator
 from .schema import schema
 from .municipality_codes import municipality_codes
 from .province_codes import province_codes
-from ..send_message import send
 
 
 def check():
@@ -44,9 +43,7 @@ def check():
         message_error += '============================================\n'
         index += 1
     if index > 1:
-        send(message_error)
         raise Exception(message_error)
-    return True
 
 
 def check_provinces_and_municipalities(data):

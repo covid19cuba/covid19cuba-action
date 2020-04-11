@@ -12,9 +12,8 @@ from ..send_message import send
 
 
 def run(debug=False):
-    if not check():
-        return
     try:
+        check()
         makedirs('api/v1', exist_ok=True)
         data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
         data_world = load(open('data/paises-info-dias.json', encoding='utf-8'))
@@ -49,9 +48,15 @@ def run(debug=False):
             ensure_ascii=False,
             indent=2 if debug else None,
             separators=(',', ': ') if debug else (',', ':'))
-        send('GitHub Action run successfully.')
+        if debug:
+            print('GitHub Action run successfully.')
+        else:
+            send('GitHub Action run successfully.')
     except Exception as e:
-        send(f'Error: {e}')
+        if debug:
+            print(str(e))
+        else:
+            send(str(e))
 
 
 def dump_util(func, **data):

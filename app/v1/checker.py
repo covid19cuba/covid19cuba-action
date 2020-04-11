@@ -77,7 +77,7 @@ def check_provinces_and_municipalities(data):
                 expected = province_codes.get(code)
                 if actual != expected and \
                         (actual or expected != 'Desconocida'):
-                    message = f'Invalid "provincia_detección" by' + \
+                    message = f'Invalid "provincia_detección" by ' + \
                         f'"dpacode_provincia_deteccion". ' + \
                         f'Expected: {expected}, Found: {actual}.'
                     path = f'Id: {value["id"]}, {["casos", "dias", day, "diagnosticados", i, value["id"]]}'

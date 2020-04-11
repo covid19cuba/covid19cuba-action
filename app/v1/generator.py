@@ -1,5 +1,43 @@
-from .countries import countries
+from json import load, dump
 from math import log10
+from .countries import countries
+from .utils import dump_util
+
+
+def generate(debug=False):
+    data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
+    data_world = load(open('data/paises-info-dias.json', encoding='utf-8'))
+    function_list = [
+        resume,
+        cases_by_sex,
+        cases_by_mode_of_contagion,
+        curves_evolution,
+        evolution_of_cases_by_days,
+        evolution_of_deaths_by_days,
+        evolution_of_recovered_by_days,
+        distribution_by_age_ranges,
+        cases_by_nationality,
+        distribution_by_nationality_of_foreign_cases,
+        list_of_tests_performed,
+        tests_by_days,
+        affected_provinces,
+        affected_municipalities,
+        comparison_of_accumulated_cases,
+        map_data,
+        updated,
+        note,
+        top_20_accumulated_countries
+    ]
+    dump({
+        f.__name__: dump_util('api/v1', f,
+                            data_cuba=data_cuba,
+                            data_world=data_world,
+                            debug=debug)
+        for f in function_list},
+        open(f'api/v1/all.json', mode='w', encoding='utf-8'),
+        ensure_ascii=False,
+        indent=2 if debug else None,
+        separators=(',', ': ') if debug else (',', ':'))
 
 
 def resume(data):
@@ -478,7 +516,11 @@ def comparison_of_accumulated_cases(data):
     world['paises']['Cuba'] = accum_cuba
     len_cuba = len(accum_cuba)
     return {
-        'countries': {key: world['paises'][key] for key in world['paises'] if len(world['paises'][key]) >= len_cuba},
+        'countries': {
+            key: world['paises'][key]
+            for key in world['paises']
+            if len(world['paises'][key]) >= len_cuba
+        },
         'updated': world['dia-actualizacion']
     }
 
@@ -492,28 +534,42 @@ def updated(data):
 def note(data):
     return data['data_cuba']['note-text'] if 'note-text' in data['data_cuba'] else ''
 
-def curves_evolution(data):
-    dataw=data['data_world']
-    ntop=20
-    curves = {}
-    scaleX = lambda x: 0 if x==0 else log10(x)
-    scaleY = lambda y: 0 if y==0 else log10(y)
-    for c, dat in dataw['paises'].items():
-        weeksum=0
-        weeks=[]
-        accum=[]
-        prevweek=0
-        total=0
-        ctotal = 0
-        for i, (day, day1) in enumerate(zip(dat[:-1],dat[1:])):
-            ctotal=day1
-            if (i+1)%7==0 and day>30:
-                total=day
-                weeksum=total-prevweek
-                weeks.append(scaleY(weeksum))
-                weeksum=0
-                prevweek=total
-                accum.append(scaleX(total))
-        curves[c]={'weeks': weeks, 'cummulative_sum':accum, 'total': total,'ctotal':ctotal}
 
-    return {i:j for i,j in list(sorted(curves.items(), key=lambda x: x[1]['ctotal'], reverse=True))[:ntop]}
+def curves_evolution(data):
+    dataw = data['data_world']
+    ntop = 20
+    curves = {}
+    scaleX = lambda x: 0 if x == 0 else log10(x)
+    scaleY = lambda y: 0 if y == 0 else log10(y)
+    for c, dat in dataw['paises'].items():
+        weeksum = 0
+        weeks = []
+        accum = []
+        prevweek = 0
+        total = 0
+        ctotal = 0
+        for i, (day, day1) in enumerate(zip(dat[:-1], dat[1:])):
+            ctotal=day1
+            if (i + 1) % 7 == 0 and day > 30:
+                total = day
+                weeksum = total - prevweek
+                weeks.append(scaleY(weeksum))
+                weeksum = 0
+                prevweek = total
+                accum.append(scaleX(total))
+        curves[c] = {
+            'weeks': weeks,
+            'cummulative_sum': accum,
+            'total': total,
+            'ctotal': ctotal
+        }
+    return {
+        i: j
+        for i, j in list(
+            sorted(
+                curves.items(),
+                key=lambda x: x[1]['ctotal'],
+                reverse=True
+            )
+        )[:ntop]
+    }

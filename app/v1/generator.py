@@ -443,6 +443,7 @@ def affected_municipalities(data):
         result.append(item)
     return result
 
+
 def map_data(data):
     muns = {}
     pros = {}

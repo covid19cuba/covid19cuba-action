@@ -17,7 +17,8 @@ def generate(debug=False):
         distribution_by_age_ranges,
         evolution_of_cases_by_days,
         affected_municipalities,
-        dpa_province_code
+        dpa_province_code,
+        map_data,
     ]
     province_codes_r = {j:i for i,j in province_codes.items()}
     for key in province_abbrs:
@@ -35,6 +36,34 @@ def generate(debug=False):
 
 def dpa_province_code(data):
     return data['dpa_code']
+
+def map_data(data):
+    muns = {}
+    p_code = data['dpa_code']
+    days = list(data['data_cuba']['casos']['dias'].values())
+    diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
+    for patients in diagnosed:
+        for p in filter(lambda x: x['dpacode_provincia_deteccion']==p_code, patients):
+            try:
+                muns[p['dpacode_municipio_deteccion']] += 1
+            except KeyError:
+                muns[p['dpacode_municipio_deteccion']] = 1
+    total = 0
+    max_muns = 0
+    max_pros = 0
+    for key in muns:
+        if key and muns[key] > max_muns:
+            max_muns = muns[key]
+        if key:
+            total += muns[key]
+    return {
+        'muns': muns,
+        'genInfo': {
+            'max_muns': max_muns,
+            'total': total
+        }
+    }
+
 
 def updated(data):
     days = list(data['data_cuba']['casos']['dias'].values())

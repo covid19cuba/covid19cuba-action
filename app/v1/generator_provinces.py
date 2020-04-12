@@ -1,7 +1,7 @@
 from json import load, dump
 from math import log10
 from .countries import countries
-from .province_codes import province_abbrs
+from .province_codes import province_abbrs, province_codes
 from .utils import dump_util
 
 
@@ -16,13 +16,16 @@ def generate(debug=False):
         distribution_by_nationality_of_foreign_cases,
         distribution_by_age_ranges,
         evolution_of_cases_by_days,
-        affected_municipalities
+        affected_municipalities,
+        dpa_province_code
     ]
+    province_codes_r = {j:i for i,j in province_codes.items()}
     for key in province_abbrs:
         value = province_abbrs[key]
+        dpa_code = province_codes_r[value]
         dump({f.__name__: dump_util(f'api/v1/provinces/{key}', f,
                                     data_cuba=data_cuba, province=value,
-                                    debug=debug)
+                                    debug=debug, dpa_code=dpa_code)
               for f in function_list},
              open(f'api/v1/provinces/{key}/all.json',
                   mode='w', encoding='utf-8'),
@@ -30,6 +33,8 @@ def generate(debug=False):
              indent=2 if debug else None,
              separators=(',', ': ') if debug else (',', ':'))
 
+def dpa_province_code(data):
+    return data['dpa_code']
 
 def updated(data):
     days = list(data['data_cuba']['casos']['dias'].values())

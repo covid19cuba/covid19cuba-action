@@ -5,6 +5,7 @@ from .generator_provinces import generate as generate_provinces
 from .generator_municipality import generate as generate_municipality
 from .utils import dump_util
 from ..send_message import send
+from .changelog import changelog as data_changelog
 
 APP_VERSION_CODE = 6
 
@@ -15,7 +16,8 @@ def run(debug=False):
         generate(debug)
         generate_provinces(debug)
         generate_municipality(debug)
-        build_state(debug)    
+        build_state(debug)
+        build_changelog(debug)
         send_msg('GitHub Action run successfully.', debug)
     except Exception as e:
         send_msg(e, debug)
@@ -34,6 +36,15 @@ def state(data):
         text = file.read()
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()
+    return result
+
+
+def build_changelog(debug):
+    dump_util('api/v1', changelog, debug=debug)
+
+
+def changelog(data):
+    result = data_changelog
     return result
 
 

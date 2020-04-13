@@ -2,6 +2,7 @@ from hashlib import sha1
 from .checker import check
 from .generator import generate
 from .generator_provinces import generate as generate_provinces
+from .generator_municipality import generate as generate_municipality
 from .utils import dump_util
 from ..send_message import send
 
@@ -13,6 +14,7 @@ def run(debug=False):
         check()
         generate(debug)
         generate_provinces(debug)
+        generate_municipality(debug)
         build_state(debug)    
         send_msg('GitHub Action run successfully.', debug)
     except Exception as e:

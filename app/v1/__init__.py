@@ -7,7 +7,7 @@ from .utils import dump_util
 from ..send_message import send
 from .changelog import changelog as data_changelog
 
-APP_VERSION_CODE = 6
+APP_VERSION_CODE = 8
 
 
 def run(debug=False):

@@ -94,7 +94,7 @@ changelog = {
             "date": "2020/04/08",
             "changed": [
                 "Comportamiento del país por defecto con que se compara Cuba. Ahora este será el último país con que se seleccionó para comparar.",
-                "Los datos en algunas gráficas.",
+                "Datos en algunas gráficas.",
             ],
             "added": [
                 "Información de los casos activos a la gráfica de Evolución de Casos por Días.",

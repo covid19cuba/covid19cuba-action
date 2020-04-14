@@ -111,5 +111,28 @@ changelog = {
 
             ],
         },
+        {
+            "version": "0.5.0",
+            "date": "2020/04/13",
+            "changed": [
+                "Añadidos todos los países en la comparación con Cuba.",
+                "Cambios en el menú lateral.",
+            ],
+            "added": [
+                "Estadísticas por provincia acceciendo desde el menú lateral.",
+                "Gráfico para comparar los comportamientos exponenciales de la epídemia en los 20 países más afectados con Cuba."
+                "Pantalla para chequear si hay una actualización de la aplicación.",
+                "Notificaciones de actualización de la aplicación.",
+                "Notificaciones de actualización de la información.",
+                "Nuevo sistema de cache para disminuir la transferencia de datos por la red.",
+                "Animación al abrir y recargar las pantallas.",
+            ],
+            "fixed": [
+
+            ],
+            "deleted": [
+
+            ],
+        },
     ]
 }

@@ -119,13 +119,13 @@ changelog = {
                 "Cambios en el menú lateral.",
             ],
             "added": [
-                "Estadísticas por provincia acceciendo desde el menú lateral.",
-                "Gráfico para comparar los comportamientos exponenciales de la epídemia en los 20 países más afectados con Cuba."
+                "Estadísticas por provincia accediendo desde el menú lateral.",
+                "Gráfico para comparar los comportamientos exponenciales de la epidemia en los 20 países más afectados con Cuba."
                 "Pantalla para chequear si hay una actualización de la aplicación.",
                 "Notificaciones de actualización de la aplicación.",
                 "Notificaciones de actualización de la información.",
-                "Nuevo sistema de cache para disminuir la transferencia de datos por la red.",
-                "Animación al abrir y recargar las pantallas.",
+                "Nuevo sistema de caché para disminuir la transferencia de datos por la red.",
+                "Animación al abrir y refrescar las pantallas.",
             ],
             "fixed": [
 

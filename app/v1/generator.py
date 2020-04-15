@@ -506,17 +506,56 @@ def top_20_accumulated_countries(data):
 
 def comparison_of_accumulated_cases(data):
     world = data['data_world']
-    accum_cuba = [0]
+    confirmed = [0]
+    daily = [0]
+    recovered = [0]
+    deaths = [0]
+    actives = []
+    _total = 0
+    _deaths = 0
+    _recover = 0
+    _evacuees = 0
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     for day in days:
-        accum_cuba.append(accum_cuba[-1])
+        confirmed.append(confirmed[-1])
+        recovered.append(recovered[-1])
+        deaths.append(deaths[-1])
+        daily.append(0)
         if day.get('diagnosticados'):
-            accum_cuba[-1] += len(day['diagnosticados'])
-    accum_cuba = accum_cuba[1:]
-    world['paises']['Cuba'] = accum_cuba
+            confirmed[-1] += len(day['diagnosticados'])
+            daily[-1] += len(day['diagnosticados'])
+        if day.get('recuperados_numero'):
+            recovered[-1] += day['recuperados_numero']
+        if day.get('muertes_numero'):
+            deaths[-1] += day['muertes_numero']
+        _total += len(day['diagnosticados']) if 'diagnosticados' in day else 0
+        _deaths += day['muertes_numero'] if 'muertes_numero' in day else 0
+        _recover += day['recuperados_numero'] if 'recuperados_numero' in day else 0
+        _evacuees += day['evacuados_numero'] if 'evacuados_numero' in day else 0
+        actives.append(_total - _deaths - _recover - _evacuees)
+    world['paises']['Cuba'] = confirmed[1:]
+    for key in world['paises_info']:
+        value = world['paises_info'][key]
+        confirmed = value['confirmed']
+        recovered = value['recovered']
+        deaths = value['deaths']
+        daily = [confirmed[0]]
+        active = []
+        for i in range(1, len(confirmed)):
+            daily.append(confirmed[i] - confirmed[i - 1])
+        for i in range(len(confirmed)):
+            active.append(confirmed[i] - deaths[i] - recovered[i])
+        value['daily'] = daily
+        value['active'] = active
+    world['paises_info']['Cuba']['confirmed'] = confirmed[1:]
+    world['paises_info']['Cuba']['recovered'] = recovered[1:]
+    world['paises_info']['Cuba']['deaths'] = deaths[1:]
+    world['paises_info']['Cuba']['daily'] = daily[1:]
+    world['paises_info']['Cuba']['active'] = actives
     return {
         'countries': world['paises'],
+        'countries_info': world['paises_info'],
         'updated': world['dia-actualizacion']
     }
 

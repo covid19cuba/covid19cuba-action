@@ -1,3 +1,4 @@
+from json import loads
 from hashlib import sha1
 from .checker import check
 from .generator import generate
@@ -21,6 +22,8 @@ def run(debug=False):
         send_msg('GitHub Action run successfully.', debug)
     except Exception as e:
         send_msg(e, debug)
+        if debug:
+            raise e
 
 
 def build_state(debug):
@@ -30,12 +33,16 @@ def build_state(debug):
 def state(data):
     result = {
         'version': APP_VERSION_CODE,
-        'cache': None
+        'cache': None,
+        'days': 0
     }
     with open('api/v1/all.json', encoding='utf-8') as file:
         text = file.read()
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()
+        data = loads(text)
+        days = len(data['evolution_of_cases_by_days']['accumulated']['values'])
+        result['days'] = days
     return result
 
 

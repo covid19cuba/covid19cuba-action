@@ -536,18 +536,18 @@ def comparison_of_accumulated_cases(data):
         actives.append(_total - _deaths - _recover - _evacuees)
     world['paises']['Cuba'] = confirmed[1:]
     for key in world['paises_info']:
-        value = world['paises_info'][key]
-        confirmed = value['confirmed']
-        recovered = value['recovered']
-        deaths = value['deaths']
-        daily = [confirmed[0]]
-        active = []
-        for i in range(1, len(confirmed)):
-            daily.append(confirmed[i] - confirmed[i - 1])
-        for i in range(len(confirmed)):
-            active.append(confirmed[i] - deaths[i] - recovered[i])
-        value['daily'] = daily
-        value['active'] = active
+        _value = world['paises_info'][key]
+        _confirmed = _value['confirmed']
+        _recovered = _value['recovered']
+        _deaths = _value['deaths']
+        _daily = [confirmed[0]]
+        _active = []
+        for i in range(1, len(_confirmed)):
+            _daily.append(_confirmed[i] - _confirmed[i - 1])
+        for i in range(len(_confirmed)):
+            _active.append(_confirmed[i] - _deaths[i] - _recovered[i])
+        _value['daily'] = _daily
+        _value['active'] = _active
     world['paises_info']['Cuba']['confirmed'] = confirmed[1:]
     world['paises_info']['Cuba']['recovered'] = recovered[1:]
     world['paises_info']['Cuba']['deaths'] = deaths[1:]

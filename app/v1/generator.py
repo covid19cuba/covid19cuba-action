@@ -30,9 +30,9 @@ def generate(debug=False):
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
-                            data_cuba=data_cuba,
-                            data_world=data_world,
-                            debug=debug)
+                              data_cuba=data_cuba,
+                              data_world=data_world,
+                              debug=debug)
         for f in function_list},
         open(f'api/v1/all.json', mode='w', encoding='utf-8'),
         ensure_ascii=False,
@@ -482,25 +482,21 @@ def map_data(data):
 
 
 def top_20_accumulated_countries(data):
-    world = data['data_world']
-    accum_cuba = [0]
-    days = list(data['data_cuba']['casos']['dias'].values())
-    days.sort(key=lambda x: x['fecha'])
-    for day in days:
-        accum_cuba.append(accum_cuba[-1])
-        if day.get('diagnosticados'):
-            accum_cuba[-1] += len(day['diagnosticados'])
-    accum_cuba = accum_cuba[1:]
-    world['paises']['Cuba'] = accum_cuba
+    countries_info = comparison_of_accumulated_cases(data)['countries_info']
     result = []
-    for key in world['paises']:
-        value = world['paises'][key]
-        accum = value[-1]
-        result.append((accum, key))
+    for key in countries_info:
+        value = countries_info[key]
+        confirmed = value['confirmed'][-1]
+        recovered = value['recovered'][-1]
+        deaths = value['deaths'][-1]
+        result.append((confirmed, recovered, deaths, key))
     result.sort(reverse=True)
     return list(map(lambda x: {
-        'name': x[1],
-        'value': x[0]
+        'name': x[3],
+        'value': x[0],
+        'confirmed': x[0],
+        'recovered': x[1],
+        'deaths': x[2],
     }, result[:20]))
 
 
@@ -574,8 +570,8 @@ def curves_evolution(data):
     dataw = data['data_world']
     ntop = 20
     curves = {}
-    scaleX = lambda x: 0 if x == 0 else log10(x)
-    scaleY = lambda y: 0 if y == 0 else log10(y)
+    def scaleX(x): return 0 if x == 0 else log10(x)
+    def scaleY(y): return 0 if y == 0 else log10(y)
     for c, dat in dataw['paises'].items():
         weeksum = 0
         weeks = []
@@ -584,7 +580,7 @@ def curves_evolution(data):
         total = 0
         ctotal = 0
         for i, (day, day1) in enumerate(zip(dat[:-1], dat[1:])):
-            ctotal=day1
+            ctotal = day1
             if (i + 1) % 7 == 0 and day > 30:
                 total = day
                 weeksum = total - prevweek

@@ -31,7 +31,7 @@ def generate(debug=False):
                                         debug=debug, dpa_code=dpa_code, mun_code=mun_code,
                                         municipality=mun_value)
                 for f in function_list},
-                open(f'api/v1/provinces/{key}/municipalities/{mun_code}/all.json',
+                open(f'api/v1/provinces/{key}/municipalities/{full_code}/all.json',
                     mode='w', encoding='utf-8'),
                 ensure_ascii=False,
                 indent=2 if debug else None,

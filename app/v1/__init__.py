@@ -37,8 +37,13 @@ def state(data):
     result = {
         'version': APP_VERSION_CODE,
         'cache': None,
+        'data': None,
         'days': 0
     }
+    with open('api/v1/full.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['data'] = cache.hexdigest()
     with open('api/v1/all.json', encoding='utf-8') as file:
         text = file.read()
         cache = sha1(text.encode())

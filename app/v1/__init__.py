@@ -19,9 +19,9 @@ def run(debug=False):
         generate(debug)
         generate_provinces(debug)
         generate_municipalities(debug)
-        build_state(debug)
         build_changelog(debug)
         build_full('api/v1', debug)
+        build_state(debug)
         send_msg('GitHub Action run successfully.', debug)
     except Exception as e:
         send_msg(e, debug)

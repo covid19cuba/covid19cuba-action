@@ -1,4 +1,4 @@
-from json import dump, load
+from json import load
 from jsonschema import Draft7Validator
 from .schema import schema
 from .municipality_codes import municipality_codes
@@ -72,23 +72,57 @@ def check_provinces_and_municipalities(data):
         if 'diagnosticados' in x:
             diagnosed = x['diagnosticados']
             for i, value in enumerate(diagnosed):
-                code = value['dpacode_provincia_deteccion']
-                actual = value['provincia_detección']
-                expected = province_codes.get(code)
-                if actual != expected and \
-                        (actual or expected != 'Desconocida'):
-                    message = f'Invalid "provincia_detección" by ' + \
-                        f'"dpacode_provincia_deteccion". ' + \
-                        f'Expected: {expected}, Found: {actual}.'
-                    path = f'Id: {value["id"]}, {["casos", "dias", day, "diagnosticados", i, value["id"]]}'
-                    yield message, path
-                code = value['dpacode_municipio_deteccion']
-                actual = value['municipio_detección']
-                expected = municipality_codes.get(code)
-                if actual != expected and \
-                        (actual or expected != 'Desconocido'):
-                    message = f'Invalid "municipio_detección" by ' + \
-                        f'"dpacode_municipio_deteccion". ' + \
-                        f'Expected: {expected}, Found: {actual}.'
-                    path = f'Id: {value["id"]}, {["casos", "dias", day, "diagnosticados", i, value["id"]]}'
-                    yield message, path
+                check_province = _check_province_match(i, value, day)
+                if check_province:
+                    yield check_province
+
+                check_municipality = _check_municipality_match(i, value, day)
+                if check_municipality:
+                    yield check_municipality
+
+                check_municipality_province_codes = _check_municipality_province_codes_match(i, value, day)
+                if check_municipality_province_codes:
+                    yield check_municipality_province_codes
+
+
+def _check_province_match(i, value, day):
+    province_code = value['dpacode_provincia_deteccion']
+    province = value['provincia_detección']
+    expected_province_code = province_codes.get(province_code)
+    if province != expected_province_code and \
+            (province or expected_province_code != 'Desconocida'):
+        message = f'Invalid "provincia_detección" by ' + \
+                  f'"dpacode_provincia_deteccion". ' + \
+                  f'Expected: {expected_province_code}, Found: {province}.'
+        path = f'Id: {value["id"]}, {["casos", "dias", day, "diagnosticados", i, value["id"]]}'
+        return message, path
+
+
+def _check_municipality_match(i, value, day):
+    municipality_code = value['dpacode_municipio_deteccion']
+    municipality = value['municipio_detección']
+    expected_municipality_code = municipality_codes.get(municipality_code)
+    if municipality != expected_municipality_code and \
+            (municipality or expected_municipality_code != 'Desconocido'):
+        message = f'Invalid "municipio_detección" by ' + \
+                  f'"dpacode_municipio_deteccion". ' + \
+                  f'Expected: {expected_municipality_code}, Found: {municipality}.'
+        path = f'Id: {value["id"]}, {["casos", "dias", day, "diagnosticados", i, value["id"]]}'
+        return message, path
+
+
+def _check_municipality_province_codes_match(i, value, day):
+    province_code = value['dpacode_provincia_deteccion']
+    municipality_code = value['dpacode_municipio_deteccion']
+    match = True
+    if municipality_code:
+        if province_code != municipality_code.split('.')[0] and \
+            (municipality_code and province_code != '40.01'):
+            match = False
+    elif province_codes == '40.01':
+        match = False
+    if not match:
+        message = f'Province and municipality codes mismatch. ' + \
+                  f'Expected: {province_code} == {municipality_code.split(".")[0]}.'
+        path = f'Id: {value["id"]}, {["casos", "dias", day, "diagnosticados", i, value["id"]]}'
+        return message, path

@@ -26,12 +26,12 @@ def generate(debug=False):
         municipalities = [ (key, key.split('.')[1]) for key in municipality_codes if key.startswith(dpa_code) ]
         for full_code, mun_code in municipalities:
             mun_value = municipality_codes[full_code]
-            dump({f.__name__: dump_util(f'api/v1/provinces/{key}/{mun_code}', f,
+            dump({f.__name__: dump_util(f'api/v1/provinces/{key}/municipalities/{mun_code}', f,
                                         data_cuba=data_cuba, province=value,
                                         debug=debug, dpa_code=dpa_code, mun_code=mun_code,
                                         municipality=mun_value)
                 for f in function_list},
-                open(f'api/v1/provinces/{key}/{mun_code}/all.json',
+                open(f'api/v1/provinces/{key}/municipalities/{mun_code}/all.json',
                     mode='w', encoding='utf-8'),
                 ensure_ascii=False,
                 indent=2 if debug else None,

@@ -2,13 +2,13 @@ import os
 
 from json import dump, loads, load
 from hashlib import sha1
+from .changelog import changelog as data_changelog
 from .checker import check
 from .generator import generate
 from .generator_provinces import generate as generate_provinces
-from .generator_municipality import generate as generate_municipality
+from .generator_municipalities import generate as generate_municipalities
 from .utils import dump_util
 from ..send_message import send
-from .changelog import changelog as data_changelog
 
 APP_VERSION_CODE = 8
  
@@ -18,7 +18,7 @@ def run(debug=False):
         check()
         generate(debug)
         generate_provinces(debug)
-        generate_municipality(debug)
+        generate_municipalities(debug)
         build_state(debug)
         build_changelog(debug)
         build_full('api/v1', debug)

@@ -1,4 +1,6 @@
-from json import loads
+import os
+
+from json import dump, loads, load
 from hashlib import sha1
 from .checker import check
 from .generator import generate
@@ -19,6 +21,7 @@ def run(debug=False):
         generate_municipality(debug)
         build_state(debug)
         build_changelog(debug)
+        build_full('api/v1', debug)
         send_msg('GitHub Action run successfully.', debug)
     except Exception as e:
         send_msg(e, debug)
@@ -61,3 +64,27 @@ def send_msg(message, debug):
         print(message)
     else:
         send(message)
+
+
+def build_full(base_path, debug):
+    subdirs = [ name for name in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, name)) ]
+    all_data = None
+    try:
+        with open(os.path.join(base_path, 'all.json'), encoding='utf-8') as file:
+            all_data = load(file)
+    except FileNotFoundError:
+        pass
+    full_data = dict()
+    for subdir in subdirs:
+        subdir_full_data = build_full(os.path.join(base_path, subdir), debug)
+        if len(list(subdir_full_data.keys())):
+            full_data[subdir] = subdir_full_data
+    if all_data:
+        full_data['all'] = all_data
+        if len(subdirs):
+            with open(os.path.join(base_path, 'full.json'), mode='w', encoding='utf-8') as file:
+                dump(full_data, file,
+                    ensure_ascii=False,
+                    indent=2 if debug else None,
+                    separators=(',', ': ') if debug else (',', ':'))
+    return full_data

@@ -7,22 +7,22 @@ from .checker import check
 from .generator import generate
 from .generator_provinces import generate as generate_provinces
 from .generator_municipalities import generate as generate_municipalities
-from .utils import dump_util
-from ..send_message import send
+from .utils import dump_util, send_msg
 
 APP_VERSION_CODE = 8
  
 
 def run(debug=False):
     try:
-        check()
+        ok = check(debug)
         generate(debug)
         generate_provinces(debug)
         generate_municipalities(debug)
         build_changelog(debug)
         build_full('api/v1', debug)
         build_state(debug)
-        send_msg('GitHub Action run successfully.', debug)
+        if ok:
+            send_msg('GitHub Action run successfully.', debug)
     except Exception as e:
         send_msg(e, debug)
         if debug:
@@ -61,14 +61,6 @@ def build_changelog(debug):
 def changelog(data):
     result = data_changelog
     return result
-
-
-def send_msg(message, debug):
-    message = str(message)
-    if debug:
-        print(message)
-    else:
-        send(message)
 
 
 def build_full(base_path, debug):

@@ -3,13 +3,16 @@ from jsonschema import Draft7Validator
 from .schema import schema
 from .municipality_codes import municipality_codes
 from .province_codes import province_codes
+from .utils import send_msg
 
 
-def check():
+def check(debug=False):
     data = load(open('data/covid19-cuba.json', encoding='utf-8'))
     validator = Draft7Validator(schema)
-    index = 1
+    index_error = 1
+    index_warning = 1
     message_error = '\n'
+    message_warning = '\n'
     for error in sorted(validator.iter_errors(data), key=str):
         location = error.path
         try:
@@ -30,23 +33,33 @@ def check():
             pass
         end = f', {error.path}' if location != error.path else ''
         message_error += '============================================\n'
-        message_error += f'Error {index}:\n'
+        message_error += f'Error {index_error}:\n'
         message_error += f'Cause: {error.message}\n'
         message_error += f'Location: {location}{end}\n'
         message_error += '============================================\n'
-        index += 1
-    for message, path in check_provinces_and_municipalities(data):
+        index_error += 1
+    for message, path in check_errors(data):
         message_error += '============================================\n'
-        message_error += f'Error {index}:\n'
+        message_error += f'Error {index_error}:\n'
         message_error += f'Cause: {message}\n'
         message_error += f'Location: {path}\n'
         message_error += '============================================\n'
-        index += 1
-    if index > 1:
+        index_error += 1
+    for message, path in check_warnings(data):
+        message_warning += '============================================\n'
+        message_warning += f'Warning {index_warning}:\n'
+        message_warning += f'Cause: {message}\n'
+        message_warning += f'Location: {path}\n'
+        message_warning += '============================================\n'
+        index_warning += 1
+    if index_warning > 1:
+        send_msg(message_warning, debug)
+    if index_error > 1:
         raise Exception(message_error)
+    return index_error == 1 and index_warning == 1
 
 
-def check_provinces_and_municipalities(data):
+def check_errors(data):
     for key in data['centros_aislamiento']:
         value = data['centros_aislamiento'][key]
         code = value['dpacode_provincia']
@@ -83,6 +96,35 @@ def check_provinces_and_municipalities(data):
                 check_municipality_province_codes = _check_municipality_province_codes_match(i, value, day)
                 if check_municipality_province_codes:
                     yield check_municipality_province_codes
+
+
+def check_warnings(data):
+    for day in data['casos']['dias']:
+        x = data['casos']['dias'][day]
+        if 'diagnosticados' in x:
+            diagnosed = x['diagnosticados']
+            for i, value in enumerate(diagnosed):
+                check_sex = _check_sex_match(i, value, day)
+                if check_sex:
+                    yield check_sex
+
+
+def _check_sex_match(i, value, day):
+    sex = value['sexo']
+    if not value.get('info'):
+        return
+    expected_sex = value['info'].strip().split(' ')[0].lower()
+    if expected_sex == 'ciudadano':
+        expected_sex = 'hombre'
+    elif expected_sex == 'ciudadana':
+        expected_sex = 'mujer'
+    else:
+        return
+    if sex != expected_sex:
+        message = f'Invalid "sex". ' + \
+                  f'Expected: {expected_sex}, Found: {sex}.'
+        path = f'Id: {value["id"]}, {["casos", "dias", day, "diagnosticados", i, value["id"]]}'
+        return message, path
 
 
 def _check_province_match(i, value, day):

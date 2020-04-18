@@ -26,7 +26,8 @@ def generate(debug=False):
         map_data,
         updated,
         note,
-        top_20_accumulated_countries
+        top_20_accumulated_countries,
+        tests_positive_percent
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -385,6 +386,37 @@ def tests_by_days(data):
         'total': {
             'name': 'Total de Tests',
             'values': ntest_cases[1:]
+        }
+    }
+
+
+def tests_positive_percent(data):
+    _data = tests_by_days(data)
+    date = _data['date']
+    daily_positive = _data['positive']['values']
+    daily_total = _data['total']['values']
+    accum_positive = []
+    accum_total = []
+    total = 0
+    positive = 0
+    days = list(data['data_cuba']['casos']['dias'].values())
+    for day in (x for x in days if 'diagnosticados' in x):
+        positive += len(day['diagnosticados'])
+        if 'tests_total' in day:
+            total = max(total, day['tests_total'])
+            accum_positive.append(positive)
+            accum_total.append(total)
+    daily = [float('%.2f' % (i * 100 / j)) for i, j in zip(daily_positive, daily_total)]
+    accum = [float('%.2f' % (i * 100 / j)) for i, j in zip(accum_positive[1:], accum_total[1:])]
+    return {
+        'date': date,
+        'daily': {
+            'name': '% de Tests Positivos en el Día',
+            'values': daily
+        },
+        'accumulated': {
+            'name': '% de Tests Positivos Acumulados',
+            'values': accum
         }
     }
 

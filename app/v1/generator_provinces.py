@@ -20,7 +20,7 @@ def generate(debug=False):
         dpa_province_code,
         map_data,
     ]
-    province_codes_r = {j:i for i,j in province_codes.items()}
+    province_codes_r = {j: i for i, j in province_codes.items()}
     for key in province_abbrs:
         value = province_abbrs[key]
         dpa_code = province_codes_r[value]
@@ -34,8 +34,10 @@ def generate(debug=False):
              indent=2 if debug else None,
              separators=(',', ': ') if debug else (',', ':'))
 
+
 def dpa_province_code(data):
     return data['dpa_code']
+
 
 def map_data(data):
     muns = {}
@@ -43,14 +45,13 @@ def map_data(data):
     days = list(data['data_cuba']['casos']['dias'].values())
     diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
     for patients in diagnosed:
-        for p in filter(lambda x: x['dpacode_provincia_deteccion']==p_code, patients):
+        for p in filter(lambda x: x['dpacode_provincia_deteccion'] == p_code, patients):
             try:
                 muns[p['dpacode_municipio_deteccion']] += 1
             except KeyError:
                 muns[p['dpacode_municipio_deteccion']] = 1
     total = 0
     max_muns = 0
-    max_pros = 0
     for key in muns:
         if key and muns[key] > max_muns:
             max_muns = muns[key]
@@ -73,6 +74,10 @@ def updated(data):
 
 def resume(data):
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    new_cases = len(list(filter(
+        lambda a: a.get('provincia_detección') == data['province'],
+        days[-1]['diagnosticados']))) if 'diagnosticados' in days[-1] else 0
     diagnosed = sum((
         len(list(filter(
             lambda a: a.get('provincia_detección') == data['province'],
@@ -82,6 +87,7 @@ def resume(data):
     ))
     return [
         {'name': 'Diagnosticados', 'value': diagnosed},
+        {'name': 'Casos Nuevos', 'value': new_cases}
     ]
 
 

@@ -19,23 +19,24 @@ def generate(debug=False):
         evolution_of_cases_by_days,
         dpa_municipality_code,
     ]
-    province_codes_r = {j:i for i,j in province_codes.items()}
+    province_codes_r = {j: i for i, j in province_codes.items()}
     for key in province_abbrs:
         value = province_abbrs[key]
         dpa_code = province_codes_r[value]
-        municipalities = [ (key, key.split('.')[1]) for key in municipality_codes if key.startswith(dpa_code) ]
+        municipalities = [(key, key.split('.')[1])
+                          for key in municipality_codes if key.startswith(dpa_code)]
         for full_code, mun_code in municipalities:
             mun_value = municipality_codes[full_code]
             dump({f.__name__: dump_util(f'api/v1/provinces/{key}/municipalities/{full_code}', f,
                                         data_cuba=data_cuba, province=value,
                                         debug=debug, dpa_code=dpa_code, mun_code=mun_code,
                                         municipality=mun_value)
-                for f in function_list},
-                open(f'api/v1/provinces/{key}/municipalities/{full_code}/all.json',
-                    mode='w', encoding='utf-8'),
-                ensure_ascii=False,
-                indent=2 if debug else None,
-                separators=(',', ': ') if debug else (',', ':'))
+                  for f in function_list},
+                 open(f'api/v1/provinces/{key}/municipalities/{full_code}/all.json',
+                      mode='w', encoding='utf-8'),
+                 ensure_ascii=False,
+                 indent=2 if debug else None,
+                 separators=(',', ': ') if debug else (',', ':'))
 
 
 def dpa_municipality_code(data):
@@ -50,17 +51,25 @@ def updated(data):
 
 def resume(data):
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    new_cases = len(list(filter(
+        lambda a: a.get('provincia_detección') == data['province']
+        and a.get('municipio_detección') == data['municipality'],
+        days[-1]['diagnosticados']))) if 'diagnosticados' in days[-1] else 0
     diagnosed = sum((
         len(list(filter(
             lambda a: a.get('provincia_detección') == data['province'] and
-                        a.get('municipio_detección') == data['municipality'],
+            a.get('municipio_detección') == data['municipality'],
             x['diagnosticados'])))
         for x in days
         if 'diagnosticados' in x
     ))
-    return [
-        {'name': 'Diagnosticados', 'value': diagnosed},
+    result = [
+        {'name': 'Diagnosticados', 'value': diagnosed}
     ]
+    if diagnosed:
+        result.append({'name': 'Casos Nuevos', 'value': new_cases})
+    return result
 
 
 def cases_by_sex(data):
@@ -227,7 +236,7 @@ def evolution_of_cases_by_days(data):
         daily.append(0)
         if x.get('diagnosticados'):
             temp = len(list(filter(
-                lambda a: a.get('provincia_detección') == data['province'] and 
+                lambda a: a.get('provincia_detección') == data['province'] and
                 a.get('municipio_detección') == data['municipality'],
                 x['diagnosticados'])))
             accumulated[-1] += temp

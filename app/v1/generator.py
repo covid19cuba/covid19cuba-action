@@ -43,6 +43,8 @@ def generate(debug=False):
 
 def resume(data):
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    new_cases = len(days[-1]['diagnosticados']) if 'diagnosticados' in days[-1] else 0
     diagnosed = sum((
         len(x['diagnosticados'])
         for x in days
@@ -69,7 +71,8 @@ def resume(data):
         {'name': 'Activos', 'value': active},
         {'name': 'Recuperados', 'value': recovered},
         {'name': 'Evacuados', 'value': evacuees},
-        {'name': 'Fallecidos', 'value': deaths}
+        {'name': 'Fallecidos', 'value': deaths},
+        {'name': 'Casos Nuevos', 'value': new_cases}
     ]
 
 

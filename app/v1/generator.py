@@ -44,7 +44,6 @@ def generate(debug=False):
 def resume(data):
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
-    new_cases = len(days[-1]['diagnosticados']) if 'diagnosticados' in days[-1] else 0
     diagnosed = sum((
         len(x['diagnosticados'])
         for x in days
@@ -66,14 +65,23 @@ def resume(data):
         if 'recuperados_numero' in x
     ))
     active = diagnosed - deaths - evacuees - recovered
-    return [
+    new_diagnosed = len(days[-1]['diagnosticados']) if 'diagnosticados' in days[-1] else 0
+    new_recovered = days[-1]['recuperados_numero'] if 'recuperados_numero' in days[-1] else 0
+    new_deaths = days[-1]['muertes_numero'] if 'muertes_numero' in days[-1] else 0
+    new_evacuees = days[-1]['evacuados_numero'] if 'evacuados_numero' in days[-1] else 0
+    result = [
         {'name': 'Diagnosticados', 'value': diagnosed},
         {'name': 'Activos', 'value': active},
         {'name': 'Recuperados', 'value': recovered},
         {'name': 'Evacuados', 'value': evacuees},
         {'name': 'Fallecidos', 'value': deaths},
-        {'name': 'Casos Nuevos', 'value': new_cases}
+        {'name': 'Diagnosticados Nuevos', 'value': new_diagnosed},
+        {'name': 'Recuperados Nuevos', 'value': new_recovered},
+        {'name': 'Fallecidos Nuevos', 'value': new_deaths}
     ]
+    if new_evacuees:
+        result.append({'name': 'Evacuados Nuevos', 'value': new_evacuees})
+    return result
 
 
 def cases_by_sex(data):

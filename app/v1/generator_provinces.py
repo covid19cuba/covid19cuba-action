@@ -75,7 +75,7 @@ def updated(data):
 def resume(data):
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
-    new_cases = len(list(filter(
+    new_diagnosed = len(list(filter(
         lambda a: a.get('provincia_detección') == data['province'],
         days[-1]['diagnosticados']))) if 'diagnosticados' in days[-1] else 0
     diagnosed = sum((
@@ -87,7 +87,7 @@ def resume(data):
     ))
     return [
         {'name': 'Diagnosticados', 'value': diagnosed},
-        {'name': 'Casos Nuevos', 'value': new_cases}
+        {'name': 'Diagnosticados Nuevos', 'value': new_diagnosed}
     ]
 
 

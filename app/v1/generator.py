@@ -27,7 +27,8 @@ def generate(debug=False):
         updated,
         note,
         top_20_accumulated_countries,
-        tests_positive_percent
+        tests_positive_percent,
+        eventos
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -647,3 +648,6 @@ def curves_evolution(data):
             )
         )[:ntop] + [('Cuba', curves['Cuba'])])
     }
+
+def eventos(data):
+    return data['data_cuba']['eventos']

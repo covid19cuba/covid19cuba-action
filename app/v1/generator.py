@@ -1,6 +1,6 @@
 from json import load, dump
 from math import log10
-from .countries import countries
+from .countries import countries, countries_codes, trans_countries
 from .provinces_population import provinces_population
 from .utils import dump_util
 
@@ -29,7 +29,9 @@ def generate(debug=False):
         note,
         top_20_accumulated_countries,
         tests_positive_percent,
-        eventos
+        eventos,
+        stringency_index_cuba,
+        stringency_index_comparison
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -656,3 +658,45 @@ def curves_evolution(data):
 
 def eventos(data):
     return data['data_cuba']['eventos']
+
+def stringency_index_cuba(data):
+    dataw = data['data_world']
+    index_days = []
+    for i in dataw['indexes']['data'].keys():
+        index_days.append(i.replace('-','/') )
+    index_days = sorted(index_days)
+    index_values_cuba_all = []
+
+    for i in index_days:
+        day = dataw['indexes']['data'][i.replace('/','-')]
+        if 'CUB' in day:
+            index_values_cuba_all.append(day['CUB']['stringency'])
+        else:
+            index_values_cuba_all.append(None)
+
+    return {'days': list(map(lambda x: '/'.join(x.split('/')[1:]),index_days)), 'data': index_values_cuba_all}
+
+def stringency_index_comparison(data):
+    dataw = data['data_world']
+    curves_stringency = {}
+    stringency_countries = []
+    for i in dataw['indexes']['countries']:
+        if i in countries_codes:
+            stringency_countries.append(i)
+
+    for i in trans_countries.keys():
+        curves_stringency[i]=[]
+
+    for i in sorted(dataw['indexes']['data'].keys()):
+        day = dataw['indexes']['data'][i]
+        for j in stringency_countries:
+            if j in day:
+                curves_stringency[countries_codes[j]].append(day[j]['stringency'])
+            else:
+                curves_stringency[countries_codes[j]].append(None)
+
+    for i in curves_stringency.keys():
+        if len(curves_stringency[i])>0:
+            curves_stringency[i]=curves_stringency[i][:-1]
+
+    return curves_stringency

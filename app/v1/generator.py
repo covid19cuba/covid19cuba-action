@@ -1,6 +1,7 @@
 from json import load, dump
 from math import log10
 from .countries import countries, countries_codes, trans_countries
+from .provinces_population import provinces_population
 from .utils import dump_util
 
 
@@ -446,8 +447,10 @@ def affected_provinces(data):
             try:
                 counter[p[dpacode]]['value'] += 1
                 counter[p[dpacode]]['name'] = p['provincia_detección']
+                counter[p[dpacode]]['code'] = p[dpacode]
             except KeyError:
                 counter[p[dpacode]] = {
+                    'code': p[dpacode],
                     'value': 1,
                     'name': p['provincia_detección']
                 }
@@ -457,6 +460,8 @@ def affected_provinces(data):
     result_list.sort(key=lambda x: x['value'], reverse=True)
     for item in result_list:
         item['total'] = total
+        item['population'] = provinces_population[item['code']]
+        del item['code']
         result.append(item)
     return result
 

@@ -31,8 +31,7 @@ def generate(debug=False):
         top_20_accumulated_countries,
         tests_positive_percent,
         eventos,
-        stringency_index_cuba,
-        stringency_index_comparison
+        stringency_index_cuba
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -601,6 +600,26 @@ def comparison_of_accumulated_cases(data):
     world['paises_info']['Cuba']['deaths'] = deaths[1:]
     world['paises_info']['Cuba']['daily'] = daily[1:]
     world['paises_info']['Cuba']['active'] = actives
+    dataw = data['data_world']
+    curves_stringency = {}
+    stringency_countries = []
+    for i in dataw['indexes']['countries']:
+        if i in countries_codes:
+            stringency_countries.append(i)
+    for i in trans_countries.keys():
+        curves_stringency[i]=[]
+    for i in sorted(dataw['indexes']['data'].keys()):
+        day = dataw['indexes']['data'][i]
+        for j in stringency_countries:
+            if j in day:
+                curves_stringency[countries_codes[j]].append(day[j]['stringency'])
+            else:
+                curves_stringency[countries_codes[j]].append(None)
+    for i in curves_stringency.keys():
+        if len(curves_stringency[i])>0:
+            curves_stringency[i]=curves_stringency[i][:-1]
+    for key in curves_stringency:
+        world['paises_info'][key]['stringency'] = curves_stringency[key]
     return {
         'countries': world['paises'],
         'countries_info': world['paises_info'],
@@ -657,8 +676,10 @@ def curves_evolution(data):
         )[:ntop] + [('Cuba', curves['Cuba'])])
     }
 
+
 def eventos(data):
     return data['data_cuba']['eventos']
+
 
 def stringency_index_cuba(data):
     dataw = data['data_world']
@@ -676,28 +697,3 @@ def stringency_index_cuba(data):
             index_values_cuba_all.append(None)
 
     return {'days': index_days, 'data': index_values_cuba_all, 'moments': moments}
-
-def stringency_index_comparison(data):
-    dataw = data['data_world']
-    curves_stringency = {}
-    stringency_countries = []
-    for i in dataw['indexes']['countries']:
-        if i in countries_codes:
-            stringency_countries.append(i)
-
-    for i in trans_countries.keys():
-        curves_stringency[i]=[]
-
-    for i in sorted(dataw['indexes']['data'].keys()):
-        day = dataw['indexes']['data'][i]
-        for j in stringency_countries:
-            if j in day:
-                curves_stringency[countries_codes[j]].append(day[j]['stringency'])
-            else:
-                curves_stringency[countries_codes[j]].append(None)
-
-    for i in curves_stringency.keys():
-        if len(curves_stringency[i])>0:
-            curves_stringency[i]=curves_stringency[i][:-1]
-
-    return curves_stringency

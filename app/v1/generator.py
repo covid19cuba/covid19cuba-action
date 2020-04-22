@@ -69,7 +69,8 @@ def resume(data):
         if 'recuperados_numero' in x
     ))
     active = diagnosed - deaths - evacuees - recovered
-    new_diagnosed = len(days[-1]['diagnosticados']) if 'diagnosticados' in days[-1] else 0
+    new_diagnosed = len(days[-1]['diagnosticados']
+                        ) if 'diagnosticados' in days[-1] else 0
     new_recovered = days[-1]['recuperados_numero'] if 'recuperados_numero' in days[-1] else 0
     new_deaths = days[-1]['muertes_numero'] if 'muertes_numero' in days[-1] else 0
     new_evacuees = days[-1]['evacuados_numero'] if 'evacuados_numero' in days[-1] else 0
@@ -421,8 +422,10 @@ def tests_positive_percent(data):
             total = max(total, day['tests_total'])
             accum_positive.append(positive)
             accum_total.append(total)
-    daily = [float('%.2f' % (i * 100 / j)) for i, j in zip(daily_positive, daily_total)]
-    accum = [float('%.2f' % (i * 100 / j)) for i, j in zip(accum_positive[1:], accum_total[1:])]
+    daily = [float('%.2f' % (i * 100 / j))
+             for i, j in zip(daily_positive, daily_total)]
+    accum = [float('%.2f' % (i * 100 / j))
+             for i, j in zip(accum_positive[1:], accum_total[1:])]
     return {
         'date': date,
         'daily': {
@@ -607,19 +610,23 @@ def comparison_of_accumulated_cases(data):
         if i in countries_codes:
             stringency_countries.append(i)
     for i in trans_countries.keys():
-        curves_stringency[i]=[]
+        curves_stringency[i] = []
     for i in sorted(dataw['indexes']['data'].keys()):
         day = dataw['indexes']['data'][i]
         for j in stringency_countries:
             if j in day:
-                curves_stringency[countries_codes[j]].append(day[j]['stringency'])
+                curves_stringency[countries_codes[j]].append(
+                    day[j]['stringency'])
             else:
                 curves_stringency[countries_codes[j]].append(None)
     for i in curves_stringency.keys():
-        if len(curves_stringency[i])>0:
-            curves_stringency[i]=curves_stringency[i][:-1]
+        if len(curves_stringency[i]) > 0:
+            curves_stringency[i] = curves_stringency[i][:-1]
     for key in curves_stringency:
-        world['paises_info'][key]['stringency'] = curves_stringency[key]
+        world['paises_info'][key]['stringency'] = curves_stringency[key][
+            max(len(curves_stringency[key]) -
+                len(world['paises_info'][key]['confirmed']), 0):
+        ]
     return {
         'countries': world['paises'],
         'countries_info': world['paises_info'],
@@ -685,12 +692,12 @@ def stringency_index_cuba(data):
     dataw = data['data_world']
     index_days = []
     for i in dataw['indexes']['data'].keys():
-        index_days.append(i.replace('-','/') )
+        index_days.append(i.replace('-', '/'))
     index_days = sorted(index_days)
     index_values_cuba_all = []
 
     for i in index_days:
-        day = dataw['indexes']['data'][i.replace('/','-')]
+        day = dataw['indexes']['data'][i.replace('/', '-')]
         if 'CUB' in day:
             index_values_cuba_all.append(day['CUB']['stringency'])
         else:

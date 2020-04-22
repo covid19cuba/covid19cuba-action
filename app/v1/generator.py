@@ -1,6 +1,7 @@
 from json import load, dump
 from math import log10
 from .countries import countries, countries_codes, trans_countries
+from .moments import moments
 from .provinces_population import provinces_population
 from .utils import dump_util
 
@@ -674,7 +675,7 @@ def stringency_index_cuba(data):
         else:
             index_values_cuba_all.append(None)
 
-    return {'days': list(map(lambda x: '/'.join(x.split('/')[1:]),index_days)), 'data': index_values_cuba_all}
+    return {'days': index_days, 'data': index_values_cuba_all, 'moments': moments}
 
 def stringency_index_comparison(data):
     dataw = data['data_world']

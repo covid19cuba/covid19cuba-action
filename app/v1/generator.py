@@ -263,23 +263,25 @@ def evolution_of_recovered_by_days(data):
 
 
 def distribution_by_age_ranges(data):
-    result = [0] * 5
-    keys = ['0-18', '19-40', '41-60', '>=61', 'Desconocido']
-    hard = ['0-18', '19-40', '41-60', '>=61', 'unknown']
+    result = [0] * 6
+    keys = ['0-19', '20-39', '40-59', '60-79', '>=80', 'Desconocido']
+    hard = ['0-19', '20-39', '40-59', '60-79', '>=80', 'unknown']
     days = list(data['data_cuba']['casos']['dias'].values())
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             age = item.get('edad')
             if age is None:
-                result[4] += 1
-            elif 0 <= age <= 18:
+                result[-1] += 1
+            elif 0 <= age <= 19:
                 result[0] += 1
-            elif 18 < age <= 40:
+            elif 20 <= age <= 39:
                 result[1] += 1
-            elif 40 < age <= 60:
+            elif 40 <= age <= 59:
                 result[2] += 1
-            else:
+            elif 60 <= age <= 79:
                 result[3] += 1
+            else:
+                result[4] += 1
     return [
         {'code': item[0], 'name': item[1][0], 'value': item[1][1]}
         for item in zip(hard, zip(keys, result))

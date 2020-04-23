@@ -31,7 +31,8 @@ def generate(debug=False):
         top_20_accumulated_countries,
         tests_positive_percent,
         eventos,
-        stringency_index_cuba
+        stringency_index_cuba,
+        pesquisador
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -704,3 +705,11 @@ def stringency_index_cuba(data):
             index_values_cuba_all.append(None)
 
     return {'days': index_days, 'data': index_values_cuba_all, 'moments': moments}
+
+
+def pesquisador(data):
+    return {
+        'url': 'http://autopesquisa.sld.cu/',
+        'javascript': "document.querySelector('app-root').removeChild(document.querySelector('mat-toolbar'));",
+        'contains': 'autopesquisa.sld.cu'
+    }

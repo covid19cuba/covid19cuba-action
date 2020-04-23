@@ -9,7 +9,7 @@ from .generator_provinces import generate as generate_provinces
 from .generator_municipalities import generate as generate_municipalities
 from .utils import dump_util, send_msg
 
-APP_VERSION_CODE = 8
+APP_VERSION_CODE = 9
 
 
 def run(debug=False):

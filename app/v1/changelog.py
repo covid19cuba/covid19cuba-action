@@ -166,5 +166,23 @@ changelog = {
 
             ],
         },
+        {
+            'version': '0.6.1',
+            'date': '2020/04/24',
+            'changed': [
+                
+            ],
+            'added': [
+                'Opción en la pantalla de configuraciones para reiniciar el estado de la aplicación.',
+                'Enlaces de descarga de la aplicación dinámicos.'
+            ],
+            'fixed': [
+                'Error en el buscador de países.',
+                'Errores en las leyendas de los gráficos.',
+            ],
+            'deleted': [
+
+            ],
+        },
     ]
 }

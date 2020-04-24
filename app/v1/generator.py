@@ -549,7 +549,7 @@ def top_20_accumulated_countries(data):
         result.append((confirmed, recovered, deaths, key))
     result.sort(reverse=True)
     return list(map(lambda x: {
-        'name': x[3],
+        'name': trans_countries[x[3]],
         'value': x[0],
         'confirmed': x[0],
         'recovered': x[1],

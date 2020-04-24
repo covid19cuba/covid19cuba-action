@@ -1,6 +1,6 @@
 from json import load, dump
 from math import log10
-from .countries import countries, countries_codes, trans_countries
+from .countries import countries, countries_codes, trans_countries, countries_iso3Code
 from .moments import moments
 from .provinces_population import provinces_population
 from .utils import dump_util
@@ -630,6 +630,16 @@ def comparison_of_accumulated_cases(data):
             max(len(curves_stringency[key]) -
                 len(world['paises_info'][key]['confirmed']), 0):
         ]
+    list_to_remove = []
+    for key in world['paises_info']:
+        if key not in trans_countries:
+            # print(key)
+            list_to_remove.append(key)
+            continue
+        world['paises_info'][key]['name'] = trans_countries[key]
+        world['paises_info'][key]['iso3'] = countries_iso3Code[key]
+    for item in list_to_remove:
+        del world['paises_info'][item]
     return {
         'countries': world['paises'],
         'countries_info': world['paises_info'],

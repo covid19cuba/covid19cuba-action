@@ -630,19 +630,17 @@ def comparison_of_accumulated_cases(data):
             max(len(curves_stringency[key]) -
                 len(world['paises_info'][key]['confirmed']), 0):
         ]
-    list_to_remove = []
+    _data = {}
     for key in world['paises_info']:
         if key not in trans_countries:
             # print(key)
-            list_to_remove.append(key)
             continue
-        world['paises_info'][key]['name'] = trans_countries[key]
-        world['paises_info'][key]['iso3'] = countries_iso3Code[key]
-    for item in list_to_remove:
-        del world['paises_info'][item]
+        _data[countries_iso3Code[key]] = world['paises_info'][key]
+        _data[countries_iso3Code[key]]['name'] = trans_countries[key]
     return {
         'countries': world['paises'],
         'countries_info': world['paises_info'],
+        'data': _data,
         'updated': world['dia-actualizacion']
     }
 

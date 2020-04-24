@@ -684,7 +684,7 @@ def curves_evolution(data):
             'ctotal': ctotal
         }
     return {
-        i: j
+        trans_countries[i]: j
         for i, j in (list(
             sorted(
                 curves.items(),

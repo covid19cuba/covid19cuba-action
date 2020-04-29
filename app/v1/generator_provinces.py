@@ -19,6 +19,7 @@ def generate(debug=False):
         affected_municipalities,
         dpa_province_code,
         map_data,
+        effective_reproductive_number,
     ]
     province_codes_r = {j: i for i, j in province_codes.items()}
     for key in province_abbrs:
@@ -304,3 +305,14 @@ def affected_municipalities(data):
         item['total'] = total
         result.append(item)
     return result
+
+
+def effective_reproductive_number(data):
+    if not data['dpa_code'] in data['data_cuba']['numero-reproductivo']:
+        return None
+    data_prov = data['data_cuba']['numero-reproductivo'][data['dpa_code']]
+    dates = []
+    for item in data_prov['dates']:
+        dates.append(f'2020/{item}')
+    data_prov['dates'] = dates
+    return data_prov

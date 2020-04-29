@@ -315,4 +315,21 @@ def effective_reproductive_number(data):
     for item in data_prov['dates']:
         dates.append(f'2020/{item}')
     data_prov['dates'] = dates
-    return data_prov
+    return {
+        'upper': {
+            'name': 'Margen Superior',
+            'values': data_prov['upper']
+        },
+        'value': {
+            'name': 'Número Reproductivo Efectivo',
+            'values': data_prov['value']
+        },
+        'lower': {
+            'name': 'Margen Inferior',
+            'values': data_prov['lower']
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': data_prov['dates']
+        }
+    }

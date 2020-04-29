@@ -732,4 +732,21 @@ def effective_reproductive_number(data):
     for item in data_cu['dates']:
         dates.append(f'2020/{item}')
     data_cu['dates'] = dates
-    return data_cu
+    return {
+        'upper': {
+            'name': 'Margen Superior',
+            'values': data_cu['upper']
+        },
+        'value': {
+            'name': 'Número Reproductivo Efectivo',
+            'values': data_cu['value']
+        },
+        'lower': {
+            'name': 'Margen Inferior',
+            'values': data_cu['lower']
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': data_cu['dates']
+        }
+    }

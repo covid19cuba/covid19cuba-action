@@ -32,7 +32,8 @@ def generate(debug=False):
         tests_positive_percent,
         eventos,
         stringency_index_cuba,
-        pesquisador
+        pesquisador,
+        effective_reproductive_number
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -723,3 +724,12 @@ def pesquisador(data):
         'javascript': "document.querySelector('app-root').removeChild(document.querySelector('mat-toolbar'));",
         'contains': 'autopesquisa.sld.cu'
     }
+
+
+def effective_reproductive_number(data):
+    data_cu = data['data_cuba']['numero-reproductivo']['cu']
+    dates = []
+    for item in data_cu['dates']:
+        dates.append(f'2020/{item}')
+    data_cu['dates'] = dates
+    return data_cu

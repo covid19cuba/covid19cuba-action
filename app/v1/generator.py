@@ -720,7 +720,7 @@ def stringency_index_cuba(data):
 
 def pesquisador(data):
     return {
-        'url': 'https://autopesquisa.sld.cu/',
+        'url': 'http://autopesquisa.sld.cu/',
         'javascript': "document.querySelector('app-root').removeChild(document.querySelector('mat-toolbar'));",
         'contains': 'autopesquisa.sld.cu'
     }

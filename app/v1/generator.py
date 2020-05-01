@@ -660,8 +660,8 @@ def curves_evolution(data):
     dataw = data['data_world']
     ntop = 20
     curves = {}
-    def scaleX(x): return 0 if x == 0 else log10(x)
-    def scaleY(y): return 0 if y == 0 else log10(y)
+    def scaleX(x): return None if x < 0 else 0 if x == 0 else log10(x)
+    def scaleY(y): return None if y < 0 else 0 if y == 0 else log10(y)
     for c, dat in dataw['paises'].items():
         weeksum = 0
         weeks = []

@@ -726,7 +726,7 @@ def stringency_index_cuba(data):
             index_values_cuba_all.append(None)
             index_values_cuba_legacy_all.append(None)
     cuba_length = len(list(data['data_cuba']['casos']['dias'].values()))
-    index_slice = len(index_days) - cuba_length - 3
+    index_slice = len(index_days) - cuba_length - 1
     index_slice = max(index_slice, 0)
     index_days = index_days[index_slice:]
     index_values_cuba_all = index_values_cuba_all[index_slice:]

@@ -36,7 +36,8 @@ def generate(debug=False):
         stringency_index_cuba,
         pesquisador,
         effective_reproductive_number,
-        distribution_of_cases
+        distribution_of_cases,
+        test_behavior_comparison,
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -849,3 +850,23 @@ def distribution_of_cases(data):
             'value': cases
         }
     }
+
+
+def test_behavior_comparison(data):
+    result = data['data_world']['tests']
+    for key in result:
+        result[key]['name'] = trans_countries[countries_codes[key]] if key in countries_codes else None
+        result[key]['test_efectivity'] = float(result[key]['test_efectivity'])
+        result[key]['total_tests_per_million'] = float(result[key]['total_tests_per_million'])
+    cuba_population = 11209628
+    cuba_total = 0
+    cuba_positive = 0
+    cuba_days = list(data['data_cuba']['casos']['dias'].values())
+    for cuba_day in (x for x in cuba_days if 'diagnosticados' in x):
+        cuba_positive += len(cuba_day['diagnosticados'])
+        if 'tests_total' in cuba_day:
+            cuba_total = max(cuba_total, cuba_day['tests_total'])
+    result['CUB']['name'] = trans_countries[countries_codes['CUB']]
+    result['CUB']['test_efectivity'] = float(cuba_positive / cuba_total * 100)
+    result['CUB']['total_tests_per_million'] = float(cuba_total / cuba_population * 10**6)
+    return {key: result[key] for key in result if result[key]['name']}

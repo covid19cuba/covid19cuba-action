@@ -9,6 +9,7 @@ from .utils import dump_util
 def generate(debug=False):
     data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
     data_world = load(open('data/paises-info-dias.json', encoding='utf-8'))
+    data_oxford = load(open('data/oxford-indexes.json', encoding='utf-8'))
     function_list = [
         resume,
         cases_by_sex,
@@ -40,6 +41,7 @@ def generate(debug=False):
         f.__name__: dump_util('api/v1', f,
                               data_cuba=data_cuba,
                               data_world=data_world,
+                              data_oxford=data_oxford,
                               debug=debug)
         for f in function_list},
         open(f'api/v1/all.json', mode='w', encoding='utf-8'),
@@ -702,21 +704,34 @@ def eventos(data):
 
 
 def stringency_index_cuba(data):
-    dataw = data['data_world']
+    data_oxford = data['data_oxford']['data']
     index_days = []
-    for i in dataw['indexes']['data'].keys():
+    for i in data_oxford:
         index_days.append(i.replace('-', '/'))
     index_days = sorted(index_days)
     index_values_cuba_all = []
-
+    index_values_cuba_legacy_all = []
+    index_last_value = 0
+    index_last_value_legacy = 0
     for i in index_days:
-        day = dataw['indexes']['data'][i.replace('/', '-')]
+        day = data_oxford[i.replace('/', '-')]
         if 'CUB' in day:
-            index_values_cuba_all.append(day['CUB']['stringency'])
+            val = day['CUB']['stringency']
+            index_values_cuba_all.append(val)
+            index_last_value = max(index_last_value, val)
+            val = day['CUB']['stringency_legacy_disp']
+            index_values_cuba_legacy_all.append(val)
+            index_last_value_legacy = max(index_last_value_legacy, val)
         else:
             index_values_cuba_all.append(None)
-
-    return {'days': index_days, 'data': index_values_cuba_all, 'moments': moments}
+            index_values_cuba_legacy_all.append(None)
+    cuba_length = len(list(data['data_cuba']['casos']['dias'].values()))
+    index_slice = len(index_days) - cuba_length - 1
+    index_slice = max(index_slice, 0)
+    index_days = index_days[index_slice:]
+    index_values_cuba_all = index_values_cuba_all[index_slice:]
+    index_values_cuba_legacy_all = index_values_cuba_legacy_all[index_slice:]
+    return {'days': index_days, 'data': index_values_cuba_all, 'data-legacy': index_values_cuba_legacy_all, 'moments': moments}
 
 
 def pesquisador(data):

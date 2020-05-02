@@ -1,9 +1,5 @@
 moments = [
     {
-        'date': '2020/01/28',
-        'value': 'Análisis Plan de Prevención y Control'
-    },
-    {
         'date': '2020/03/11',
         'value': 'Primeros casos confirmados'
     },

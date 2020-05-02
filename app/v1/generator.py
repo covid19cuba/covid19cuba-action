@@ -869,4 +869,15 @@ def test_behavior_comparison(data):
     result['CUB']['name'] = trans_countries[countries_codes['CUB']]
     result['CUB']['test_efectivity'] = float(cuba_positive / cuba_total * 100)
     result['CUB']['total_tests_per_million'] = float(cuba_total / cuba_population * 10**6)
-    return {key: result[key] for key in result if result[key]['name']}
+    curves = curves_evolution_v2(data)
+    tests = result
+    result = {}
+    for key in tests:
+        if not tests[key]['name']:
+            continue
+        name = tests[key]['name']
+        if not name in curves:
+            continue
+        result[key] = tests[key]
+        result[key]['total'] = curves[name]['ctotal']
+    return result

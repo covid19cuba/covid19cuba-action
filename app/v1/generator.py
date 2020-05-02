@@ -267,25 +267,20 @@ def evolution_of_recovered_by_days(data):
 
 
 def distribution_by_age_ranges(data):
-    result = [0] * 6
-    keys = ['0-19', '20-39', '40-59', '60-79', '>=80', '--']
-    hard = ['0-19', '20-39', '40-59', '60-79', '>=80', 'unknown']
+    keys = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80', '--']
+    hard = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80', 'unknown']
+    intervals = [[0, 9], [10, 19], [20, 29], [30, 39], [40, 49], [50, 59], [60, 69], [70, 79], [80, 2**10]]
+    result = [0] * (len(intervals) + 1)
     days = list(data['data_cuba']['casos']['dias'].values())
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             age = item.get('edad')
             if age is None:
                 result[-1] += 1
-            elif 0 <= age <= 19:
-                result[0] += 1
-            elif 20 <= age <= 39:
-                result[1] += 1
-            elif 40 <= age <= 59:
-                result[2] += 1
-            elif 60 <= age <= 79:
-                result[3] += 1
-            else:
-                result[4] += 1
+            for index, (left, right) in enumerate(intervals):
+                if left <= age <= right:
+                    result[index] += 1
+                    break
     return [
         {'code': item[0], 'name': item[1][0], 'value': item[1][1]}
         for item in zip(hard, zip(keys, result))

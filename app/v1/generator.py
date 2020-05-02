@@ -33,7 +33,8 @@ def generate(debug=False):
         eventos,
         stringency_index_cuba,
         pesquisador,
-        effective_reproductive_number
+        effective_reproductive_number,
+        distribution_of_cases
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -748,5 +749,53 @@ def effective_reproductive_number(data):
         'date': {
             'name': 'Fecha',
             'values': data_cu['dates']
+        }
+    }
+
+
+def distribution_of_cases(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    cases = sum((
+        len(x['diagnosticados'])
+        for x in days
+        if 'diagnosticados' in x
+    ))
+    deaths = sum((
+        x['muertes_numero']
+        for x in days
+        if 'muertes_numero' in x
+    ))
+    evacuees = sum((
+        x['evacuados_numero']
+        for x in days
+        if 'evacuados_numero' in x
+    ))
+    recovered = sum((
+        x['recuperados_numero']
+        for x in days
+        if 'recuperados_numero' in x
+    ))
+    active = cases - deaths - evacuees - recovered
+    return {
+        'recovered': {
+            'name': 'Recuperados',
+            'value': recovered
+        },
+        'active': {
+            'name': 'Activos',
+            'value': active
+        },
+        'evacuees': {
+            'name': 'Evacuados',
+            'value': evacuees
+        },
+        'deaths': {
+            'name': 'Fallecidos',
+            'value': deaths
+        },
+        'cases': {
+            'name': 'Casos',
+            'value': cases
         }
     }

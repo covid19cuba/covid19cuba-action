@@ -408,7 +408,8 @@ countries_codes = {
     "VEN": "Venezuela",
     "VNM": "Vietnam",
     "ZMB": "Zambia",
-    "ZWE": "Zimbabwe"
+    "ZWE": "Zimbabwe",
+    "TJK": "Tajikistan",
 }
 
 countries_iso3Code = {
@@ -595,9 +596,11 @@ countries_iso3Code = {
     "Western Sahara": "ESH",
     "Sao Tome and Principe": "STP",
     "Yemen": "YEM",
+    "Tajikistan": "TJK",
 }
 
 trans_countries = {
+    'Tajikistan': 'Tayikistán',
     'Western Sahara': 'Sahara Occidental',
     'Sao Tome and Principe': 'Santo Tomé y Príncipe',
     'Yemen': 'Yemen',

@@ -200,9 +200,9 @@ def distribution_by_nationality_of_foreign_cases(data):
 
 
 def distribution_by_age_ranges(data):
-    keys = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80', '--']
-    hard = ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '>=80', 'unknown']
-    intervals = [[0, 9], [10, 19], [20, 29], [30, 39], [40, 49], [50, 59], [60, 69], [70, 79], [80, 2**10]]
+    keys = ['0-19', '20-39', '40-59', '60-79', '>=80', '--']
+    hard = ['0-19', '20-39', '40-59', '60-79', '>=80', 'unknown']
+    intervals = [[0, 19], [20, 39], [40, 59], [60, 79], [80, 2**10]]
     result = [0] * (len(intervals) + 1)
     days = list(data['data_cuba']['casos']['dias'].values())
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):

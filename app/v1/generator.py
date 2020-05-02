@@ -15,6 +15,7 @@ def generate(debug=False):
         cases_by_sex,
         cases_by_mode_of_contagion,
         curves_evolution,
+        curves_evolution_v2,
         evolution_of_cases_by_days,
         evolution_of_deaths_by_days,
         evolution_of_recovered_by_days,
@@ -691,6 +692,45 @@ def curves_evolution(data):
                 reverse=True
             )
         )[:ntop] + [('Cuba', curves['Cuba'])])
+    }
+
+
+def curves_evolution_v2(data):
+    dataw = data['data_world']
+    curves = {}
+    def scaleX(x): return None if x < 0 else 0 if x == 0 else log10(x)
+    def scaleY(y): return None if y < 0 else 0 if y == 0 else log10(y)
+    for c, dat in dataw['paises'].items():
+        weeksum = 0
+        weeks = []
+        accum = []
+        prevweek = 0
+        total = 0
+        ctotal = 0
+        for i, (day, day1) in enumerate(zip(dat[:-1], dat[1:])):
+            ctotal = day1
+            if (i + 1) % 7 == 0 and day > 30:
+                total = day
+                weeksum = total - prevweek
+                weeks.append(scaleY(weeksum))
+                weeksum = 0
+                prevweek = total
+                accum.append(scaleX(total))
+        curves[c] = {
+            'weeks': weeks,
+            'cummulative_sum': accum,
+            'total': total,
+            'ctotal': ctotal
+        }
+    return {
+        trans_countries[i]: j
+        for i, j in (list(
+            sorted(
+                curves.items(),
+                key=lambda x: x[0],
+                reverse=False
+            )
+        )) if i in trans_countries
     }
 
 

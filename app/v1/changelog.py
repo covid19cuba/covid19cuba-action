@@ -210,5 +210,21 @@ changelog = {
 
             ],
         },
+        {
+            'version': '0.7.1',
+            'date': '2020/05/04',
+            'changed': [
+                
+            ],
+            'added': [
+                'Botones de información en la parte superior derecha de las gráficas.',
+            ],
+            'fixed': [
+                'Enlaces en la pantalla de actualización.',
+            ],
+            'deleted': [
+
+            ],
+        },
     ]
 }

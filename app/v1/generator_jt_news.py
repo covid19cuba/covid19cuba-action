@@ -11,7 +11,7 @@ def generate(debug=False):
         summary = str(entry['summary'])
         index_summary = summary.rindex('<hr>')
         summary = summary[:index_summary]
-        index_abstract = summary.index('</p>')
+        index_abstract = findnth(summary, '</p>', 2)
         abstract = summary[:index_abstract + 4]
         news.append({
             'id': entry['id'],
@@ -31,3 +31,10 @@ def generate(debug=False):
         ensure_ascii=False,
         indent=2 if debug else None,
         separators=(',', ': ') if debug else (',', ':'))
+
+
+def findnth(haystack, needle, n):
+    parts= haystack.split(needle, n+1)
+    if len(parts)<=n+1:
+        return -1
+    return len(haystack) - len(parts[-1]) - len(needle)

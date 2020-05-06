@@ -17,7 +17,10 @@ def generate(debug=False):
             'updated': entry['updated_parsed'],
             'summary': entry['summary'],
         })
-    dump(news,
+    result = {
+        'news': news,
+    }
+    dump(result,
         open(f'api/v1/jt_news.json', mode='w', encoding='utf-8'),
         ensure_ascii=False,
         indent=2 if debug else None,

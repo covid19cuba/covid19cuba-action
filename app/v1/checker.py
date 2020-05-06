@@ -5,6 +5,10 @@ from .municipality_codes import municipality_codes
 from .province_codes import province_codes
 from .utils import send_msg
 
+sex_ignored = {
+    'cu-1392'
+}
+
 
 def check(debug=False):
     data = load(open('data/covid19-cuba.json', encoding='utf-8'))
@@ -110,6 +114,8 @@ def check_warnings(data):
 
 
 def _check_sex_match(i, value, day):
+    if value['id'] in sex_ignored:
+        return
     sex = value['sexo']
     if not value.get('info'):
         return

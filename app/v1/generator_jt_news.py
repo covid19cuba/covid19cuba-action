@@ -9,8 +9,10 @@ def generate(debug=False):
     news = []
     for entry in feed.entries:
         summary = str(entry['summary'])
-        index = summary.rindex('<hr>')
-        summary = summary[:index]
+        index_summary = summary.rindex('<hr>')
+        summary = summary[:index_summary]
+        index_abstract = summary.index('</p>')
+        abstract = summary[:index_abstract + 4]
         news.append({
             'id': entry['id'],
             'link': entry['link'],
@@ -19,6 +21,7 @@ def generate(debug=False):
             'published': entry['published_parsed'],
             'updated': entry['updated_parsed'],
             'summary': summary,
+            'abstract': abstract,
         })
     result = {
         'news': news,

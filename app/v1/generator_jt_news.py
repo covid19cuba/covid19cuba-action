@@ -8,6 +8,9 @@ def generate(debug=False):
     feed = parse(URL_JT_MEDIUM_FEED)
     news = []
     for entry in feed.entries:
+        summary = str(entry['summary'])
+        index = summary.rindex('<hr>')
+        summary = summary[:index]
         news.append({
             'id': entry['id'],
             'link': entry['link'],
@@ -15,7 +18,7 @@ def generate(debug=False):
             'author': entry['author'],
             'published': entry['published_parsed'],
             'updated': entry['updated_parsed'],
-            'summary': entry['summary'],
+            'summary': summary,
         })
     result = {
         'news': news,

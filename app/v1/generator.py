@@ -38,6 +38,7 @@ def generate(debug=False):
         effective_reproductive_number,
         distribution_of_cases,
         test_behavior_comparison,
+        evolution_of_cases_and_recovered_by_days,
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -881,3 +882,33 @@ def test_behavior_comparison(data):
         result[key] = tests[key]
         result[key]['total'] = curves[name]['ctotal']
     return result
+
+
+def evolution_of_cases_and_recovered_by_days(data):
+    diagnosed = []
+    recovered = []
+    date = []
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        diagnosed.append(0)
+        recovered.append(0)
+        if x.get('diagnosticados'):
+            diagnosed[-1] += len(x['diagnosticados'])
+        if x.get('recuperados_numero'):
+            recovered[-1] += x['recuperados_numero']
+        date.append(x['fecha'])
+    return {
+        'diagnosed': {
+            'name': 'Casos en el día',
+            'values': diagnosed
+        },
+        'recovered': {
+            'name': 'Altas en el día',
+            'values': recovered
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date
+        }
+    }

@@ -39,6 +39,7 @@ def generate(debug=False):
         distribution_of_cases,
         test_behavior_comparison,
         evolution_of_cases_and_recovered_by_days,
+        evolution_of_active_and_recovered_accumulated,
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -906,6 +907,42 @@ def evolution_of_cases_and_recovered_by_days(data):
         'recovered': {
             'name': 'Altas en el día',
             'values': recovered
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date
+        }
+    }
+
+
+def evolution_of_active_and_recovered_accumulated(data):
+    date = []
+    actives = []
+    recovered = [0]
+    total = 0
+    deaths = 0
+    recover = 0
+    evacuees = 0
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        recovered.append(recovered[-1])
+        if x.get('recuperados_numero'):
+            recovered[-1] += x['recuperados_numero']
+        total += len(x['diagnosticados']) if 'diagnosticados' in x else 0
+        deaths += x['muertes_numero'] if 'muertes_numero' in x else 0
+        recover += x['recuperados_numero'] if 'recuperados_numero' in x else 0
+        evacuees += x['evacuados_numero'] if 'evacuados_numero' in x else 0
+        actives.append(total - deaths - recover - evacuees)
+        date.append(x['fecha'])
+    return {
+        'active': {
+            'name': 'Casos activos',
+            'values': actives
+        },
+        'recovered': {
+            'name': 'Altas acumuladas',
+            'values': recovered[1:]
         },
         'date': {
             'name': 'Fecha',

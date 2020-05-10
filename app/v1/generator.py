@@ -40,6 +40,7 @@ def generate(debug=False):
         test_behavior_comparison,
         evolution_of_cases_and_recovered_by_days,
         evolution_of_active_and_recovered_accumulated,
+        world_countries,
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -949,3 +950,22 @@ def evolution_of_active_and_recovered_accumulated(data):
             'values': date
         }
     }
+
+
+def world_countries(data):
+    countries_info = comparison_of_accumulated_cases(data)['countries_info']
+    result = []
+    for key in countries_info:
+        value = countries_info[key]
+        confirmed = value['confirmed'][-1]
+        recovered = value['recovered'][-1]
+        deaths = value['deaths'][-1]
+        result.append((confirmed, recovered, deaths, key))
+    result.sort(reverse=True)
+    return list(map(lambda x: {
+        'name': trans_countries[x[3]],
+        'value': x[0],
+        'confirmed': x[0],
+        'recovered': x[1],
+        'deaths': x[2],
+    }, filter(lambda x: x[3] in trans_countries, result)))

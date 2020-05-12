@@ -226,5 +226,26 @@ changelog = {
 
             ],
         },
+        {
+            'version': '0.8.0',
+            'date': '2020/05/11',
+            'changed': [
+                'Organización de las estadísticas provinciales y municipales, ahora se encuentran todas desde la sección de Cuba accesible desde el menú en la parte inferior utilizando filtros para seleccionar la provincia o el municipio deseado.',
+                'Posibilidad de escoger entre cualquier par de países en la gráfica de Comparación entre países en la sección Mundo.',
+            ],
+            'added': [
+                'Sección de Consejos accesible desde el menú en la parte inferior',
+                'Sección de Noticias accesible desde el menú en la parte inferior',
+                'Gráfica de Evolución por días de casos y altas diarias.',
+                'Gráfica de Evolución por días de casos activos y altas acumuladas.',
+                'Ordenación y paginado de la tabla de Acumulados por países en la sección de Mundo accesible desde el menú en la parte inferior.',
+            ],
+            'fixed': [
+                'Color de los municipios y provincias en los mapas.',
+            ],
+            'deleted': [
+
+            ],
+        },
     ]
 }

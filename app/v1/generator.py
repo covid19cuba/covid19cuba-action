@@ -41,6 +41,7 @@ def generate(debug=False):
         evolution_of_cases_and_recovered_by_days,
         evolution_of_active_and_recovered_accumulated,
         world_countries,
+        radar_chart_data,
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -969,3 +970,48 @@ def world_countries(data):
         'recovered': x[1],
         'deaths': x[2],
     }, filter(lambda x: x[3] in trans_countries, result)))
+
+def radar_chart_data(data):
+    dataw = data['data_world']
+    def get_last(array):
+        res = array[-1]
+        for i in array[::-1]:
+            if i is not None:
+                res = i
+                break
+        return res
+
+    world_data = comparison_of_accumulated_cases(data)
+    iso3Code_countries = {j:i for i,j in countries_iso3Code.items()}
+    radar = {}
+    cuba_pop = 11209628
+    dataw['tests']['CUB']['population']=cuba_pop
+    cuba_test = dataw['tests']['CUB']['total_tests_per_million']
+    cuba_confirmed = int(world_data['data']['CUB']['confirmed'][-1]/cuba_pop*10**6)
+
+    for j, i in world_data['data'].items():
+        if len(i['stringency'])==0 or j not in dataw['tests']:
+            continue
+        radar[i['name']]={
+            'name': i['name'],
+            'confirmed_per_million': i['confirmed'][-1],
+            'deaths_p': i['deaths'][-1]/i['confirmed'][-1]*100,
+            'recovered_p': i['recovered'][-1]/i['confirmed'][-1]*100,
+            'stringency': get_last(i['stringency'])
+        }
+
+    for key, dat in dataw['tests'].items():
+        if key not in countries_codes:
+            continue
+        name = trans_countries[iso3Code_countries[key]]
+        if name not in radar:
+            continue
+        radar[name]['test_per_million'] = dat['total_tests_per_million']
+        radar[name]['test_p'] = dat['test_efectivity']
+        radar[name]['confirmed_per_million'] = int(radar[name]['confirmed_per_million']/dat['population']*10**6)
+        radar[name]['confirmed_per_million_bound'] = int(1.1*max(radar[name]['confirmed_per_million'],cuba_confirmed))
+        radar[name]['test_per_million_bound'] = int(1.1*max(int(dat['total_tests_per_million']),cuba_test))
+
+    print(radar)
+
+    return {'data': radar, 'bounds': {'stringency':100, 'deaths_p': 15, 'recovered_p': 100, 'test_p': 40}}

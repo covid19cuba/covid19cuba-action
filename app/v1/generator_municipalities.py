@@ -204,21 +204,35 @@ def distribution_by_age_ranges(data):
     hard = ['0-19', '20-39', '40-59', '60-79', '>=80', 'unknown']
     intervals = [[0, 19], [20, 39], [40, 59], [60, 79], [80, 2**10]]
     result = [0] * (len(intervals) + 1)
+    men = [0] * (len(intervals) + 1)
+    women = [0] * (len(intervals) + 1)
+    unknown = [0] * (len(intervals) + 1)
     days = list(data['data_cuba']['casos']['dias'].values())
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             if item.get('provincia_detección') != data['province'] or item.get('municipio_detección') != data['municipality']:
                 continue
             age = item.get('edad')
+            sex = item.get('sexo')
+            sex_list = men if sex == 'hombre' else women if sex == 'mujer' else unknown
             if age is None:
                 result[-1] += 1
+                sex_list[-1] += 1
             for index, (left, right) in enumerate(intervals):
                 if left <= age <= right:
                     result[index] += 1
+                    sex_list[index] += 1
                     break
     return [
-        {'code': item[0], 'name': item[1][0], 'value': item[1][1]}
-        for item in zip(hard, zip(keys, result))
+        {
+            'code': item[0],
+            'name': item[1],
+            'value': item[2],
+            'men': item[3],
+            'women': item[4],
+            'unknown': item[5],
+        }
+        for item in zip(hard, keys, result, men, women, unknown)
     ]
 
 

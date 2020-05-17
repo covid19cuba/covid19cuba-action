@@ -1012,6 +1012,4 @@ def radar_chart_data(data):
         radar[name]['confirmed_per_million_bound'] = int(1.1*max(radar[name]['confirmed_per_million'],cuba_confirmed))
         radar[name]['test_per_million_bound'] = int(1.1*max(int(dat['total_tests_per_million']),cuba_test))
 
-    print(radar)
-
     return {'data': radar, 'bounds': {'stringency':100, 'deaths_p': 15, 'recovered_p': 100, 'test_p': 40}}

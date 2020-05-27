@@ -141,8 +141,8 @@ changelog = {
                 'Comportamiento de las notificaciones de actualización de los datos.',
             ],
             'added': [
-                'Eventos de transmisión local activos',
-                'Eventos de transmisión local cerrados',
+                'Eventos de transmisión local activos.',
+                'Eventos de transmisión local cerrados.',
                 'Gráfica de la relación entre los tests (PCR) positivos respecto al total de tests (PCR) aplicados.',
                 'Gráfica de la evolución del Oxford Stringency Index para Cuba.',
                 'Cantidad de casos y tasa de diagnosticados por cada 100 mil habitantes en la tabla de provincias.',
@@ -174,11 +174,74 @@ changelog = {
             ],
             'added': [
                 'Opción en la pantalla de configuraciones para reiniciar el estado de la aplicación.',
-                'Enlaces de descarga de la aplicación dinámicos.'
+                'Enlaces de descarga de la aplicación dinámicos.',
             ],
             'fixed': [
                 'Error en el buscador de países.',
                 'Errores en las leyendas de los gráficos.',
+            ],
+            'deleted': [
+
+            ],
+        },
+        {
+            'version': '0.7.0',
+            'date': '2020/05/03',
+            'changed': [
+                'Colores de las gráficas para estar a la par con el sitio web.',
+                'Orden de los elementos en el menú lateral.',
+            ],
+            'added': [
+                'Botones de navegación en la parte inferior.',
+                'Sección para estadísticas y gráficas de comparación de Cuba con otros países.',
+                'Gráfica de donuts de distribución de los casos.',
+                'Gráficas del Número Reproductivo Efectivo.',
+                'Nueva versión del Oxford Stringency Index. Se muestran las dos versiones.',
+                'Gráfica de puntos del comportamiento de los tests (positivos contra cantidad) de varios países para comparar con Cuba.',
+                'Posibilidad de escoger los países a comparar con Cuba en la gráfica de la curva logarítmica.',
+                'Nuevo contribuidores y réplicas en la sección Sobre Nosotros.',
+            ],
+            'fixed': [
+                'Solapamiento en la gráfica de Tests (PCR) por días. Ahora se muestra con una gráfica de líneas.',
+                'Errores en los Consejos y Respuestas.',
+                'Errores menores.',
+            ],
+            'deleted': [
+
+            ],
+        },
+        {
+            'version': '0.7.1',
+            'date': '2020/05/04',
+            'changed': [
+                
+            ],
+            'added': [
+                'Botones de información en la parte superior derecha de las gráficas.',
+            ],
+            'fixed': [
+                'Enlaces en la pantalla de actualización.',
+            ],
+            'deleted': [
+
+            ],
+        },
+        {
+            'version': '0.8.0',
+            'date': '2020/05/11',
+            'changed': [
+                'Organización de las estadísticas provinciales y municipales, ahora se encuentran todas desde la sección de Cuba accesible desde el menú en la parte inferior utilizando filtros para seleccionar la provincia o el municipio deseado.',
+                'Posibilidad de escoger entre cualquier par de países en la gráfica de Comparación entre países en la sección Mundo.',
+            ],
+            'added': [
+                'Sección de Consejos accesible desde el menú en la parte inferior',
+                'Sección de Noticias accesible desde el menú en la parte inferior',
+                'Gráfica de Evolución por días de casos y altas diarias.',
+                'Gráfica de Evolución por días de casos activos y altas acumuladas.',
+                'Ordenación y paginado de la tabla de Acumulados por países en la sección de Mundo accesible desde el menú en la parte inferior.',
+            ],
+            'fixed': [
+                'Color de los municipios y provincias en los mapas.',
             ],
             'deleted': [
 

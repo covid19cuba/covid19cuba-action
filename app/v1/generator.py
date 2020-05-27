@@ -38,6 +38,10 @@ def generate(debug=False):
         effective_reproductive_number,
         distribution_of_cases,
         test_behavior_comparison,
+        evolution_of_cases_and_recovered_by_days,
+        evolution_of_active_and_recovered_accumulated,
+        world_countries,
+        radar_chart_data,
     ]
     dump({
         f.__name__: dump_util('api/v1', f,
@@ -273,19 +277,33 @@ def distribution_by_age_ranges(data):
     hard = ['0-19', '20-39', '40-59', '60-79', '>=80', 'unknown']
     intervals = [[0, 19], [20, 39], [40, 59], [60, 79], [80, 2**10]]
     result = [0] * (len(intervals) + 1)
+    men = [0] * (len(intervals) + 1)
+    women = [0] * (len(intervals) + 1)
+    unknown = [0] * (len(intervals) + 1)
     days = list(data['data_cuba']['casos']['dias'].values())
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             age = item.get('edad')
+            sex = item.get('sexo')
+            sex_list = men if sex == 'hombre' else women if sex == 'mujer' else unknown
             if age is None:
                 result[-1] += 1
+                sex_list[-1] += 1
             for index, (left, right) in enumerate(intervals):
                 if left <= age <= right:
                     result[index] += 1
+                    sex_list[index] += 1
                     break
     return [
-        {'code': item[0], 'name': item[1][0], 'value': item[1][1]}
-        for item in zip(hard, zip(keys, result))
+        {
+            'code': item[0],
+            'name': item[1],
+            'value': item[2],
+            'men': item[3],
+            'women': item[4],
+            'unknown': item[5],
+        }
+        for item in zip(hard, keys, result, men, women, unknown)
     ]
 
 
@@ -881,3 +899,131 @@ def test_behavior_comparison(data):
         result[key] = tests[key]
         result[key]['total'] = curves[name]['ctotal']
     return result
+
+
+def evolution_of_cases_and_recovered_by_days(data):
+    diagnosed = []
+    recovered = []
+    date = []
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        diagnosed.append(0)
+        recovered.append(0)
+        if x.get('diagnosticados'):
+            diagnosed[-1] += len(x['diagnosticados'])
+        if x.get('recuperados_numero'):
+            recovered[-1] += x['recuperados_numero']
+        date.append(x['fecha'])
+    return {
+        'diagnosed': {
+            'name': 'Casos en el día',
+            'values': diagnosed
+        },
+        'recovered': {
+            'name': 'Altas en el día',
+            'values': recovered
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date
+        }
+    }
+
+
+def evolution_of_active_and_recovered_accumulated(data):
+    date = []
+    actives = []
+    recovered = [0]
+    total = 0
+    deaths = 0
+    recover = 0
+    evacuees = 0
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        recovered.append(recovered[-1])
+        if x.get('recuperados_numero'):
+            recovered[-1] += x['recuperados_numero']
+        total += len(x['diagnosticados']) if 'diagnosticados' in x else 0
+        deaths += x['muertes_numero'] if 'muertes_numero' in x else 0
+        recover += x['recuperados_numero'] if 'recuperados_numero' in x else 0
+        evacuees += x['evacuados_numero'] if 'evacuados_numero' in x else 0
+        actives.append(total - deaths - recover - evacuees)
+        date.append(x['fecha'])
+    return {
+        'active': {
+            'name': 'Casos activos',
+            'values': actives
+        },
+        'recovered': {
+            'name': 'Altas acumuladas',
+            'values': recovered[1:]
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date
+        }
+    }
+
+
+def world_countries(data):
+    countries_info = comparison_of_accumulated_cases(data)['countries_info']
+    result = []
+    for key in countries_info:
+        value = countries_info[key]
+        confirmed = value['confirmed'][-1]
+        recovered = value['recovered'][-1]
+        deaths = value['deaths'][-1]
+        result.append((confirmed, recovered, deaths, key))
+    result.sort(reverse=True)
+    return list(map(lambda x: {
+        'name': trans_countries[x[3]],
+        'value': x[0],
+        'confirmed': x[0],
+        'recovered': x[1],
+        'deaths': x[2],
+    }, filter(lambda x: x[3] in trans_countries, result)))
+
+def radar_chart_data(data):
+    dataw = data['data_world']
+    def get_last(array):
+        res = array[-1]
+        for i in array[::-1]:
+            if i is not None:
+                res = i
+                break
+        return res
+
+    world_data = comparison_of_accumulated_cases(data)
+    iso3Code_countries = {j:i for i,j in countries_iso3Code.items()}
+    radar = {}
+    cuba_pop = 11209628
+    dataw['tests']['CUB']['population']=cuba_pop
+    cuba_test = dataw['tests']['CUB']['total_tests_per_million']
+    cuba_confirmed = int(world_data['data']['CUB']['confirmed'][-1]/cuba_pop*10**6)
+
+    for j, i in world_data['data'].items():
+        if len(i['stringency'])==0 or j not in dataw['tests']:
+            continue
+        radar[i['name']]={
+            'name': i['name'],
+            'confirmed_per_million': i['confirmed'][-1],
+            'deaths_p': i['deaths'][-1]/i['confirmed'][-1]*100,
+            'recovered_p': i['recovered'][-1]/i['confirmed'][-1]*100,
+            'stringency': get_last(i['stringency'])
+        }
+
+    for key, dat in dataw['tests'].items():
+        if key not in countries_codes:
+            continue
+        name = trans_countries[iso3Code_countries[key]]
+        if name not in radar:
+            continue
+        radar[name]['test_per_million'] = dat['total_tests_per_million']
+        radar[name]['test_p'] = dat['test_efectivity']
+        radar[name]['confirmed_per_million'] = int(radar[name]['confirmed_per_million']/dat['population']*10**6)
+        radar[name]['confirmed_per_million_bound'] = int(1.1*max(radar[name]['confirmed_per_million'],cuba_confirmed))
+        radar[name]['test_per_million_bound'] = int(1.1*max(int(dat['total_tests_per_million']),cuba_test))
+
+    return {'data': radar, 'bounds': {'stringency':100, 'deaths_p': 15, 'recovered_p': 100, 'test_p': 40}}

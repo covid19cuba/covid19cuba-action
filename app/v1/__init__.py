@@ -5,11 +5,12 @@ from hashlib import sha1
 from .changelog import changelog as data_changelog
 from .checker import check
 from .generator import generate
+from .generator_jt_news import generate as generate_jt_news
 from .generator_provinces import generate as generate_provinces
 from .generator_municipalities import generate as generate_municipalities
 from .utils import dump_util, send_msg
 
-APP_VERSION_CODE = 10
+APP_VERSION_CODE = 13
 
 
 def run(debug=False):
@@ -18,9 +19,11 @@ def run(debug=False):
         generate(debug)
         generate_provinces(debug)
         generate_municipalities(debug)
+        generate_jt_news(debug)
         build_changelog(debug)
         build_full('api/v1', debug)
         build_state(debug)
+        build_jt_news_state(debug)
         if ok:
             send_msg('GitHub Action run successfully.', debug)
     except Exception as e:
@@ -51,6 +54,21 @@ def state(data):
         data = loads(text)
         days = len(data['evolution_of_cases_by_days']['accumulated']['values'])
         result['days'] = days
+    return result
+
+
+def build_jt_news_state(debug):
+    dump_util('api/v1', jt_news_state, debug=debug)
+
+
+def jt_news_state(data):
+    result = {
+        'cache': None,
+    }
+    with open('api/v1/jt_news.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['cache'] = cache.hexdigest()
     return result
 
 

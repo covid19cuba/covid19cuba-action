@@ -45,7 +45,13 @@ def remove_junk(string):
     for i in new_str:
         string=string+i
     return string 
+def clean_date(string):
+    string = string[string.find('content="')+len('content="'):]
+    return string[:string.find('"')]
 
+def clean_id(string):
+    string = string[string.find('value="')+len('value="'):]
+    return string[:string.find('"')]
 def generate(debug=False):
     news = []
     r = requests.get(URL_ACN,data = payload ,headers = headers)
@@ -65,17 +71,21 @@ def generate(debug=False):
         updated = str(soup.find('meta', {'itemprop':'dateModified'}))
         category = str(categories[i])
         summary = str(summaries[i])
-        new_id = str(soup.find('input', {'name':'object_id'})   )
-        news.append({
-            'id': new_id,
-            'link': link,
-            'title': remove_junk(title),
-            'author': remove_junk(author),
-            'published': created,
-            'updated': updated,
-            'summary': remove_junk(summary),
-            'abstract': remove_junk(category),
-        })
+       
+        id_check = soup.find('input', {'name':'object_id'})
+        if not id_check == None and not id_check == 'None':
+            new_id = str( id_check)
+        
+            news.append({
+                'id': clean_id(new_id),
+                'link': link,
+                'title': remove_junk(title),
+                'author': remove_junk(author),
+                'published': clean_date(created),
+                'updated': clean_date(updated),
+                'summary': remove_junk(summary),
+                'abstract': remove_junk(category)[1:-1],
+            })
     result = {
         'news': news,
     }

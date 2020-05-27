@@ -6,6 +6,7 @@ from .changelog import changelog as data_changelog
 from .checker import check
 from .generator import generate
 from .generator_jt_news import generate as generate_jt_news
+from .generator_acn_news import generate as generate_acn_news
 from .generator_provinces import generate as generate_provinces
 from .generator_municipalities import generate as generate_municipalities
 from .utils import dump_util, send_msg
@@ -20,6 +21,7 @@ def run(debug=False):
         generate_provinces(debug)
         generate_municipalities(debug)
         generate_jt_news(debug)
+        generate_acn_news(debug)
         build_changelog(debug)
         build_full('api/v1', debug)
         build_state(debug)

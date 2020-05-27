@@ -1,7 +1,6 @@
 #http://www.acn.cu/busqueda?searchword=covid&ordering=newest&searchphrase=all&limit=0&areas[0]=categories&areas[1]=content&areas[2]=tags
 
 from json import dump
-# from feedparser import parse
 import requests
 from bs4 import BeautifulSoup
 from os import path
@@ -108,5 +107,3 @@ def findnth(haystack, needle, n):
     if len(parts)<=n+1:
         return -1
     return len(haystack) - len(parts[-1]) - len(needle)
-
-generate()

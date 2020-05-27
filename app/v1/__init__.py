@@ -26,6 +26,7 @@ def run(debug=False):
         build_full('api/v1', debug)
         build_state(debug)
         build_jt_news_state(debug)
+        build_acn_news_state(debug)
         if ok:
             send_msg('GitHub Action run successfully.', debug)
     except Exception as e:
@@ -68,6 +69,19 @@ def jt_news_state(data):
         'cache': None,
     }
     with open('api/v1/jt_news.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['cache'] = cache.hexdigest()
+    return result
+
+def build_acn_news_state(debug):
+    dump_util('api/v1', acn_news_state, debug=debug)
+
+def acn_news_state(data):
+    result = {
+        'cache': None,
+    }
+    with open('api/v1/acn_news.json', encoding='utf-8') as file:
         text = file.read()
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()

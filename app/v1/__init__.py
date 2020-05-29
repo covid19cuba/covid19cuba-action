@@ -9,6 +9,7 @@ from .generator_jt_news import generate as generate_jt_news
 from .generator_provinces import generate as generate_provinces
 from .generator_municipalities import generate as generate_municipalities
 from .utils import dump_util, send_msg
+from .tips import tips as advices
 
 APP_VERSION_CODE = 13
 
@@ -24,6 +25,7 @@ def run(debug=False):
         build_full('api/v1', debug)
         build_state(debug)
         build_jt_news_state(debug)
+        build_tips(debug)
         if ok:
             send_msg('GitHub Action run successfully.', debug)
     except Exception as e:
@@ -78,6 +80,15 @@ def build_changelog(debug):
 
 def changelog(data):
     result = data_changelog
+    return result
+
+
+def build_tips(debug):
+    dump_util('api/v1', tips, debug= debug)
+
+
+def tips(data):
+    result = advices
     return result
 
 

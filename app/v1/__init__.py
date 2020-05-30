@@ -3,6 +3,7 @@ import os
 from json import dump, loads, load
 from hashlib import sha1
 from .changelog import changelog as data_changelog
+from .about_us import about_us as data_about_us
 from .checker import check
 from .generator import generate
 from .generator_jt_news import generate as generate_jt_news
@@ -21,6 +22,7 @@ def run(debug=False):
         generate_municipalities(debug)
         generate_jt_news(debug)
         build_changelog(debug)
+        build_about_us(debug)
         build_full('api/v1', debug)
         build_state(debug)
         build_jt_news_state(debug)
@@ -78,6 +80,14 @@ def build_changelog(debug):
 
 def changelog(data):
     result = data_changelog
+    return result
+
+def build_about_us(debug):
+    dump_util('api/v1', about_us, debug=debug)
+
+
+def about_us(data):
+    result = data_about_us
     return result
 
 

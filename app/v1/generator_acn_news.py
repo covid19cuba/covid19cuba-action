@@ -48,6 +48,10 @@ def clean_date(string):
     string = string[string.find('content="')+len('content="'):]
     return string[:string.find('"')]
 
+def verify_none(element):
+    if element == 'None':
+        return ''
+
 def generate(debug=False):
     news = []
     r = requests.get(URL_ACN,data = payload ,headers = headers)
@@ -63,12 +67,17 @@ def generate(debug=False):
         r = requests.get(link,data = payload ,headers = headers)
         
         soup = BeautifulSoup(r.text,'lxml')
+        author =verify_none( str(soup.find('dd', {'class':'createdby hasTooltip'})))
+        created = verify_none(str(soup.find('meta', {'itemprop':'datePublished'})))
+        updated = verify_none(str(soup.find('meta', {'itemprop':'dateModified'})))
+        
         title = str(soup.find('h1', {'class':'article-title'}))
-        author = str(soup.find('dd', {'class':'createdby hasTooltip'}))
-        created = str(soup.find('meta', {'itemprop':'datePublished'}))
-        updated = str(soup.find('meta', {'itemprop':'dateModified'}))
         abstract = str(abstracts[i])
         summary = str(soup.find('section', {'class':'article-content'}))
+        
+        if title == 'None' or abstract == 'None' or summary == 'None': #verify required non None fields on the news
+            continue
+        
         news.append({
             'id': link,
             'link': link,
@@ -87,12 +96,9 @@ def generate(debug=False):
     dump(result,
         open(f'api/v1/acn_news.json', mode='w', encoding='utf-8'),
         # open(f'acn_news.json', mode='w', encoding='utf-8'),
-        
         ensure_ascii=False,
         indent=2 if debug else None,
         separators=(',', ': ') if debug else (',', ':'))
-
-
 
 def findnth(haystack, needle, n):
     parts= haystack.split(needle, n+1)

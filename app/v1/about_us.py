@@ -1,4 +1,4 @@
-about_us = [
+collaborators = [
     {
       'name':'Jorge Alberto Reyes Carballeira',
       'description':'Ing. en Telecomunicaciones y Electrónica, graduado de la CUJAE. '
@@ -133,3 +133,87 @@ about_us = [
       'link':'https://leynier.github.io',
     },
   ]
+
+replicas = [
+    {
+      'text':'CUSOBU',
+      'url':'https://www.cusobu.nat.cu/covid',
+      'replicaUrl':'https://www.cusobu.nat.cu',
+    },
+    {
+      'text':'Federación de Radioaficionados de Cuba',
+      'url':'http://covid19.frcuba.cu',
+      'replicaUrl':'https://www.frcuba.cu',
+    },
+    {
+      'text':'Proyecto SWL-X',
+      'url':'http://covidcuba.swlx.info',
+      'replicaUrl':'https://www.swlx.info',
+    },
+    {
+      'text':'Universidad de La Habana',
+      'url':'https://covid19cubadata.uh.cu',
+      'replicaUrl':'http://www.uh.cu',
+    },
+    # {
+    #   'text':'Joven Club',
+    #   'url':'http://covid19.jovenclub.cu',
+    #   'replicaUrl':'https://www.jovenclub.cu',
+    # },
+  ]
+
+promotors = [
+    {
+      'name': 'MatCom',
+      'url': 'http://www.matcom.uh.cu',
+    },
+    {
+      'name': 'Postdata.club',
+      'url': 'https://www.postdata.club',
+    },
+    {
+      'name': 'Juventud Técnica',
+      'url': 'https://medium.com/juventud-técnica',
+    },
+  ]
+
+collabProjects = [
+    {
+      'name': 'CUSOBU',
+      'url': 'https://www.cusobu.nat.cu',
+    },
+    {
+      'name': 'Proyecto SWL-X',
+      'url': 'https://www.swlx.info',
+    },
+    {
+      'name': 'Daxslab',
+      'url': 'https://www.daxslab.com',
+    },
+    {
+      'name': 'Unión de Informáticos de Cuba',
+      'url': 'https://www.uic.cu',
+    },
+    {
+      'name': 'Universidad de Oriente',
+      'url': 'https://www.uo.edu.cu',
+    },
+    {
+      'name': 'Universidad de La Habana',
+      'url': 'http://www.uh.cu',
+    },
+  ]
+
+thanks = 'El equipo de desarrollo de Covid19 Cuba Data agradece a todos '
+thanks += 'los que de una forma u otra ayudan a combatir la pandemia de la '
+thanks += 'Covid-19, en especial a los que arriesgan su vida luchando en '
+thanks += 'primera línea.'
+
+about_us = {
+  'collaborators': collaborators,
+  'replicas': replicas,
+  'promotors': promotors,
+  'collabProjects': collabProjects,
+  'thanks': thanks,
+
+}

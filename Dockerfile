@@ -7,6 +7,8 @@ RUN pip install --target=/app jsonschema
 RUN pip install --target=/app importlib_metadata
 RUN pip install --target=/app python-telegram-bot
 RUN pip install --target=/app feedparser
+RUN pip install --target=/app requests
+RUN pip install --target=/app bs4
 
 # A distroless container image with Python and some basics like SSL certificates
 # https://github.com/GoogleContainerTools/distroless

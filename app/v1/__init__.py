@@ -2,16 +2,16 @@ import os
 
 from json import dump, loads, load
 from hashlib import sha1
-from .changelog import changelog as data_changelog
-from .about_us import about_us as data_about_us
 from .checker import check
 from .generator import generate
 from .generator_jt_news import generate as generate_jt_news
 from .generator_acn_news import generate as generate_acn_news
 from .generator_provinces import generate as generate_provinces
 from .generator_municipalities import generate as generate_municipalities
-from .utils import dump_util, send_msg
-from .tips import tips as advices
+from ..data.changelog import changelog as data_changelog
+from ..data.about_us import about_us as data_about_us
+from ..data.tips import tips as advices
+from ..utils import dump_util, send_msg
 
 APP_VERSION_CODE = 13
 
@@ -32,11 +32,12 @@ def run(debug=False):
         build_acn_news_state(debug)
         build_tips(debug)
         if ok:
-            send_msg('GitHub Action run successfully.', debug)
+            return True
     except Exception as e:
         send_msg(e, debug)
         if debug:
             raise e
+    return False
 
 
 def build_state(debug):

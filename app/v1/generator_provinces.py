@@ -1,8 +1,8 @@
 from json import load, dump
 from math import log10
-from .countries import countries
-from .province_codes import province_abbrs, province_codes
-from .utils import dump_util
+from ..data.countries import countries
+from ..data.province_codes import province_abbrs, province_codes
+from ..utils import dump_util
 
 
 def generate(debug=False):

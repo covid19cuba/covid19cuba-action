@@ -2,9 +2,9 @@ from json import load
 from jsonschema import Draft7Validator
 from .schema import schema
 from .schema_deaths import schema_deaths
-from .municipality_codes import municipality_codes
-from .province_codes import province_codes
-from .utils import send_msg
+from ..data.municipality_codes import municipality_codes
+from ..data.province_codes import province_codes
+from ..utils import send_msg
 
 sex_ignored = {
     'cu-1392'

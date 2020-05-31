@@ -1,7 +1,7 @@
 from json import load, dump
 from math import log10
-from ..data.countries import countries
-from ..data.province_codes import province_abbrs, province_codes
+from ..static.countries import countries
+from ..static.province_codes import province_abbrs, province_codes
 from ..utils import dump_util
 
 

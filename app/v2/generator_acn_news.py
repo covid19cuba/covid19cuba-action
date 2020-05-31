@@ -69,7 +69,7 @@ def generate(debug=False):
     limit = 10
     news = []
     r = get(URL_ACN, data=payload, headers=headers)
-    soup = BeautifulSoup(r.text, 'lxml')
+    soup = BeautifulSoup(r.text, 'html.parser')
     titles = soup.findAll('dt', {'class': 'result-title'})
     abstracts = soup.findAll('dd', {'class': 'result-text'})
     news_links = [extract_href(str(i)) for i in titles]
@@ -78,7 +78,7 @@ def generate(debug=False):
             break
         link = 'http://www.acn.cu' + item
         r = get(link, data=payload, headers=headers)
-        soup = BeautifulSoup(r.text, 'lxml')
+        soup = BeautifulSoup(r.text, 'html.parser')
         title = str(soup.find('h1', {'class': 'article-title'}))
         author = str(soup.find('dd', {'class': 'createdby hasTooltip'}))
         published = str(soup.find('meta', {'itemprop': 'datePublished'}))

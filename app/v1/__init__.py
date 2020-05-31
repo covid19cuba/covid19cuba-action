@@ -8,12 +8,11 @@ from .generator_jt_news import generate as generate_jt_news
 from .generator_acn_news import generate as generate_acn_news
 from .generator_provinces import generate as generate_provinces
 from .generator_municipalities import generate as generate_municipalities
+from ..data.app_version import APP_VERSION_CODE
 from ..data.changelog import changelog as data_changelog
 from ..data.about_us import about_us as data_about_us
 from ..data.tips import tips as advices
 from ..utils import dump_util, send_msg
-
-APP_VERSION_CODE = 13
 
 
 def run(debug=False):

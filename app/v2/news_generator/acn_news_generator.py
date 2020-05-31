@@ -5,7 +5,7 @@ from os import path
 from requests import get
 from bs4 import BeautifulSoup
 from feedparser import parse
-from ..utils import dump_util
+from ...utils import dump_util
 
 URL_ACN = 'http://www.acn.cu/busqueda?searchword=covid&ordering=newest&searchphrase=all&limit=0&areas[0]=categories&areas[1]=content&areas[2]=tags'
 headers = {

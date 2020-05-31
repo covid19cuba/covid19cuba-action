@@ -1,9 +1,9 @@
 from json import load, dump
 from math import log10
-from ..static.countries import countries, countries_codes, trans_countries, countries_iso3Code
-from ..static.moments import moments
-from ..static.provinces_population import provinces_population
-from ..utils import dump_util
+from ...static.countries import countries, countries_codes, trans_countries, countries_iso3Code
+from ...static.moments import moments
+from ...static.provinces_population import provinces_population
+from ...utils import dump_util
 
 
 def generate(debug=False):

@@ -1,10 +1,10 @@
 from json import dump
 from functools import cmp_to_key
 from hashlib import sha1
-from .generator_acn_news import generate as generate_acn_news
-from .generator_gob_news import generate as generate_gob_news
-from .generator_jt_news import generate as generate_jt_news
-from ..utils import dump_util
+from .acn_news_generator import generate as generate_acn_news
+from .gob_news_generator import generate as generate_gob_news
+from .jt_news_generator import generate as generate_jt_news
+from ...utils import dump_util
 
 
 def generate(debug=False):

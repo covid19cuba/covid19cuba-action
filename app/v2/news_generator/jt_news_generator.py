@@ -1,7 +1,7 @@
 from json import dump
 from feedparser import parse
 from hashlib import sha1
-from ..utils import dump_util
+from ...utils import dump_util
 
 URL_JT_MEDIUM_FEED = 'https://medium.com/feed/juventud-t%C3%A9cnica/tagged/covid19'
 

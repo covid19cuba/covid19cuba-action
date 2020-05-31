@@ -3,7 +3,7 @@ from json import dump
 from hashlib import sha1
 from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
-from ..utils import dump_util
+from ...utils import dump_util
 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'

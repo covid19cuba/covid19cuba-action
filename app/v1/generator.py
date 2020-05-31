@@ -8,6 +8,7 @@ from .utils import dump_util
 
 def generate(debug=False):
     data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
+    data_deaths = load(open('data/covid19-fallecidos.json', encoding='utf-8'))
     data_world = load(open('data/paises-info-dias.json', encoding='utf-8'))
     data_oxford = load(open('data/oxford-indexes.json', encoding='utf-8'))
     function_list = [
@@ -46,6 +47,7 @@ def generate(debug=False):
     dump({
         f.__name__: dump_util('api/v1', f,
                               data_cuba=data_cuba,
+                              data_deaths=data_deaths,
                               data_world=data_world,
                               data_oxford=data_oxford,
                               debug=debug)

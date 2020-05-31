@@ -4,6 +4,8 @@ author: "Jacob Tomlinson"
 inputs:
   BotToken:
     description: "Bot Token"
+  GroupId:
+    description: "Group Id"
 outputs:
   myOutput:
     description: "Output from the action"

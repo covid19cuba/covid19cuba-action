@@ -1,6 +1,8 @@
+import os
 import telegram
 
-bot_token = '1122724836:AAF6K1XjbGfVykqoqUTARQA0Qa7A2ItEnZ8'
+bot_token = os.environ('BOT_TOKEN')
+# bot_token = '1122724836:AAF6K1XjbGfVykqoqUTARQA0Qa7A2ItEnZ8'
 group_id = -1001328230896
 
 def send(msg, chat_id=group_id, token=bot_token):

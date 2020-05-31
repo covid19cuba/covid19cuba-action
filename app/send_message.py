@@ -1,7 +1,7 @@
 import os
 import telegram
 
-bot_token = os.environ('INPUT_BOTTOKEN')
+bot_token = os.getenv('INPUT_BOTTOKEN')
 # bot_token = '1122724836:AAF6K1XjbGfVykqoqUTARQA0Qa7A2ItEnZ8'
 group_id = -1001328230896
 

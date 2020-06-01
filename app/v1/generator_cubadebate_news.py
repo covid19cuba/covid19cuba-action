@@ -1,108 +1,33 @@
-#http://www.acn.cu/busqueda?searchword=covid&ordering=newest&searchphrase=all&limit=0&areas[0]=categories&areas[1]=content&areas[2]=tags
-
 from json import dump
-import requests
-from bs4 import BeautifulSoup
-from os import path
-from feedparser import parse
-
-URL_ACN = 'http://www.cubadebate.cu/etiqueta/covid-19/'
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'}
-
-payload = {
-    'query':'test'
-}
+import datetime 
+from download_comments import get_news
 
 
-def Extract_href(element):
-    index = element.find('href="')
-    element = element[index+len('href="'):]
-    element = element[:element.find('">')]    
-    return element
-
-def remove_junk(string):
-    new_str = ''
-    flag = False
-    for i in string:
-        if i == '<':
-            flag = True
-        if not flag:
-            new_str = new_str+i
-        if i == '>':
-            flag = False
-    new_str = new_str.split('\t')
-    string = ''
-    for i in new_str:
-        string=string+i
-    new_str = string.split('\n')
-    string = ''
-    for i in new_str:
-        string=string+i
-    new_str = string.split('\t')
-    string = ''
-    for i in new_str:
-        string=string+i
-    return string 
-
-def clean_date(string):
-    string = string[string.find('content="')+len('content="'):]
-    return string[:string.find('"')]
-
-def verify_none(element):
-    if element == 'None':
-        return ''
+def find_match(new,keywords:str='covid'):
+    for i in new['tags']:
+        if type(i) == str and not i.lower().find(keywords) == -1:
+            return True
+    if not new['title'].lower().find(keywords) == -1 or not new['summary'].lower().find(keywords) == -1:
+        return True
+    return False
 
 def generate(debug=False):
-    news = []
-    r = requests.get(URL_ACN,data = payload ,headers = headers)
-
-    soup = BeautifulSoup(r.text,'lxml')
-    news = soup.find_all('div', {'class':'noticias'})
-    titles = soup.findAll('dt', {'class':'result-title'})
-    abstracts = soup.findAll('dd', {'class':'result-text'})
-    news_links = [Extract_href(str(i)) for i in titles]
     
-    for i,item in enumerate(news_links):
-        
-        link ='http://www.acn.cu'+item
-        r = requests.get(link,data = payload ,headers = headers)
-        
-        soup = BeautifulSoup(r.text,'lxml')
-        author =verify_none( str(soup.find('dd', {'class':'createdby hasTooltip'})))
-        created = verify_none(str(soup.find('meta', {'itemprop':'datePublished'})))
-        updated = verify_none(str(soup.find('meta', {'itemprop':'dateModified'})))
-        
-        title = str(soup.find('h1', {'class':'article-title'}))
-        abstract = str(abstracts[i])
-        summary = str(soup.find('section', {'class':'article-content'}))
-        
-        if title == 'None' or abstract == 'None' or summary == 'None': #verify required non None fields on the news
-            continue
-        
-        news.append({
-            'id': link,
-            'link': link,
-            'title': remove_junk(title),
-            'author': remove_junk(author),
-            'published': clean_date(created),
-            'updated': clean_date(updated),
-            'summary': remove_junk(summary),
-            'abstract':remove_junk(abstract),
-        })
+
+    json_file = []
+    for new in get_news(datetime.datetime.now() - datetime.timedelta(5), datetime.datetime.now()):
+        if find_match(new):
+            new['id'] = new['link']
+            json_file.append(new)
     
     result = {
-        'news': news,
+        'news':json_file
     }
-
     dump(result,
-        open(f'api/v1/acn_news.json', mode='w', encoding='utf-8'),
-        # open(f'acn_news.json', mode='w', encoding='utf-8'),
+        # open(f'api/v1/cubadebate_news.json', mode='w', encoding='utf-8'),
+        open(f'cubadebate_news.json', mode='w', encoding='utf-8'), 
         ensure_ascii=False,
         indent=2 if debug else None,
         separators=(',', ': ') if debug else (',', ':'))
-
-def findnth(haystack, needle, n):
-    parts= haystack.split(needle, n+1)
-    if len(parts)<=n+1:
-        return -1
-    return len(haystack) - len(parts[-1]) - len(needle)
+    
+generate()

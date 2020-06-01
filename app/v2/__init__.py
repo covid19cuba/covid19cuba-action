@@ -15,9 +15,9 @@ def run(debug=False):
         ok = check(debug)
         generate_extras(debug)
         generate_news(debug)
-        # generate_statistics(debug)
-        # build_full('api/v2', debug)
-        # build_state(debug)
+        generate_statistics(debug)
+        build_full('api/v2', debug)
+        build_state(debug)
         if ok:
             return True
     except Exception as e:

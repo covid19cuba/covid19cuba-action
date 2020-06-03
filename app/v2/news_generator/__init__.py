@@ -8,9 +8,24 @@ from ...utils import dump_util
 
 
 def generate(debug=False):
-    acn_news = generate_acn_news(debug)
-    gob_news = generate_gob_news(debug)
-    jt_news = generate_jt_news(debug)
+    news = []
+    try:
+        acn_news = generate_acn_news(debug)
+        news += acn_news
+    except Exception as e:
+        print(e)
+    try:
+        gob_news = generate_gob_news(debug)
+        news += gob_news
+    except Exception as e:
+        print(e)
+    try:
+        jt_news = generate_jt_news(debug)
+        news += jt_news
+    except Exception as e:
+        print(e)
+    if not news:
+        raise Exception('List of news is empty.')
     news = acn_news + gob_news + jt_news
     news.sort(key=cmp_to_key(comparator), reverse=True)
     result = {

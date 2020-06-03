@@ -2,32 +2,37 @@ from json import load, dump
 from math import log10
 from ...static.countries import countries
 from ...static.province_codes import province_abbrs, province_codes
+from ...static.provinces_population import provinces_population
 from ...utils import dump_util
 
 
 def generate(debug=False):
     data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
+    data_deaths = load(open('data/covid19-fallecidos.json', encoding='utf-8'))
     function_list = [
+        dpa_province_code,
         updated,
         resume,
+        map_data,
         cases_by_sex,
         cases_by_mode_of_contagion,
+        evolution_of_cases_by_days,
+        distribution_by_age_ranges,
         cases_by_nationality,
         distribution_by_nationality_of_foreign_cases,
-        distribution_by_age_ranges,
-        evolution_of_cases_by_days,
-        affected_municipalities,
-        dpa_province_code,
-        map_data,
         effective_reproductive_number,
+        affected_municipalities,
     ]
     province_codes_r = {j: i for i, j in province_codes.items()}
     for key in province_abbrs:
         value = province_abbrs[key]
         dpa_code = province_codes_r[value]
         dump({f.__name__: dump_util(f'api/v2/provinces/{key}', f,
-                                    data_cuba=data_cuba, province=value,
-                                    debug=debug, dpa_code=dpa_code)
+                                    data_cuba=data_cuba,
+                                    data_deaths=data_deaths,
+                                    province=value,
+                                    dpa_code=dpa_code,
+                                    debug=debug)
               for f in function_list},
              open(f'api/v2/provinces/{key}/all.json',
                   mode='w', encoding='utf-8'),
@@ -38,6 +43,63 @@ def generate(debug=False):
 
 def dpa_province_code(data):
     return data['dpa_code']
+
+
+def updated(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    return days[-1]['fecha']
+
+
+def resume(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    new_diagnosed = len(list(filter(
+        lambda a: a.get('provincia_detección') == data['province'],
+        days[-1]['diagnosticados']))) if 'diagnosticados' in days[-1] else 0
+    diagnosed = sum((
+        len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
+            x['diagnosticados'])))
+        for x in days
+        if 'diagnosticados' in x
+    ))
+    last15days = 0
+    for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
+        diagnosed = len(list(filter(\
+            lambda a: a.get('provincia_detección') == data['province'], \
+            days[i]['diagnosticados']))) \
+            if 'diagnosticados' in days[i] else 0
+        last15days += diagnosed
+    last15days = last15days * 10**5 / provinces_population[data['dpa_code']] \
+        if data['dpa_code'] in provinces_population else 0
+    days_since_last_diagnosed = 0
+    for i in range(len(days) - 1, -1, -1):
+        diagnosed = len(list(filter(\
+            lambda a: a.get('provincia_detección') == data['province'], \
+            days[i]['diagnosticados']))) \
+            if 'diagnosticados' in days[i] else 0
+        if diagnosed:
+            break
+        days_since_last_diagnosed += 1
+    return [
+        {
+            'name': 'Diagnosticados',
+            'value': diagnosed,
+        },
+        {
+            'name': 'Diagnosticados Nuevos',
+            'value': new_diagnosed,
+        },
+        {
+            'name': 'Tasa (por 100 mil) Últimos 15 Días',
+            'value': last15days,
+        },
+        {
+            'name': 'Días Desde El Último Diagnosticado',
+            'value': days_since_last_diagnosed,
+        },
+    ]
 
 
 def map_data(data):
@@ -62,34 +124,9 @@ def map_data(data):
         'muns': muns,
         'genInfo': {
             'max_muns': max_muns,
-            'total': total
-        }
+            'total': total,
+        },
     }
-
-
-def updated(data):
-    days = list(data['data_cuba']['casos']['dias'].values())
-    days.sort(key=lambda x: x['fecha'])
-    return days[-1]['fecha']
-
-
-def resume(data):
-    days = list(data['data_cuba']['casos']['dias'].values())
-    days.sort(key=lambda x: x['fecha'])
-    new_diagnosed = len(list(filter(
-        lambda a: a.get('provincia_detección') == data['province'],
-        days[-1]['diagnosticados']))) if 'diagnosticados' in days[-1] else 0
-    diagnosed = sum((
-        len(list(filter(
-            lambda a: a.get('provincia_detección') == data['province'],
-            x['diagnosticados'])))
-        for x in days
-        if 'diagnosticados' in x
-    ))
-    return [
-        {'name': 'Diagnosticados', 'value': diagnosed},
-        {'name': 'Diagnosticados Nuevos', 'value': new_diagnosed}
-    ]
 
 
 def cases_by_sex(data):
@@ -110,17 +147,17 @@ def cases_by_sex(data):
     pretty = {
         'hombre': 'Hombres',
         'mujer': 'Mujeres',
-        'no reportado': 'No Reportados'
+        'no reportado': 'No Reportados',
     }
     hard = {
         'hombre': 'men',
         'mujer': 'women',
-        'no reportado': 'unknown'
+        'no reportado': 'unknown',
     }
     return {
         hard[key] if key in hard else key: {
             'name': pretty[key] if key in pretty else key.title(),
-            'value': result[key]
+            'value': result[key],
         }
         for key in result
     }
@@ -131,7 +168,7 @@ def cases_by_mode_of_contagion(data):
         'importado': 0,
         'introducido': 0,
         'autoctono': 0,
-        'desconocido': 0
+        'desconocido': 0,
     }
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
@@ -150,73 +187,53 @@ def cases_by_mode_of_contagion(data):
         'importado': 'Importados',
         'introducido': 'Introducidos',
         'autoctono': 'Autóctonos',
-        'desconocido': 'Desconocidos'
+        'desconocido': 'Desconocidos',
     }
     hard = {
         'importado': 'imported',
         'introducido': 'inserted',
         'autoctono': 'autochthonous',
-        'desconocido': 'unknown'
+        'desconocido': 'unknown',
     }
     return {
         hard[key] if key in hard else key: {
             'name': pretty[key] if key in pretty else key.title(),
-            'value': result[key]
+            'value': result[key],
         }
         for key in result
     }
 
 
-def cases_by_nationality(data):
-    pretty = {
-        'foreign': 'Extranjeros',
-        'cubans': 'Cubanos',
-        'unknown': 'No reportados'
-    }
-    result = {'foreign': 0, 'cubans': 0, 'unknown': 0}
+def evolution_of_cases_by_days(data):
+    accumulated = [0]
+    daily = [0]
+    date = []
     days = list(data['data_cuba']['casos']['dias'].values())
-    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
-        for item in diagnosed:
-            if item.get('provincia_detección') != data['province']:
-                continue
-            country = item.get('pais')
-            if country is None:
-                result['unknown'] += 1
-            elif country == 'cu':
-                result['cubans'] += 1
-            else:
-                result['foreign'] += 1
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        accumulated.append(accumulated[-1])
+        daily.append(0)
+        if x.get('diagnosticados'):
+            temp = len(list(filter(
+                lambda a: a.get('provincia_detección') == data['province'],
+                x['diagnosticados'])))
+            accumulated[-1] += temp
+            daily[-1] += temp
+        date.append(x['fecha'])
     return {
-        key: {
-            'name': pretty[key] if key in pretty else key.title(),
-            'value': result[key]
-        }
-        for key in result
+        'accumulated': {
+            'name': 'Casos acumulados',
+            'values': accumulated[1:],
+        },
+        'daily': {
+            'name': 'Casos en el día',
+            'values': daily[1:],
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date,
+        },
     }
-
-
-def distribution_by_nationality_of_foreign_cases(data):
-    result = {}
-    days = list(data['data_cuba']['casos']['dias'].values())
-    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
-        for item in diagnosed:
-            if item.get('provincia_detección') != data['province']:
-                continue
-            country = item['pais']
-            if country == 'cu':
-                continue
-            try:
-                result[country] += 1
-            except KeyError:
-                result[country] = 1
-    return [
-        {
-            'code': key,
-            'name': countries[key] if key in countries else key.title(),
-            'value': result[key]
-        }
-        for key in result
-    ]
 
 
 def distribution_by_age_ranges(data):
@@ -257,35 +274,83 @@ def distribution_by_age_ranges(data):
     ]
 
 
-def evolution_of_cases_by_days(data):
-    accumulated = [0]
-    daily = [0]
-    date = []
+def cases_by_nationality(data):
+    pretty = {
+        'foreign': 'Extranjeros',
+        'cubans': 'Cubanos',
+        'unknown': 'No reportados',
+    }
+    result = {'foreign': 0, 'cubans': 0, 'unknown': 0}
     days = list(data['data_cuba']['casos']['dias'].values())
-    days.sort(key=lambda x: x['fecha'])
-    for x in days:
-        accumulated.append(accumulated[-1])
-        daily.append(0)
-        if x.get('diagnosticados'):
-            temp = len(list(filter(
-                lambda a: a.get('provincia_detección') == data['province'],
-                x['diagnosticados'])))
-            accumulated[-1] += temp
-            daily[-1] += temp
-        date.append(x['fecha'])
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
+        for item in diagnosed:
+            if item.get('provincia_detección') != data['province']:
+                continue
+            country = item.get('pais')
+            if country is None:
+                result['unknown'] += 1
+            elif country == 'cu':
+                result['cubans'] += 1
+            else:
+                result['foreign'] += 1
     return {
-        'accumulated': {
-            'name': 'Casos acumulados',
-            'values': accumulated[1:]
+        key: {
+            'name': pretty[key] if key in pretty else key.title(),
+            'value': result[key],
+        }
+        for key in result
+    }
+
+
+def distribution_by_nationality_of_foreign_cases(data):
+    result = {}
+    days = list(data['data_cuba']['casos']['dias'].values())
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
+        for item in diagnosed:
+            if item.get('provincia_detección') != data['province']:
+                continue
+            country = item['pais']
+            if country == 'cu':
+                continue
+            try:
+                result[country] += 1
+            except KeyError:
+                result[country] = 1
+    return [
+        {
+            'code': key,
+            'name': countries[key] if key in countries else key.title(),
+            'value': result[key],
+        }
+        for key in result
+    ]
+
+
+def effective_reproductive_number(data):
+    if not data['dpa_code'] in data['data_cuba']['numero-reproductivo']:
+        return None
+    data_prov = data['data_cuba']['numero-reproductivo'][data['dpa_code']]
+    dates = []
+    for item in data_prov['dates']:
+        dates.append(f'2020/{item}')
+    data_prov['dates'] = dates
+    return {
+        'upper': {
+            'name': 'Margen Superior',
+            'values': data_prov['upper'],
         },
-        'daily': {
-            'name': 'Casos en el día',
-            'values': daily[1:]
+        'value': {
+            'name': 'Número Reproductivo Efectivo',
+            'values': data_prov['value'],
+        },
+        'lower': {
+            'name': 'Margen Inferior',
+            'values': data_prov['lower'],
         },
         'date': {
             'name': 'Fecha',
-            'values': date
-        }
+            'values': data_prov['dates'],
+        },
     }
 
 
@@ -305,7 +370,7 @@ def affected_municipalities(data):
             except KeyError:
                 counter[p[dpacode]] = {
                     'value': 1,
-                    'name': p['municipio_detección']
+                    'name': p['municipio_detección'],
                 }
             total += 1
     result = []
@@ -315,31 +380,3 @@ def affected_municipalities(data):
         item['total'] = total
         result.append(item)
     return result
-
-
-def effective_reproductive_number(data):
-    if not data['dpa_code'] in data['data_cuba']['numero-reproductivo']:
-        return None
-    data_prov = data['data_cuba']['numero-reproductivo'][data['dpa_code']]
-    dates = []
-    for item in data_prov['dates']:
-        dates.append(f'2020/{item}')
-    data_prov['dates'] = dates
-    return {
-        'upper': {
-            'name': 'Margen Superior',
-            'values': data_prov['upper']
-        },
-        'value': {
-            'name': 'Número Reproductivo Efectivo',
-            'values': data_prov['value']
-        },
-        'lower': {
-            'name': 'Margen Inferior',
-            'values': data_prov['lower']
-        },
-        'date': {
-            'name': 'Fecha',
-            'values': data_prov['dates']
-        }
-    }

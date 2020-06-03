@@ -1,6 +1,7 @@
 from hashlib import sha1
 from ...static.about_us import about_us as data_about_us
 from ...static.changelog import changelog as data_changelog
+from ...static.faqs import faqs as data_faqs
 from ...static.tips import tips as data_tips
 from ...utils import dump_util
 
@@ -8,6 +9,7 @@ from ...utils import dump_util
 def generate(debug=False):
     build_about_us(debug)
     build_changelog(debug)
+    build_faqs(debug)
     build_tips(debug)
 
 
@@ -53,6 +55,30 @@ def changelog_state(data):
         'cache': None,
     }
     with open('api/v2/changelog.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['cache'] = cache.hexdigest()
+    return result
+
+
+def build_faqs(debug):
+    dump_util('api/v2', faqs, debug=debug)
+    build_faqs_state(debug)
+
+
+def faqs(_):
+    return data_faqs
+
+
+def build_faqs_state(debug):
+    dump_util('api/v2', faqs_state, debug=debug)
+
+
+def faqs_state(data):
+    result = {
+        'cache': None,
+    }
+    with open('api/v2/faqs.json', encoding='utf-8') as file:
         text = file.read()
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()

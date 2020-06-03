@@ -33,6 +33,8 @@ def generate(debug=False):
         relation_of_tests_performed,
         tests_by_days,
         percent_positive_tests,
+        critics_serious_evolution,
+        percent_critics_serious_to_actives,
         effective_reproductive_number,
         stringency_index_cuba,
         affected_provinces,
@@ -174,6 +176,7 @@ def map_data(data):
     muns = {}
     pros = {}
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
     for patients in diagnosed:
         for p in patients:
@@ -506,6 +509,7 @@ def distribution_by_age_ranges(data):
     women = [0] * (len(intervals) + 1)
     unknown = [0] * (len(intervals) + 1)
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             age = item.get('edad')
@@ -541,6 +545,7 @@ def cases_by_nationality(data):
     }
     result = {'foreign': 0, 'cubans': 0, 'unknown': 0}
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             country = item.get('pais')
@@ -562,6 +567,7 @@ def cases_by_nationality(data):
 def distribution_by_nationality_of_foreign_cases(data):
     result = {}
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
         for item in diagnosed:
             country = item['pais']
@@ -585,6 +591,7 @@ def relation_of_tests_performed(data):
     total = 0
     positive = 0
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for day in (x for x in days if 'diagnosticados' in x):
         positive += len(day['diagnosticados'])
         if 'tests_total' in day:
@@ -615,6 +622,7 @@ def tests_by_days(data):
     prev_test_positive = 0
     total = 0
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for day in (x for x in days if 'diagnosticados' in x):
         total += len(day['diagnosticados'])
         if 'tests_total' in day:
@@ -664,6 +672,7 @@ def percent_positive_tests(data):
     total = 0
     positive = 0
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for day in (x for x in days if 'diagnosticados' in x):
         positive += len(day['diagnosticados'])
         if 'tests_total' in day:
@@ -683,6 +692,59 @@ def percent_positive_tests(data):
         'accumulated': {
             'name': '% de Tests Positivos Acumulados',
             'values': accum,
+        },
+    }
+
+
+def critics_serious_evolution(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    date = [day['fecha'] for day in days]
+    critics = [day['criticos_numero'] if 'criticos_numero' in day else 0 for day in days]
+    serious = [day['graves_numero'] if 'graves_numero' in day else 0 for day in days]
+    return {
+        'date': {
+            'name': 'Fecha',
+            'values': date,
+        },
+        'critics': {
+            'name': 'Críticos',
+            'values': critics,
+        },
+        'serious': {
+            'name': 'Graves',
+            'values': serious,
+        },
+    }
+
+
+def percent_critics_serious_to_actives(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    date = [day['fecha'] for day in days]
+    critics = [day['criticos_numero'] if 'criticos_numero' in day else 0 for day in days]
+    serious = [day['graves_numero'] if 'graves_numero' in day else 0 for day in days]
+    critics_serious = [x[0] + x[1] for x in zip(critics, serious)]
+    total = 0
+    deaths = 0
+    recover = 0
+    evacuees = 0
+    actives = []
+    for x in days:
+        total += len(x['diagnosticados']) if 'diagnosticados' in x else 0
+        deaths += x['muertes_numero'] if 'muertes_numero' in x else 0
+        recover += x['recuperados_numero'] if 'recuperados_numero' in x else 0
+        evacuees += x['evacuados_numero'] if 'evacuados_numero' in x else 0
+        actives.append(total - deaths - recover - evacuees)
+    result = [x[0] * 100 / x[1] for x in zip(critics_serious, actives)]
+    return {
+        'percents': {
+            'name': 'Por ciento de casos graves y críticos',
+            'values': result,
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date,
         },
     }
 
@@ -753,6 +815,7 @@ def affected_provinces(data):
     counter = {}
     total = 0
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
     for patients in diagnosed:
         for p in patients:
@@ -783,6 +846,7 @@ def affected_municipalities(data):
     counter = {}
     total = 0
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     diagnosed = [x['diagnosticados'] for x in days if 'diagnosticados' in x]
     for patients in diagnosed:
         for p in patients:
@@ -957,6 +1021,7 @@ def test_behavior_comparison(data):
     cuba_total = 0
     cuba_positive = 0
     cuba_days = list(data['data_cuba']['casos']['dias'].values())
+    cuba_days.sort(key=lambda x: x['fecha'])
     for cuba_day in (x for x in cuba_days if 'diagnosticados' in x):
         cuba_positive += len(cuba_day['diagnosticados'])
         if 'tests_total' in cuba_day:

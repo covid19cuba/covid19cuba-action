@@ -703,6 +703,10 @@ schema = {
                                     'type': 'integer',
                                     'minimum': 0
                                 },
+                                'criticos_numero': {
+                                    'type': 'integer',
+                                    'minimum': 0
+                                },
                                 'graves_id': {
                                     'type': 'array',
                                     'items': {

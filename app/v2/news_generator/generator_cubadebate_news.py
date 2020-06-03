@@ -77,7 +77,7 @@ def process_new(news):
         html = Selector(response.text)
 
         data = get_news_info(html)
-        new.update(data)":"
+        new.update(data)
 
         yield new
 

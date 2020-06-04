@@ -2,6 +2,7 @@ from json import dump
 from functools import cmp_to_key
 from hashlib import sha1
 from .acn_news_generator import generate as generate_acn_news
+from .cd_news_generator import generate as generate_cd_news
 from .gob_news_generator import generate as generate_gob_news
 from .jt_news_generator import generate as generate_jt_news
 from ...utils import dump_util
@@ -12,6 +13,11 @@ def generate(debug=False):
     try:
         acn_news = generate_acn_news(debug)
         news += acn_news
+    except Exception as e:
+        print(e)
+    try:
+        cd_news = generate_cd_news(debug)
+        news += cd_news
     except Exception as e:
         print(e)
     try:
@@ -26,7 +32,6 @@ def generate(debug=False):
         print(e)
     if not news:
         raise Exception('List of news is empty.')
-    news = acn_news + gob_news + jt_news
     news.sort(key=cmp_to_key(comparator), reverse=True)
     result = {
         'news': news,

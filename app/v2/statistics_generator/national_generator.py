@@ -47,6 +47,14 @@ def generate(debug=False):
         world_countries,
         # Extra
         pesquisador,
+        # Deceases section
+        deceases_updated,
+        deceases_map_data,
+        deceases_evolution_by_days,
+        deceases_by_sex,
+        deceases_distribution_by_age_ranges,
+        deceases_by_nationality,
+        deceases_distribution_amount_disease_history,
     ]
     dump({
         f.__name__: dump_util('api/v2', f,
@@ -1109,4 +1117,196 @@ def pesquisador(data):
         'url': 'http://autopesquisa.sld.cu/',
         'javascript': "document.querySelector('app-root').removeChild(document.querySelector('mat-toolbar'));",
         'contains': 'autopesquisa.sld.cu'
+    }
+
+# Deceases section
+
+def deceases_updated(data):
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    return days[-1]['fecha']
+
+
+def deceases_map_data(data):
+    muns = {}
+    pros = {}
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    deaths = [x['fallecidos'] for x in days if 'fallecidos' in x]
+    for patients in deaths:
+        for p in patients:
+            try:
+                muns[p['dpacode_municipio_deteccion']] += 1
+            except KeyError:
+                muns[p['dpacode_municipio_deteccion']] = 1
+            try:
+                pros[p['dpacode_provincia_deteccion']] += 1
+            except KeyError:
+                pros[p['dpacode_provincia_deteccion']] = 1
+    total = 0
+    max_muns = 0
+    max_pros = 0
+    for key in muns:
+        if key and muns[key] > max_muns:
+            max_muns = muns[key]
+    for key in pros:
+        if key and pros[key] > max_muns:
+            max_pros = pros[key]
+        if key:
+            total += pros[key]
+    return {
+        'muns': muns,
+        'pros': pros,
+        'genInfo': {
+            'max_muns': max_muns,
+            'max_pros': max_pros,
+            'total': total,
+        }
+    }
+
+
+def deceases_evolution_by_days(data):
+    accumulated = [0]
+    daily = [0]
+    date = []
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        accumulated.append(accumulated[-1])
+        daily.append(0)
+        if x.get('fallecidos'):
+            accumulated[-1] += len(x['fallecidos'])
+            daily[-1] += len(x['fallecidos'])
+        date.append(x['fecha'])
+    return {
+        'accumulated': {
+            'name': 'Fallecimientos acumulados',
+            'values': accumulated[1:],
+        },
+        'daily': {
+            'name': 'Fallecimientos en el día',
+            'values': daily[1:],
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date,
+        }
+    }
+
+
+def deceases_by_sex(data):
+    result = {'hombre': 0, 'mujer': 0, 'no reportado': 0}
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for deaths in (x['fallecidos'] for x in days if 'fallecidos' in x):
+        for item in deaths:
+            if item.get('sexo') is None:
+                result['no reportado'] += 1
+            else:
+                try:
+                    result[item.get('sexo')] += 1
+                except KeyError:
+                    result[item.get('sexo')] = 1
+    pretty = {
+        'hombre': 'Hombres',
+        'mujer': 'Mujeres',
+        'no reportado': 'No Reportados',
+    }
+    hard = {
+        'hombre': 'men',
+        'mujer': 'women',
+        'no reportado': 'unknown',
+    }
+    return {
+        hard[key] if key in hard else key: {
+            'name': pretty[key] if key in pretty else key.title(),
+            'value': result[key],
+        }
+        for key in result
+    }
+
+
+def deceases_distribution_by_age_ranges(data):
+    keys = ['0-19', '20-39', '40-59', '60-79', '>=80', '--']
+    hard = ['0-19', '20-39', '40-59', '60-79', '>=80', 'unknown']
+    intervals = [[0, 19], [20, 39], [40, 59], [60, 79], [80, 2**10]]
+    result = [0] * (len(intervals) + 1)
+    men = [0] * (len(intervals) + 1)
+    women = [0] * (len(intervals) + 1)
+    unknown = [0] * (len(intervals) + 1)
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for deaths in (x['fallecidos'] for x in days if 'fallecidos' in x):
+        for item in deaths:
+            age = item.get('edad')
+            sex = item.get('sexo')
+            sex_list = men if sex == 'hombre' else women if sex == 'mujer' else unknown
+            if age is None:
+                result[-1] += 1
+                sex_list[-1] += 1
+            else:
+                for index, (left, right) in enumerate(intervals):
+                    if left <= age <= right:
+                        result[index] += 1
+                        sex_list[index] += 1
+                        break
+    return [
+        {
+            'code': item[0],
+            'name': item[1],
+            'value': item[2],
+            'men': item[3],
+            'women': item[4],
+            'unknown': item[5],
+        }
+        for item in zip(hard, keys, result, men, women, unknown)
+    ]
+
+
+def deceases_by_nationality(data):
+    pretty = {
+        'foreign': 'Extranjeros',
+        'cubans': 'Cubanos',
+        'unknown': 'No reportados',
+    }
+    result = {'foreign': 0, 'cubans': 0, 'unknown': 0}
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for deaths in (x['fallecidos'] for x in days if 'fallecidos' in x):
+        for item in deaths:
+            country = item.get('pais')
+            if country is None:
+                result['unknown'] += 1
+            elif country == 'cu':
+                result['cubans'] += 1
+            else:
+                result['foreign'] += 1
+    return {
+        key: {
+            'name': pretty[key] if key in pretty else key.title(),
+            'value': result[key]
+        }
+        for key in result
+    }
+
+
+def deceases_distribution_amount_disease_history(data):
+    result = {}
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    for deaths in (x['fallecidos'] for x in days if 'fallecidos' in x):
+        for item in deaths:
+            temp = item['enfermedades'] if 'enfermedades' in item else []
+            try:
+                result[len(temp)] += 1
+            except KeyError:
+                result[len(temp)] = 1
+    return {
+        str(key): {
+            'name': 'Ninguna' \
+                if key == 0 else f'{key} Enfermedad' \
+                    if key == 1 else f'{key} Enfermedades',
+            'value': result[key]
+        }
+        for key in result
     }

@@ -3,6 +3,7 @@ ADD . /app
 WORKDIR /app
 
 # We are installing a dependency here directly into our app source dir
+RUN pip3 install --target=/app Cython
 RUN pip3 install --target=/app jsonschema
 RUN pip3 install --target=/app importlib_metadata
 RUN pip3 install --target=/app python-telegram-bot

@@ -32,6 +32,9 @@ def get_news_info(html):
     index_abstract = findnth(summary, '</p>', 2)
     abstract = summary[:index_abstract + 4]
     author = None
+    if html.css('#taxonomies > div:nth-child(1) > strong::text').get() == 'Por: ':
+        list_author = html.css('#taxonomies > div:nth-child(1) > a::text').getall()
+        author = ', '.join(list_author) if list_author else None
     return {
         'summary': summary,
         'abstract': abstract,
@@ -94,7 +97,7 @@ def find_match(new, keywords: str = 'covid'):
 
 def generate(debug=False):
     news = []
-    for new in get_news(datetime.now() - timedelta(5), datetime.now()):
+    for new in get_news(datetime.now() - timedelta(3), datetime.now()):
         if find_match(new):
             del new['tags']
             new['source'] = 'Cubadebate'

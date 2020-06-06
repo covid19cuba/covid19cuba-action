@@ -112,7 +112,7 @@ def tips_state(data):
 
 def build_bulletins(debug):
     dump_util('api/v2', bulletins, debug=debug)
-    build_about_us_state(debug)
+    build_bulletins_state(debug)
 
 def build_bulletins_state(debug):
     dump_util('api/v2', bulletins_state, debug=debug)

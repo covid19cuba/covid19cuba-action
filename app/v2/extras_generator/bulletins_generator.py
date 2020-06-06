@@ -1,20 +1,19 @@
-import json
-import bs4
-import requests
-import urllib.request
+from bs4 import BeautifulSoup
+from requests import get
+from urllib import request
 
 def bulletins(debug=False, base_url = 'https://covid19cubadata.github.io/'):
     _bulletins = []
 
-    source = requests.get(f'{base_url}boletines').text
+    source = get(f'{base_url}boletines').text
 
-    soup = bs4.BeautifulSoup(source,'lxml')
+    soup = BeautifulSoup(source,'lxml')
 
     for elem in soup.findAll('a'):
         description = elem.text
         link = elem.get('href')
         number = description[description.find('No.') + 4]
-        size = int(urllib.request.urlopen(base_url + link).info()['Content-Length'])/10**6
+        size = int(request.urlopen(base_url + link).info()['Content-Length'])/10**6
         _bulletins.append({
             'id': number,
             'info': description,

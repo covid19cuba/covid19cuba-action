@@ -35,7 +35,5 @@ def bulletins(debug=False, base_url = 'https://covid19cubadata.github.io/'):
          indent=2 if debug else None,
          separators=(',', ': ') if debug else (',', ':'))
 
-    build_bulletins_state(debug)
-
     return data
     

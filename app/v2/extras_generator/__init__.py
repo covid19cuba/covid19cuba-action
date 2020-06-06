@@ -4,6 +4,7 @@ from ...static.changelog import changelog as data_changelog
 from ...static.faqs import faqs as data_faqs
 from ...static.tips import tips as data_tips
 from ...utils import dump_util
+from .bulletins_generator import bulletins
 
 
 def generate(debug=False):
@@ -103,6 +104,23 @@ def tips_state(data):
         'cache': None,
     }
     with open('api/v2/tips.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['cache'] = cache.hexdigest()
+    return result
+
+def build_bulletins(debug):
+    dump_util('api/v2', bulletins, debug=debug)
+    build_about_us_state(debug)
+
+def build_bulletins_state(debug):
+    dump_util('api/v2', bulletins_state, debug=debug)
+
+def bulletins_state(data):
+    result = {
+        'cache': None,
+    }
+    with open('api/v2/bulletins.json', encoding='utf-8') as file:
         text = file.read()
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()

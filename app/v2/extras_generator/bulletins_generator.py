@@ -32,11 +32,5 @@ def bulletins(debug=False, base_url = 'https://covid19cubadata.github.io/'):
         }
     ]
 
-    json.dump(data,
-         open(f'api/v2/bulletins.json', mode='w', encoding='utf-8'),
-         ensure_ascii=False,
-         indent=2 if debug else None,
-         separators=(',', ': ') if debug else (',', ':'))
-
     return data
     

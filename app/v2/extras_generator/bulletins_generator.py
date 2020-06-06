@@ -23,11 +23,14 @@ def bulletins(debug=False, base_url = 'https://covid19cubadata.github.io/'):
 
     _bulletins.sort(key= lambda x : x['id'])
 
-    data = {
-        'source':{
-            base_url:_bulletins,
+    data = [
+        {
+            'name': 'CEDEM',
+            'url': 'http://www.biblioteca.uh.cu/red-bibliotecas/centro-estudios-demograficos-cedem',
+            'data_source': base_url,
+            'bulletins': _bulletins
         }
-    }
+    ]
 
     json.dump(data,
          open(f'api/v2/bulletins.json', mode='w', encoding='utf-8'),

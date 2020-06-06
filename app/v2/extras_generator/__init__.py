@@ -12,6 +12,7 @@ def generate(debug=False):
     build_changelog(debug)
     build_faqs(debug)
     build_tips(debug)
+    build_bulletins(debug)
 
 
 def build_about_us(debug):

@@ -1,13 +1,14 @@
 from json import load, dump
 from math import log10
-from .countries import countries, countries_codes, trans_countries, countries_iso3Code
-from .moments import moments
-from .provinces_population import provinces_population
-from .utils import dump_util
+from ..static.countries import countries, countries_codes, trans_countries, countries_iso3Code
+from ..static.moments import moments
+from ..static.provinces_population import provinces_population
+from ..utils import dump_util
 
 
 def generate(debug=False):
     data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
+    data_deaths = load(open('data/covid19-fallecidos.json', encoding='utf-8'))
     data_world = load(open('data/paises-info-dias.json', encoding='utf-8'))
     data_oxford = load(open('data/oxford-indexes.json', encoding='utf-8'))
     function_list = [
@@ -46,6 +47,7 @@ def generate(debug=False):
     dump({
         f.__name__: dump_util('api/v1', f,
                               data_cuba=data_cuba,
+                              data_deaths=data_deaths,
                               data_world=data_world,
                               data_oxford=data_oxford,
                               debug=debug)
@@ -289,11 +291,12 @@ def distribution_by_age_ranges(data):
             if age is None:
                 result[-1] += 1
                 sex_list[-1] += 1
-            for index, (left, right) in enumerate(intervals):
-                if left <= age <= right:
-                    result[index] += 1
-                    sex_list[index] += 1
-                    break
+            else:
+                for index, (left, right) in enumerate(intervals):
+                    if left <= age <= right:
+                        result[index] += 1
+                        sex_list[index] += 1
+                        break
     return [
         {
             'code': item[0],

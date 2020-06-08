@@ -1,23 +1,24 @@
 from json import load, dump
 from math import log10
-from ..static.countries import countries
-from ..static.province_codes import province_abbrs, province_codes
-from ..static.municipality_codes import municipality_codes
-from ..utils import dump_util
+from ...static.countries import countries
+from ...static.province_codes import province_abbrs, province_codes
+from ...static.municipality_codes import municipality_codes
+from ...utils import dump_util
 
 
 def generate(debug=False):
     data_cuba = load(open('data/covid19-cuba.json', encoding='utf-8'))
+    data_deaths = load(open('data/covid19-fallecidos.json', encoding='utf-8'))
     function_list = [
+        dpa_municipality_code,
         updated,
         resume,
         cases_by_sex,
         cases_by_mode_of_contagion,
+        evolution_of_cases_by_days,
+        distribution_by_age_ranges,
         cases_by_nationality,
         distribution_by_nationality_of_foreign_cases,
-        distribution_by_age_ranges,
-        evolution_of_cases_by_days,
-        dpa_municipality_code,
     ]
     province_codes_r = {j: i for i, j in province_codes.items()}
     for key in province_abbrs:
@@ -27,12 +28,16 @@ def generate(debug=False):
                           for key in municipality_codes if key.startswith(dpa_code)]
         for full_code, mun_code in municipalities:
             mun_value = municipality_codes[full_code]
-            dump({f.__name__: dump_util(f'api/v1/provinces/{key}/municipalities/{full_code}', f,
-                                        data_cuba=data_cuba, province=value,
-                                        debug=debug, dpa_code=dpa_code, mun_code=mun_code,
-                                        municipality=mun_value)
+            dump({f.__name__: dump_util(f'api/v2/provinces/{key}/municipalities/{full_code}', f,
+                                        data_cuba=data_cuba,
+                                        data_deaths=data_deaths,
+                                        province=value,
+                                        municipality=mun_value,
+                                        dpa_code=dpa_code,
+                                        mun_code=mun_code,
+                                        debug=debug)
                   for f in function_list},
-                 open(f'api/v1/provinces/{key}/municipalities/{full_code}/all.json',
+                 open(f'api/v2/provinces/{key}/municipalities/{full_code}/all.json',
                       mode='w', encoding='utf-8'),
                  ensure_ascii=False,
                  indent=2 if debug else None,
@@ -64,11 +69,28 @@ def resume(data):
         for x in days
         if 'diagnosticados' in x
     ))
+    days_since_last_diagnosed = 0
+    for i in range(len(days) - 1, -1, -1):
+        diagnosed = len(list(filter(\
+            lambda a: a.get('provincia_detección') == data['province'] and
+            a.get('municipio_detección') == data['municipality'], \
+            days[i]['diagnosticados']))) \
+            if 'diagnosticados' in days[i] else 0
+        if diagnosed:
+            break
+        days_since_last_diagnosed += 1
     result = [
         {'name': 'Diagnosticados', 'value': diagnosed}
     ]
     if diagnosed:
-        result.append({'name': 'Diagnosticados Nuevos', 'value': new_diagnosed})
+        result.append({
+            'name': 'Diagnosticados Nuevos',
+            'value': new_diagnosed,
+        })
+        result.append({
+            'name': 'Días Desde El Último Diagnosticado',
+            'value': days_since_last_diagnosed,
+        })
     return result
 
 
@@ -90,17 +112,17 @@ def cases_by_sex(data):
     pretty = {
         'hombre': 'Hombres',
         'mujer': 'Mujeres',
-        'no reportado': 'No Reportados'
+        'no reportado': 'No Reportados',
     }
     hard = {
         'hombre': 'men',
         'mujer': 'women',
-        'no reportado': 'unknown'
+        'no reportado': 'unknown',
     }
     return {
         hard[key] if key in hard else key: {
             'name': pretty[key] if key in pretty else key.title(),
-            'value': result[key]
+            'value': result[key],
         }
         for key in result
     }
@@ -111,7 +133,7 @@ def cases_by_mode_of_contagion(data):
         'importado': 0,
         'introducido': 0,
         'autoctono': 0,
-        'desconocido': 0
+        'desconocido': 0,
     }
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
@@ -130,73 +152,54 @@ def cases_by_mode_of_contagion(data):
         'importado': 'Importados',
         'introducido': 'Introducidos',
         'autoctono': 'Autóctonos',
-        'desconocido': 'Desconocidos'
+        'desconocido': 'Desconocidos',
     }
     hard = {
         'importado': 'imported',
         'introducido': 'inserted',
         'autoctono': 'autochthonous',
-        'desconocido': 'unknown'
+        'desconocido': 'unknown',
     }
     return {
         hard[key] if key in hard else key: {
             'name': pretty[key] if key in pretty else key.title(),
-            'value': result[key]
+            'value': result[key],
         }
         for key in result
     }
 
 
-def cases_by_nationality(data):
-    pretty = {
-        'foreign': 'Extranjeros',
-        'cubans': 'Cubanos',
-        'unknown': 'No reportados'
-    }
-    result = {'foreign': 0, 'cubans': 0, 'unknown': 0}
+def evolution_of_cases_by_days(data):
+    accumulated = [0]
+    daily = [0]
+    date = []
     days = list(data['data_cuba']['casos']['dias'].values())
-    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
-        for item in diagnosed:
-            if item.get('provincia_detección') != data['province'] or item.get('municipio_detección') != data['municipality']:
-                continue
-            country = item.get('pais')
-            if country is None:
-                result['unknown'] += 1
-            elif country == 'cu':
-                result['cubans'] += 1
-            else:
-                result['foreign'] += 1
+    days.sort(key=lambda x: x['fecha'])
+    for x in days:
+        accumulated.append(accumulated[-1])
+        daily.append(0)
+        if x.get('diagnosticados'):
+            temp = len(list(filter(
+                lambda a: a.get('provincia_detección') == data['province'] and
+                a.get('municipio_detección') == data['municipality'],
+                x['diagnosticados'])))
+            accumulated[-1] += temp
+            daily[-1] += temp
+        date.append(x['fecha'])
     return {
-        key: {
-            'name': pretty[key] if key in pretty else key.title(),
-            'value': result[key]
-        }
-        for key in result
+        'accumulated': {
+            'name': 'Casos acumulados',
+            'values': accumulated[1:],
+        },
+        'daily': {
+            'name': 'Casos en el día',
+            'values': daily[1:],
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date,
+        },
     }
-
-
-def distribution_by_nationality_of_foreign_cases(data):
-    result = {}
-    days = list(data['data_cuba']['casos']['dias'].values())
-    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
-        for item in diagnosed:
-            if item.get('provincia_detección') != data['province'] or item.get('municipio_detección') != data['municipality']:
-                continue
-            country = item['pais']
-            if country == 'cu':
-                continue
-            try:
-                result[country] += 1
-            except KeyError:
-                result[country] = 1
-    return [
-        {
-            'code': key,
-            'name': countries[key] if key in countries else key.title(),
-            'value': result[key]
-        }
-        for key in result
-    ]
 
 
 def distribution_by_age_ranges(data):
@@ -237,34 +240,53 @@ def distribution_by_age_ranges(data):
     ]
 
 
-def evolution_of_cases_by_days(data):
-    accumulated = [0]
-    daily = [0]
-    date = []
-    days = list(data['data_cuba']['casos']['dias'].values())
-    days.sort(key=lambda x: x['fecha'])
-    for x in days:
-        accumulated.append(accumulated[-1])
-        daily.append(0)
-        if x.get('diagnosticados'):
-            temp = len(list(filter(
-                lambda a: a.get('provincia_detección') == data['province'] and
-                a.get('municipio_detección') == data['municipality'],
-                x['diagnosticados'])))
-            accumulated[-1] += temp
-            daily[-1] += temp
-        date.append(x['fecha'])
-    return {
-        'accumulated': {
-            'name': 'Casos acumulados',
-            'values': accumulated[1:]
-        },
-        'daily': {
-            'name': 'Casos en el día',
-            'values': daily[1:]
-        },
-        'date': {
-            'name': 'Fecha',
-            'values': date
-        }
+def cases_by_nationality(data):
+    pretty = {
+        'foreign': 'Extranjeros',
+        'cubans': 'Cubanos',
+        'unknown': 'No reportados',
     }
+    result = {'foreign': 0, 'cubans': 0, 'unknown': 0}
+    days = list(data['data_cuba']['casos']['dias'].values())
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
+        for item in diagnosed:
+            if item.get('provincia_detección') != data['province'] or item.get('municipio_detección') != data['municipality']:
+                continue
+            country = item.get('pais')
+            if country is None:
+                result['unknown'] += 1
+            elif country == 'cu':
+                result['cubans'] += 1
+            else:
+                result['foreign'] += 1
+    return {
+        key: {
+            'name': pretty[key] if key in pretty else key.title(),
+            'value': result[key],
+        }
+        for key in result
+    }
+
+
+def distribution_by_nationality_of_foreign_cases(data):
+    result = {}
+    days = list(data['data_cuba']['casos']['dias'].values())
+    for diagnosed in (x['diagnosticados'] for x in days if 'diagnosticados' in x):
+        for item in diagnosed:
+            if item.get('provincia_detección') != data['province'] or item.get('municipio_detección') != data['municipality']:
+                continue
+            country = item['pais']
+            if country == 'cu':
+                continue
+            try:
+                result[country] += 1
+            except KeyError:
+                result[country] = 1
+    return [
+        {
+            'code': key,
+            'name': countries[key] if key in countries else key.title(),
+            'value': result[key],
+        }
+        for key in result
+    ]

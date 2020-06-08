@@ -2,9 +2,10 @@ name: "Python Container Action Template"
 description: "Get started with Python Container actions"
 author: "Jacob Tomlinson"
 inputs:
-  myInput:
-    description: "Input to use"
-    default: "world"
+  BotToken:
+    description: "Bot Token"
+  GroupId:
+    description: "Group Id"
 outputs:
   myOutput:
     description: "Output from the action"

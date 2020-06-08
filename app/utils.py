@@ -1,6 +1,6 @@
 from json import dump
 from os import makedirs
-from ..send_message import send
+from .send_message import send
 
 
 def dump_util(path, func, **data):

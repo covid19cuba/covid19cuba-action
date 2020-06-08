@@ -1,8 +1,8 @@
 from json import load, dump
 from math import log10
-from .countries import countries
-from .province_codes import province_abbrs, province_codes
-from .utils import dump_util
+from ..static.countries import countries
+from ..static.province_codes import province_abbrs, province_codes
+from ..utils import dump_util
 
 
 def generate(debug=False):
@@ -238,11 +238,12 @@ def distribution_by_age_ranges(data):
             if age is None:
                 result[-1] += 1
                 sex_list[-1] += 1
-            for index, (left, right) in enumerate(intervals):
-                if left <= age <= right:
-                    result[index] += 1
-                    sex_list[index] += 1
-                    break
+            else:
+                for index, (left, right) in enumerate(intervals):
+                    if left <= age <= right:
+                        result[index] += 1
+                        sex_list[index] += 1
+                        break
     return [
         {
             'code': item[0],

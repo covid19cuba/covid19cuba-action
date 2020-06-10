@@ -1,136 +1,92 @@
-# from datetime import datetime, timedelta
-# from json import dump
-# from parsel import Selector
-# from requests import get
-# from hashlib import sha1
-# from ...utils import dump_util
+from urllib.request import urlopen, Request
+from bs4 import BeautifulSoup
+from json import dump
+from datetime import datetime
+from hashlib import sha1
+from ...utils import dump_util
 
-# BASE_URL = 'http://www.cubadebate.cu'
-
-
-# def get_other_pages(html):
-#     return html.css('.page::attr(href)').getall()
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'
+}
 
 
-# def get_news_page(html):
-#     for div in html.css('#archive > div.generic'):
-#         a = div.css('.title > a')
-#         yield {
-#             'tags': [
-#                 tag for tag in div.attrib['class'].split(' ')
-#                 if tag and tag != 'generic'
-#             ],
-#             'title': a.css('::text').get(),
-#             'link': a.css('::attr(href)').get(),
-#             'id': a.css('::attr(href)').get(),
-#         }
+def get_page(url):
+    page = Request(url=url, headers=HEADERS)
+    html = urlopen(page)
+    bs = BeautifulSoup(html.read(), 'html.parser')
+    return bs
 
 
-# def get_news_info(html):
-#     summary = ''.join(
-#         html.css('div.entry > div.note_content > p').getall()).strip()
-#     index_abstract = findnth(summary, '</p>', 2)
-#     abstract = summary[:index_abstract + 4]
-#     author = None
-#     if html.css('#taxonomies > div:nth-child(1) > strong::text').get() == 'Por: ':
-#         list_author = html.css('#taxonomies > div:nth-child(1) > a::text').getall()
-#         author = ', '.join(list_author) if list_author else None
-#     return {
-#         'summary': summary,
-#         'abstract': abstract,
-#         'author': author,
-#     }
+def get_datetime(arg):
+    try:
+        _datetime = datetime.strptime(arg, '%Y-%m-%d %H:%M:%S')
+        return [
+            _datetime.year,
+            _datetime.month,
+            _datetime.day,
+            _datetime.hour,
+            _datetime.minute,
+            _datetime.second
+        ]
+    except:
+        pass
+    return None
 
 
-# def generate_urls(from_date, to_date):
-#     current = from_date
-#     while current <= to_date:
-#         yield {
-#             'link': f'{BASE_URL}/{current.year}/{current.month}/{current.day}',
-#             'date': current,
-#         }
-#         current += timedelta(days=1)
+def get_info(article):
+    abstract  = article.find('div', {'class':'excerpt'}).p.text
+    link      = article.find('a').attrs['href']
+    page      = get_page(link)
+    title     = page.find('h2', {'class': 'title'}).text
+    author    = page.find('div', {'id':'taxonomies'}).find('a').text
+    published = get_datetime(page.find('time').attrs['datetime'])
+    summary   = page.find('div', {'class':'note_content'})
+    return {
+        'id'       : link,
+        'link'     : link,
+        'title'    : title,
+        'author'   : author,
+        'published': published,
+        'updated'  : published,
+        'summary'  : summary,
+        'abstract' : abstract,
+        'source'   : 'Cubadebate',
+    }
 
 
-# def proccess_links(links):
-#     for link in links:
-#         published = str(link['date'])
-#         published = datetime.strptime(published, '%Y-%m-%d %H:%M:%S.%f')
-#         published = [
-#             published.year,
-#             published.month,
-#             published.day,
-#             published.hour,
-#             published.minute,
-#             published.second
-#         ]
-#         link = link['link']
-#         response = get(link)
-#         html = Selector(response.text)
-#         for page in get_news_page(html):
-#             page['published'] = published
-#             page['updated'] = published
-#             yield page
+def generate(debug=False):
+    url = 'http://www.cubadebate.cu/etiqueta/covid-19/'
+    page = get_page(url)
+    articles_list = page.find_all('div', {'class':'spoiler'})
+    news = []
+    
+    for article in articles_list:
+        info = get_info(article)
+        news.append(info)
+        
+    result = {
+        'news': news,
+    }
+    dump(result,
+         open(f'api/v2/cd_news.json', mode='w', encoding='utf-8'),
+         ensure_ascii=False,
+         indent=2 if debug else None,
+         separators=(',', ': ') if debug else (',', ':'))
+    
+    build_cd_news_state(debug)
+    return news
 
 
-# def process_new(news):
-#     for new in news:
-#         response = get(new['link'])
-#         html = Selector(response.text)
-#         data = get_news_info(html)
-#         new.update(data)
-#         yield new
+def build_cd_news_state(debug):
+    dump_util('api/v2', cd_news_state, debug=debug)
 
 
-# def get_news(from_date, to_date, folder='artícles') -> dict:
-#     return process_new(proccess_links(generate_urls(from_date, to_date)))
-
-
-# def find_match(new, keywords: str = 'covid'):
-#     for i in new['tags']:
-#         if type(i) == str and not i.lower().find(keywords) == -1:
-#             return True
-#     if not new['title'].lower().find(keywords) == -1 or not new['summary'].lower().find(keywords) == -1:
-#         return True
-#     return False
-
-
-# def generate(debug=False):
-#     news = []
-#     for new in get_news(datetime.now() - timedelta(3), datetime.now()):
-#         if find_match(new):
-#             del new['tags']
-#             new['source'] = 'Cubadebate'
-#             news.append(new)
-#     result = {
-#         'news': news
-#     }
-#     dump(result,
-#          open(f'api/v2/cd_news.json', mode='w', encoding='utf-8'),
-#          ensure_ascii=False,
-#          indent=2 if debug else None,
-#          separators=(',', ': ') if debug else (',', ':'))
-#     build_cd_news_state(debug)
-#     return news
-
-
-# def build_cd_news_state(debug):
-#     dump_util('api/v2', cd_news_state, debug=debug)
-
-
-# def cd_news_state(data):
-#     result = {
-#         'cache': None,
-#     }
-#     with open('api/v2/cd_news.json', encoding='utf-8') as file:
-#         text = file.read()
-#         cache = sha1(text.encode())
-#         result['cache'] = cache.hexdigest()
-#     return result
-
-
-# def findnth(haystack, needle, n):
-#     parts = haystack.split(needle, n+1)
-#     if len(parts) <= n+1:
-#         return -1
-#     return len(haystack) - len(parts[-1]) - len(needle)
+def cd_news_state(data):
+    result = {
+        'cache': None,
+    }
+    with open('api/v2/cd_news.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['cache'] = cache.hexdigest()
+    return result

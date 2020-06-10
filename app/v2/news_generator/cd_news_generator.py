@@ -2,7 +2,6 @@ from urllib.request import urlopen, Request
 from bs4 import BeautifulSoup
 from json import dump
 from datetime import datetime
-# from requests import get
 from hashlib import sha1
 from ...utils import dump_util
 
@@ -10,11 +9,13 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'
 }
 
+
 def get_page(url):
     page = Request(url=url, headers=HEADERS)
     html = urlopen(page)
     bs = BeautifulSoup(html.read(), 'html.parser')
     return bs
+
 
 def get_datetime(arg):
     try:
@@ -30,6 +31,7 @@ def get_datetime(arg):
     except:
         pass
     return None
+
 
 def get_info(article):
     abstract  = article.find('div', {'class':'excerpt'}).p.text
@@ -50,6 +52,7 @@ def get_info(article):
         'abstract' : abstract,
         'source'   : 'Cubadebate',
     }
+
 
 def generate(debug=False):
     url = 'http://www.cubadebate.cu/etiqueta/covid-19/'
@@ -77,6 +80,7 @@ def generate(debug=False):
 def build_cd_news_state(debug):
     dump_util('api/v2', cd_news_state, debug=debug)
 
+
 def cd_news_state(data):
     result = {
         'cache': None,
@@ -86,9 +90,3 @@ def cd_news_state(data):
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()
     return result
-
-# def findnth(haystack, needle, n):
-#     parts = haystack.split(needle, n+1)
-#     if len(parts) <= n+1:
-#         return -1
-#     return len(haystack) - len(parts[-1]) - len(needle)

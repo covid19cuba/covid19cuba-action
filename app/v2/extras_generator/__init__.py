@@ -110,12 +110,15 @@ def tips_state(data):
         result['cache'] = cache.hexdigest()
     return result
 
+
 def build_bulletins(debug):
     dump_util('api/v2', bulletins, debug=debug)
     build_bulletins_state(debug)
 
+
 def build_bulletins_state(debug):
     dump_util('api/v2', bulletins_state, debug=debug)
+
 
 def bulletins_state(data):
     result = {

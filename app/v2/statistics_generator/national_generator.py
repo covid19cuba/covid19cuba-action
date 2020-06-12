@@ -55,6 +55,9 @@ def generate(debug=False):
         deceases_distribution_by_age_ranges,
         deceases_by_nationality,
         deceases_distribution_amount_disease_history,
+        deceases_common_previous_diseases,
+        deceases_affected_provinces,
+        deceases_affected_municipalities,
     ]
     dump({
         f.__name__: dump_util('api/v2', f,
@@ -1310,3 +1313,77 @@ def deceases_distribution_amount_disease_history(data):
         }
         for key in result
     }
+
+
+def deceases_common_previous_diseases(data):
+    result = {}
+    days = list(data['data_deaths']['casos']['dias'].values())
+    for deaths in (x['fallecidos'] for x in days if 'fallecidos' in x):
+        for item in deaths:
+            for disease in item['enfermedades']:
+                try:
+                    result[disease]['value'] += 1
+             
+                except KeyError:
+                    result[disease] = {
+                        'value': 1,
+                        'name' : data['data_deaths']['enfermedades'][disease].title(),
+                    }
+    
+    result_list = list(result.values())
+    result_list.sort(key=lambda x: x['value'], reverse=True)
+    return result_list
+
+
+def deceases_affected_provinces(data):
+    result = {}
+    total_deaths = 0
+    days = list(data['data_deaths']['casos']['dias'].values())
+    for deaths in (x['fallecidos'] for x in days if 'fallecidos' in x):
+        for item in deaths:
+            dpacode = item['dpacode_provincia_deteccion']
+            try:
+                result[dpacode]['value'] += 1
+        
+            except KeyError:
+                result[dpacode] = {
+                    'value': 1,
+                    'name' : item['provincia_detección'],
+                    'code' : dpacode
+                }
+            total_deaths += 1
+    
+    result_list = list(result.values())
+    result_list.sort(key=lambda x: x['value'], reverse=True)
+    for item in result_list:
+        item['total'] = total_deaths
+        item['population'] = provinces_population[item['code']]
+        del item['code']
+    
+    return result_list
+
+
+def deceases_affected_municipalities(data):
+    result = {}
+    total_deaths = 0
+    days = list(data['data_deaths']['casos']['dias'].values())
+    for deaths in (x['fallecidos'] for x in days if 'fallecidos' in x):
+        for item in deaths:
+            dpacode = item['dpacode_municipio_deteccion']
+            try:
+                result[dpacode]['value'] += 1
+        
+            except KeyError:
+                result[dpacode] = {
+                    'value'   : 1,
+                    'name'    : item['municipio_detección'],
+                    'province': item['provincia_detección']
+                }
+            total_deaths += 1
+    
+    result_list = list(result.values())
+    result_list.sort(key=lambda x: x['value'], reverse=True)
+    for item in result_list:
+        item['total'] = total_deaths
+    
+    return result_list

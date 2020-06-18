@@ -33,6 +33,10 @@ def generate(debug=False):
         relation_of_tests_performed,
         tests_by_days,
         percent_positive_tests,
+        percent_of_symptomatics_and_asymptomatics,
+        evolution_of_symptomatics_and_asymptomatics_by_days,
+        percent_evolution_of_symptomatics_and_asymptomatics_by_days,
+        percent_evolution_of_symptomatics_and_asymptomatics_accumulated,
         critics_serious_evolution,
         percent_critics_serious_to_actives,
         effective_reproductive_number,
@@ -541,6 +545,123 @@ def percent_positive_tests(data):
         'accumulated': {
             'name': '% de Tests Positivos Acumulados',
             'values': accum,
+        },
+    }
+
+
+def percent_of_symptomatics_and_asymptomatics(data):
+    total = 0
+    symptomatics = 0
+    asymptomatics = 0
+    days = list(data['data_cuba']['casos']['dias'].values())
+    for day in days:
+        if 'diagnosticados' in day:
+            total += len(day['diagnosticados'])
+            symptomatics += day['asintomaticos_numero']
+            asymptomatics += len(day['diagnosticados']) - day['asintomaticos_numero']
+    
+    symptomatics_percent = (symptomatics * 100) / total
+    asymptomatics_percent = 100 - symptomatics_percent
+    return {
+        'symptomatics': {
+            'name': 'Sintomáticos',
+            'value': round(symptomatics_percent, 2)
+        },
+        'asymptomatics': {
+            'name': 'Asintomáticos',
+            'value': round(asymptomatics_percent,2)
+        },
+    }
+
+
+def evolution_of_symptomatics_and_asymptomatics_by_days(data):
+    symptomatics_list = []
+    asymptomatics_list = []
+    date_list = []
+    days = list(data['data_cuba']['casos']['dias'].values())
+    for day in days:
+        date_list.append(day['fecha'])
+        if 'diagnosticados' in day: 
+            asymptomatics = day['asintomaticos_numero']
+            symptomatics = len(day['diagnosticados']) - asymptomatics
+            asymptomatics_list.append(asymptomatics)
+            symptomatics_list.append(symptomatics)
+        else:
+            symptomatics_list.append(0)
+            asymptomatics_list.append(0)
+    
+    return {
+        'symptomatics': {
+            'name': 'Sintomáticos por día',
+            'value': symptomatics_list
+        },
+        'asymptomatics': {
+            'name': 'Asintomáticos por día',
+            'value': asymptomatics_list
+        },
+    }
+    
+
+def percent_evolution_of_symptomatics_and_asymptomatics_by_days(data):
+    symptomatics_percent_list = []
+    asymptomatics_percent_list = []
+    date_list = []
+    days = list(data['data_cuba']['casos']['dias'].values())
+    for day in days:
+        date_list.append(day['fecha'])
+        if 'diagnosticados' in day: 
+            asymptomatics = day['asintomaticos_numero']
+            symptomatics = len(day['diagnosticados']) - asymptomatics
+            total = asymptomatics + symptomatics
+            asymptomatics_percent_list.append(round((asymptomatics*100) / total, 2))
+            symptomatics_percent_list.append(round((symptomatics*100) / total, 2)) 
+        else:
+            symptomatics_percent_list.append(0.0)
+            asymptomatics_percent_list.append(0.0)
+    
+    return {
+        'symptomatics': {
+            'name': '% de sintomáticos por día',
+            'value': symptomatics_percent_list
+        },
+        'asymptomatics': {
+            'name': '% de asintomáticos por día',
+            'value': asymptomatics_percent_list
+        },
+        'date': {
+            'name': 'Fecha',
+            'value': date_list
+        }
+    }
+
+
+def percent_evolution_of_symptomatics_and_asymptomatics_accumulated(data):
+    symptomatics_percent_list = []
+    asymptomatics_percent_list = []
+    symptomatics = 0
+    asymptomatics = 0
+    date_list = []
+    days = list(data['data_cuba']['casos']['dias'].values())
+    for day in days:
+        date_list.append(day['fecha'])
+        if 'diagnosticados' in day: 
+            asymptomatics += day['asintomaticos_numero']
+            symptomatics += len(day['diagnosticados']) - day['asintomaticos_numero']
+            total = asymptomatics + symptomatics
+            asymptomatics_percent_list.append(round((asymptomatics*100) / total, 2))
+            symptomatics_percent_list.append(round((symptomatics*100) / total, 2)) 
+        else:
+            symptomatics_percent_list.append(symptomatics_percent_list[-1])
+            asymptomatics_percent_list.append(asymptomatics_percent_list[-1])
+    
+    return {
+        'symptomatics': {
+            'name': '% de sintomáticos acumulado',
+            'value': symptomatics_percent_list
+        },
+        'asymptomatics': {
+            'name': '% de asintomáticos acumulado',
+            'value': asymptomatics_percent_list
         },
     }
 

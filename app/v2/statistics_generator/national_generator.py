@@ -53,6 +53,7 @@ def generate(debug=False):
         pesquisador,
         # Deceases section
         deceases_updated,
+        deceases_resume,
         deceases_map_data,
         deceases_evolution_by_days,
         deceases_by_sex,
@@ -1271,6 +1272,48 @@ def deceases_updated(data):
     days = list(data['data_deaths']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     return days[-1]['fecha']
+
+
+def deceases_resume(data):
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    deaths = sum((
+        len(x['fallecidos'])
+        for x in days
+        if 'fallecidos' in x
+    ))
+    new_deaths = len(days[-1]['fallecidos']) \
+        if 'fallecidos' in days[-1] else 0
+    last15days = 0
+    for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
+        temp = len(days[i]['fallecidos']) \
+            if 'fallecidos' in days[i] else 0
+        last15days += temp
+    last15days = last15days * 10**5 / CUBA_POPULATION
+    days_since_last_deceased = 0
+    for i in range(len(days) - 1, -1, -1):
+        if 'fallecidos' in days[i] and len(days[i]['fallecidos']) != 0:
+            break
+        days_since_last_deceased += 1
+    result = [
+        {
+            'name': 'Fallecidos',
+            'value': deaths,
+        },
+        {
+            'name': 'Fallecidos Nuevos',
+            'value': new_deaths,
+        },
+        {
+            'name': 'Tasa (por 100 mil) Últimos 15 Días',
+            'value': last15days,
+        },
+        {
+            'name': 'Días Desde El Último Fallecido',
+            'value': days_since_last_deceased,
+        },
+    ]
+    return result
 
 
 def deceases_map_data(data):

@@ -21,6 +21,7 @@ def generate(debug=False):
         distribution_by_nationality_of_foreign_cases,
         # Deceases section
         deceases_updated,
+        deceases_resume,
         deceases_evolution_by_days,
         deceases_by_sex,
         deceases_distribution_by_age_ranges,
@@ -322,6 +323,46 @@ def deceases_updated(data):
     days = list(data['data_deaths']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     return days[-1]['fecha']
+
+
+def deceases_resume(data):
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    new_deaths = len(list(filter(
+        lambda a: a.get('provincia_detección') == data['province']
+        and a.get('municipio_detección') == data['municipality'],
+        days[-1]['fallecidos']))) if 'fallecidos' in days[-1] else 0
+    deaths = sum((
+        len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'] and
+            a.get('municipio_detección') == data['municipality'],
+            x['fallecidos'])))
+        for x in days
+        if 'fallecidos' in x
+    ))
+    days_since_last_deceased = 0
+    for i in range(len(days) - 1, -1, -1):
+        temp = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'] and
+            a.get('municipio_detección') == data['municipality'],
+            days[i]['fallecidos']))) \
+            if 'fallecidos' in days[i] else 0
+        if temp:
+            break
+        days_since_last_deceased += 1
+    result = [
+        {'name': 'Fallecidos', 'value': deaths}
+    ]
+    if deaths:
+        result.append({
+            'name': 'Fallecidos Nuevos',
+            'value': new_deaths,
+        })
+        result.append({
+            'name': 'Días Desde El Último Fallecido',
+            'value': days_since_last_deceased,
+        })
+    return result
 
 
 def deceases_evolution_by_days(data):

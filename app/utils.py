@@ -308,17 +308,17 @@ def deceases_common_previous_diseases_util(data, filter_func) -> list:
     result = {}
     days = list(data['data_deaths']['casos']['dias'].values())
     for cases in (x['fallecidos'] for x in days if 'fallecidos' in x):
-        for disease in cases['enfermedades']:
-            if filter_func(data, disease):
-                continue
-            try:
-                result[disease]['value'] += 1
-         
-            except KeyError:
-                result[disease] = {
-                    'value': 1,
-                    'name' : data['data_deaths']['enfermedades'][disease].title(),
-                }
+        for item in cases:
+            for disease in item['enfermedades']:
+                if filter_func(data, disease):
+                    continue
+                try:
+                    result[disease]['value'] += 1
+                except KeyError:
+                    result[disease] = {
+                        'value': 1,
+                        'name' : data['data_deaths']['enfermedades'][disease].title(),
+                    }
     
     result_list = list(result.values())
     result_list.sort(key=lambda x: x['value'], reverse=True)

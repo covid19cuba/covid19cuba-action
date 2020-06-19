@@ -729,11 +729,11 @@ def percent_of_symptomatics_and_asymptomatics(data):
     return {
         'symptomatics': {
             'name': 'Sintomáticos',
-            'value': round(symptomatics_percent, 2)
+            'value': round(symptomatics_percent, 2),
         },
         'asymptomatics': {
             'name': 'Asintomáticos',
-            'value': round(asymptomatics_percent, 2)
+            'value': round(asymptomatics_percent, 2),
         },
     }
 
@@ -758,11 +758,15 @@ def evolution_of_symptomatics_and_asymptomatics_by_days(data):
     return {
         'symptomatics': {
             'name': 'Sintomáticos por día',
-            'values': symptomatics_list
+            'values': symptomatics_list,
         },
         'asymptomatics': {
             'name': 'Asintomáticos por día',
-            'values': asymptomatics_list
+            'values': asymptomatics_list,
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date_list,
         },
     }
 
@@ -789,16 +793,16 @@ def percent_evolution_of_symptomatics_and_asymptomatics_by_days(data):
     return {
         'symptomatics': {
             'name': '% de sintomáticos por día',
-            'values': symptomatics_percent_list
+            'values': symptomatics_percent_list,
         },
         'asymptomatics': {
             'name': '% de asintomáticos por día',
-            'values': asymptomatics_percent_list
+            'values': asymptomatics_percent_list,
         },
         'date': {
             'name': 'Fecha',
-            'values': date_list
-        }
+            'values': date_list,
+        },
     }
 
 
@@ -826,11 +830,15 @@ def percent_evolution_of_symptomatics_and_asymptomatics_accumulated(data):
     return {
         'symptomatics': {
             'name': '% de sintomáticos acumulado',
-            'values': symptomatics_percent_list
+            'values': symptomatics_percent_list,
         },
         'asymptomatics': {
             'name': '% de asintomáticos acumulado',
-            'values': asymptomatics_percent_list
+            'values': asymptomatics_percent_list,
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date_list,
         },
     }
 

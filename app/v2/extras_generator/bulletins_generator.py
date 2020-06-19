@@ -18,7 +18,7 @@ def bulletins(debug = False, base_url = 'https://covid19cubadata.github.io/'):
             'url': link,
             'size': size})
 
-    _bulletins.sort(key= lambda x : x['id'])
+    result.sort(key= lambda x : x['id'])
 
     data = { 
         'providers': 
@@ -27,7 +27,7 @@ def bulletins(debug = False, base_url = 'https://covid19cubadata.github.io/'):
                 'name': 'CEDEM',
                 'url': 'http://www.biblioteca.uh.cu/red-bibliotecas/centro-estudios-demograficos-cedem',
                 'data_source': base_url,
-                'bulletins': _bulletins 
+                'bulletins': result 
             } 
         ]
     }

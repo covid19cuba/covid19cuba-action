@@ -76,8 +76,8 @@ def resume(data):
     ))
     last15days = 0
     for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
-        diagnosed = len(list(filter(\
-            lambda a: a.get('provincia_detección') == data['province'], \
+        diagnosed = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
             days[i]['diagnosticados']))) \
             if 'diagnosticados' in days[i] else 0
         last15days += diagnosed
@@ -85,13 +85,24 @@ def resume(data):
         if data['dpa_code'] in provinces_population else 0
     days_since_last_diagnosed = 0
     for i in range(len(days) - 1, -1, -1):
-        diagnosed = len(list(filter(\
-            lambda a: a.get('provincia_detección') == data['province'], \
+        diagnosed = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
             days[i]['diagnosticados']))) \
             if 'diagnosticados' in days[i] else 0
         if diagnosed:
             break
         days_since_last_diagnosed += 1
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    days_since_last_deceased = 0
+    for i in range(len(days) - 1, -1, -1):
+        deaths = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
+            days[i]['fallecidos']))) \
+            if 'fallecidos' in days[i] else 0
+        if deaths:
+            break
+        days_since_last_deceased += 1
     return [
         {
             'name': 'Diagnosticados',
@@ -108,6 +119,10 @@ def resume(data):
         {
             'name': 'Días Desde El Último Diagnosticado',
             'value': days_since_last_diagnosed,
+        },
+        {
+            'name': 'Días Desde El Último Fallecido',
+            'value': days_since_last_deceased,
         },
     ]
 
@@ -391,7 +406,8 @@ def affected_municipalities(data):
         result.append(item)
     return result
 
-#Deceases section
+# Deceases section
+
 
 def deceases_updated(data):
     days = list(data['data_deaths']['casos']['dias'].values())
@@ -575,8 +591,8 @@ def deceases_distribution_amount_disease_history(data):
                 result[len(temp)] = 1
     return {
         str(key): {
-            'name': 'Ninguna' \
-                if key == 0 else f'{key} Enfermedad' \
+            'name': 'Ninguna'
+            if key == 0 else f'{key} Enfermedad'
                     if key == 1 else f'{key} Enfermedades',
             'value': result[key]
         }
@@ -591,19 +607,18 @@ def deceases_common_previous_diseases(data):
         for item in deaths:
             for disease in item['enfermedades']:
                 if item.get('provincia_detección') != data['province']:
-                    continue 
+                    continue
                 try:
                     result[disease]['value'] += 1
-             
                 except KeyError:
                     result[disease] = {
                         'value': 1,
-                        'name' : data['data_deaths']['enfermedades'][disease].title(),
+                        'code': disease,
+                        'name': data['data_deaths']['enfermedades'][disease].title(),
                     }
-    
     result_list = list(result.values())
     result_list.sort(key=lambda x: x['value'], reverse=True)
-    return result_list
+    return result_list[:8]
 
 
 def deceases_affected_municipalities(data):
@@ -632,4 +647,3 @@ def deceases_affected_municipalities(data):
         item['total'] = total
         result.append(item)
     return result
-

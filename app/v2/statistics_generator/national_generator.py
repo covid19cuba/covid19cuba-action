@@ -1466,16 +1466,15 @@ def deceases_common_previous_diseases(data):
             for disease in item['enfermedades']:
                 try:
                     result[disease]['value'] += 1
-
                 except KeyError:
                     result[disease] = {
                         'value': 1,
+                        'code': disease,
                         'name': data['data_deaths']['enfermedades'][disease].title(),
                     }
-
     result_list = list(result.values())
     result_list.sort(key=lambda x: x['value'], reverse=True)
-    return result_list
+    return result_list[:8]
 
 
 def deceases_affected_provinces(data):

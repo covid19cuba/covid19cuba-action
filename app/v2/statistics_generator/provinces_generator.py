@@ -77,20 +77,20 @@ def resume(data):
     ))
     last15days = 0
     for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
-        diagnosed = len(list(filter(
+        temp = len(list(filter(
             lambda a: a.get('provincia_detección') == data['province'],
             days[i]['diagnosticados']))) \
             if 'diagnosticados' in days[i] else 0
-        last15days += diagnosed
+        last15days += temp
     last15days = last15days * 10**5 / provinces_population[data['dpa_code']] \
         if data['dpa_code'] in provinces_population else 0
     days_since_last_diagnosed = 0
     for i in range(len(days) - 1, -1, -1):
-        diagnosed = len(list(filter(
+        temp = len(list(filter(
             lambda a: a.get('provincia_detección') == data['province'],
             days[i]['diagnosticados']))) \
             if 'diagnosticados' in days[i] else 0
-        if diagnosed:
+        if temp:
             break
         days_since_last_diagnosed += 1
     days = list(data['data_deaths']['casos']['dias'].values())

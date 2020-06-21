@@ -80,12 +80,12 @@ def resume(data):
     ))
     days_since_last_diagnosed = 0
     for i in range(len(days) - 1, -1, -1):
-        diagnosed = len(list(filter(
+        temp = len(list(filter(
             lambda a: a.get('provincia_detección') == data['province'] and
             a.get('municipio_detección') == data['municipality'],
             days[i]['diagnosticados']))) \
             if 'diagnosticados' in days[i] else 0
-        if diagnosed:
+        if temp:
             break
         days_since_last_diagnosed += 1
     days = list(data['data_deaths']['casos']['dias'].values())

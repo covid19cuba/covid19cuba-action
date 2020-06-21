@@ -120,9 +120,9 @@ def resume(data):
         if 'evacuados_numero' in days[-1] else 0
     last15days = 0
     for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
-        diagnosed = len(days[i]['diagnosticados']) \
+        temp = len(days[i]['diagnosticados']) \
             if 'diagnosticados' in days[i] else 0
-        last15days += diagnosed
+        last15days += temp
     last15days = last15days * 10**5 / CUBA_POPULATION
     days_since_last_diagnosed = 0
     for i in range(len(days) - 1, -1, -1):

@@ -71,36 +71,32 @@ def clean_date(string):
 
 def verify_none(element):
     if element == 'None':
-        return ''
-    
+        return None
+    return element
+
+
 def generate(debug=False):
     limit = 10
     news = []
     r = get(URL_ACN,data = payload ,headers = headers)
-
     soup = BeautifulSoup(r.text,'lxml')
     titles = soup.findAll('dt', {'class':'result-title'})
     abstracts = soup.findAll('dd', {'class':'result-text'})
     news_links = [extract_href(str(i)) for i in titles]
-    
     for i,item in enumerate(news_links):
-        if i > 10:
+        if i > limit:
             break
         link ='http://www.acn.cu'+item
         r = get(link,data = payload ,headers = headers)
-        
         soup = BeautifulSoup(r.text,'lxml')
-        author =verify_none( str(soup.find('dd', {'class':'createdby hasTooltip'})))
+        author = verify_none(str(soup.find('dd', {'class':'createdby hasTooltip'})))
         created = verify_none(str(soup.find('meta', {'itemprop':'datePublished'})))
         updated = verify_none(str(soup.find('meta', {'itemprop':'dateModified'})))
-        
-        title = str(soup.find('h1', {'class':'article-title'}))
-        abstract = str(abstracts[i])
-        summary = str(soup.find('section', {'class':'article-content'}))
-        
-        if title == 'None' or abstract == 'None' or summary == 'None': #verify required non None fields on the news
+        title = verify_none(str(soup.find('h1', {'class':'article-title'})))
+        abstract = verify_none(str(abstracts[i]))
+        summary = verify_none(str(soup.find('section', {'class':'article-content'})))
+        if None in [author, created, updated, title, abstract, summary]:
             continue
-        
         news.append({
             'id': link,
             'link': link,
@@ -111,7 +107,6 @@ def generate(debug=False):
             'summary': remove_junk(summary),
             'abstract':remove_junk(abstract),
         })
-    
     result = {
         'news': news,
     }

@@ -20,10 +20,9 @@ def get_page(url, headers):
 def get_author_and_summary(url, headers):
     bs = get_page(url, headers)
     summary = bs.find('article')
-    image = summary.find('img', {'class': 'full-width img-responsive img-rounded'})
     text = summary.find('div', {'class': 'text-justify'})
     author = summary.ul.find('span').text
-    summary = str(image) + str(text) 
+    summary = str(text) 
     return str(author), str(summary)
 
 

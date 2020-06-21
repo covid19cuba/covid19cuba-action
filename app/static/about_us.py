@@ -132,6 +132,13 @@ collaborators = [
           'Desarrollador Full Stack.',
       'link':'https://leynier.github.io',
     },
+    {
+      'name':'Javier Alejandro Oramas López',
+      'description':'Estudiante de Ciencia de la Computación en la Univ. de La Habana. '
+          'Integrante del grupo de Inteligencia Artificial de la Facultad de '
+          'Matemática y Computación.',
+      'link':'https://github.com/JavierOramas',
+    },
   ]
 
 replicas = [

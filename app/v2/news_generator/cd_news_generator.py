@@ -34,36 +34,34 @@ def get_datetime(arg):
 
 
 def get_info(article):
-    abstract  = article.find('div', {'class':'excerpt'}).p.text
-    link      = article.find('a').attrs['href']
-    page      = get_page(link)
-    title     = page.find('h2', {'class': 'title'}).text
-    author    = page.find('div', {'id':'taxonomies'}).find('a').text
+    abstract = article.find('div', {'class': 'excerpt'}).p.text
+    link = article.find('a').attrs['href']
+    page = get_page(link)
+    title = page.find('h2', {'class': 'title'}).text
+    author = page.find('div', {'id': 'taxonomies'}).find('a').text
     published = get_datetime(page.find('time').attrs['datetime'])
-    summary   = page.find('div', {'class':'note_content'})
+    summary = page.find('div', {'class': 'note_content'})
     return {
-        'id'       : link,
-        'link'     : link,
-        'title'    : title,
-        'author'   : author,
+        'id': str(link),
+        'link': str(link),
+        'title': str(title),
+        'author': str(author),
         'published': published,
-        'updated'  : published,
-        'summary'  : summary,
-        'abstract' : abstract,
-        'source'   : 'Cubadebate',
+        'updated': published,
+        'summary': str(summary),
+        'abstract': str(abstract),
+        'source': 'Cubadebate',
     }
 
 
 def generate(debug=False):
     url = 'http://www.cubadebate.cu/etiqueta/covid-19/'
     page = get_page(url)
-    articles_list = page.find_all('div', {'class':'spoiler'})
+    articles_list = page.find_all('div', {'class': 'spoiler'})
     news = []
-    
     for article in articles_list:
         info = get_info(article)
         news.append(info)
-        
     result = {
         'news': news,
     }
@@ -72,7 +70,6 @@ def generate(debug=False):
          ensure_ascii=False,
          indent=2 if debug else None,
          separators=(',', ': ') if debug else (',', ':'))
-    
     build_cd_news_state(debug)
     return news
 

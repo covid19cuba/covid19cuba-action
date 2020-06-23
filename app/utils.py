@@ -309,9 +309,9 @@ def deceases_common_previous_diseases_util(data, filter_func) -> list:
     days = list(data['data_deaths']['casos']['dias'].values())
     for cases in (x['fallecidos'] for x in days if 'fallecidos' in x):
         for item in cases:
-            for disease in item['enfermedades']:
-                if filter_func(data, disease):
+            if filter_func(data, item):
                     continue
+            for disease in item['enfermedades']:
                 try:
                     result[disease]['value'] += 1
                 except KeyError:

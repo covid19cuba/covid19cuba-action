@@ -310,7 +310,7 @@ def evolution_of_recovered_by_days(data):
     }
 
 
-def evolution_of_deaths_by_days(data, json_file='data_cuba', case_type='muertes_numero'):
+def evolution_of_deaths_by_days(data, json_file='data_deaths', case_type='fallecidos'):
     return evolution_of_deaths_by_days_util(data, json_file, case_type, filter_func)
 
 

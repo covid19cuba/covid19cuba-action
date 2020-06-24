@@ -18,12 +18,11 @@ def get_page(url, headers):
 
 
 def get_author_and_summary(url, headers):
-    page = Request(url=url, headers=headers)
-    html = urlopen(page)
-    bs = BeautifulSoup(html.read(), 'html.parser')
-    author = bs.find
+    bs = get_page(url, headers)
     summary = bs.find('article')
+    text = summary.find('div', {'class': 'text-justify'})
     author = summary.ul.find('span').text
+    summary = str(text) 
     return str(author), str(summary)
 
 

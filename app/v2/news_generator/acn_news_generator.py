@@ -26,6 +26,8 @@ def extract_href(element):
 def remove_junk(string):
     new_str = ''
     flag = False
+    if string == None:
+        return string
     for i in string:
         if i == '<':
             flag = True
@@ -53,6 +55,8 @@ def get_datetime(arg):
 
 
 def clean_date(string):
+    if string == None:
+        return string
     string = string[string.find('content="') + len('content="'):]
     _datetime = get_datetime(string[:string.find('"')])
     return [
@@ -65,39 +69,43 @@ def clean_date(string):
     ]
 
 
+def verify_none(element):
+    if element == 'None':
+        return None
+    return element
+
+
 def generate(debug=False):
     limit = 10
     news = []
-    r = get(URL_ACN, data=payload, headers=headers)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    titles = soup.findAll('dt', {'class': 'result-title'})
-    abstracts = soup.findAll('dd', {'class': 'result-text'})
+    r = get(URL_ACN,data = payload ,headers = headers)
+    soup = BeautifulSoup(r.text,'lxml')
+    titles = soup.findAll('dt', {'class':'result-title'})
+    abstracts = soup.findAll('dd', {'class':'result-text'})
     news_links = [extract_href(str(i)) for i in titles]
-    for i, item in enumerate(news_links):
-        if i >= limit:
+    for i,item in enumerate(news_links):
+        if i > limit:
             break
-        link = 'http://www.acn.cu' + item
-        r = get(link, data=payload, headers=headers)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        title = str(soup.find('h1', {'class': 'article-title'}))
-        author = str(soup.find('dd', {'class': 'createdby hasTooltip'}))
-        published = str(soup.find('meta', {'itemprop': 'datePublished'}))
-        updated = str(soup.find('meta', {'itemprop': 'dateModified'}))
-        abstract = str(abstracts[i])
-        abstract = " ".join(abstract.split())
-        summary = str(soup.find('section', {'class': 'article-content'}))
-        summary = " ".join(summary.split())
-        if 'None' in [title, author, published, updated, abstract, summary]:
+        link ='http://www.acn.cu'+item
+        r = get(link,data = payload ,headers = headers)
+        soup = BeautifulSoup(r.text,'lxml')
+        author = verify_none(str(soup.find('dd', {'class':'createdby hasTooltip'})))
+        created = verify_none(str(soup.find('meta', {'itemprop':'datePublished'})))
+        updated = verify_none(str(soup.find('meta', {'itemprop':'dateModified'})))
+        title = verify_none(str(soup.find('h1', {'class':'article-title'})))
+        abstract = verify_none(str(abstracts[i]))
+        summary = verify_none(str(soup.find('section', {'class':'article-content'})))
+        if None in [author, created, updated, title, abstract, summary]:
             continue
         news.append({
             'id': link,
             'link': link,
             'title': remove_junk(title),
             'author': remove_junk(author),
-            'published': clean_date(published),
+            'published': clean_date(created),
             'updated': clean_date(updated),
-            'summary': summary,
-            'abstract': abstract,
+            'summary': remove_junk(summary),
+            'abstract': remove_junk(abstract),
             'source': 'Agencia Cubana de Noticias',
         })
     result = {
@@ -125,3 +133,5 @@ def acn_news_state(data):
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()
     return result
+
+

@@ -24,6 +24,7 @@ def generate(debug=False):
         affected_municipalities,
         # Deceases section
         deceases_updated,
+        deceases_resume,
         deceases_map_data,
         deceases_evolution_by_days,
         deceases_by_sex,
@@ -78,22 +79,33 @@ def resume(data):
     ))
     last15days = 0
     for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
-        diagnosed = len(list(filter(\
-            lambda a: a.get('provincia_detección') == data['province'], \
+        temp = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
             days[i]['diagnosticados']))) \
             if 'diagnosticados' in days[i] else 0
-        last15days += diagnosed
+        last15days += temp
     last15days = last15days * 10**5 / provinces_population[data['dpa_code']] \
         if data['dpa_code'] in provinces_population else 0
     days_since_last_diagnosed = 0
     for i in range(len(days) - 1, -1, -1):
-        diagnosed = len(list(filter(\
-            lambda a: a.get('provincia_detección') == data['province'], \
+        temp = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
             days[i]['diagnosticados']))) \
             if 'diagnosticados' in days[i] else 0
-        if diagnosed:
+        if temp:
             break
         days_since_last_diagnosed += 1
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    days_since_last_deceased = 0
+    for i in range(len(days) - 1, -1, -1):
+        deaths = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
+            days[i]['fallecidos']))) \
+            if 'fallecidos' in days[i] else 0
+        if deaths:
+            break
+        days_since_last_deceased += 1
     return [
         {
             'name': 'Diagnosticados',
@@ -110,6 +122,10 @@ def resume(data):
         {
             'name': 'Días Desde El Último Diagnosticado',
             'value': days_since_last_diagnosed,
+        },
+        {
+            'name': 'Días Desde El Último Fallecido',
+            'value': days_since_last_deceased,
         },
     ]
 
@@ -203,10 +219,62 @@ def effective_reproductive_number(data):
 def affected_municipalities(data, json_file='data_cuba', case_type='diagnosticados'):
     return affected_municipalities_util(data, json_file, case_type, filter_by_provinces)
 
-#Deceases section
+# Deceases section
+
 
 def deceases_updated(data):
     return updated(data, json_file='data_deaths')
+
+
+def deceases_resume(data):
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    new_deaths = len(list(filter(
+        lambda a: a.get('provincia_detección') == data['province'],
+        days[-1]['fallecidos']))) if 'fallecidos' in days[-1] else 0
+    deaths = sum((
+        len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
+            x['fallecidos'])))
+        for x in days
+        if 'fallecidos' in x
+    ))
+    last15days = 0
+    for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
+        temp = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
+            days[i]['fallecidos']))) \
+            if 'fallecidos' in days[i] else 0
+        last15days += temp
+    last15days = last15days * 10**5 / provinces_population[data['dpa_code']] \
+        if data['dpa_code'] in provinces_population else 0
+    days_since_last_deceased = 0
+    for i in range(len(days) - 1, -1, -1):
+        temp = len(list(filter(
+            lambda a: a.get('provincia_detección') == data['province'],
+            days[i]['fallecidos']))) \
+            if 'fallecidos' in days[i] else 0
+        if temp:
+            break
+        days_since_last_deceased += 1
+    return [
+        {
+            'name': 'Fallecidos',
+            'value': deaths,
+        },
+        {
+            'name': 'Fallecidos Nuevos',
+            'value': new_deaths,
+        },
+        {
+            'name': 'Tasa (por 100 mil) Últimos 15 Días',
+            'value': last15days,
+        },
+        {
+            'name': 'Días Desde El Último Fallecido',
+            'value': days_since_last_deceased,
+        },
+    ]
 
 
 def deceases_map_data(data):
@@ -240,3 +308,5 @@ def deceases_common_previous_diseases(data):
 def deceases_affected_municipalities(data):
     return affected_municipalities(data, json_file='data_deaths', case_type='fallecidos')
 
+
+    

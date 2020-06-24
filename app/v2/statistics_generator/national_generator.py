@@ -53,6 +53,7 @@ def generate(debug=False):
         pesquisador,
         # Deceases section
         deceases_updated,
+        deceases_resume,
         deceases_map_data,
         deceases_evolution_by_days,
         deceases_by_sex,
@@ -85,6 +86,7 @@ def updated(data, json_file='data_cuba'):
     return updated_util(data, json_file)
 
 # National
+
 
 def resume(data):
     days = list(data['data_cuba']['casos']['dias'].values())
@@ -120,9 +122,9 @@ def resume(data):
         if 'evacuados_numero' in days[-1] else 0
     last15days = 0
     for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
-        diagnosed = len(days[i]['diagnosticados']) \
+        temp = len(days[i]['diagnosticados']) \
             if 'diagnosticados' in days[i] else 0
-        last15days += diagnosed
+        last15days += temp
     last15days = last15days * 10**5 / CUBA_POPULATION
     days_since_last_diagnosed = 0
     for i in range(len(days) - 1, -1, -1):
@@ -554,22 +556,24 @@ def percent_of_symptomatics_and_asymptomatics(data):
     symptomatics = 0
     asymptomatics = 0
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for day in days:
         if 'diagnosticados' in day:
             total += len(day['diagnosticados'])
             symptomatics += day['asintomaticos_numero']
-            asymptomatics += len(day['diagnosticados']) - day['asintomaticos_numero']
-    
+            asymptomatics += len(day['diagnosticados']) - \
+                day['asintomaticos_numero']
+
     symptomatics_percent = (symptomatics * 100) / total
     asymptomatics_percent = 100 - symptomatics_percent
     return {
         'symptomatics': {
             'name': 'Sintomáticos',
-            'value': round(symptomatics_percent, 2)
+            'value': round(symptomatics_percent, 2),
         },
         'asymptomatics': {
             'name': 'Asintomáticos',
-            'value': round(asymptomatics_percent,2)
+            'value': round(asymptomatics_percent, 2),
         },
     }
 
@@ -579,9 +583,10 @@ def evolution_of_symptomatics_and_asymptomatics_by_days(data):
     asymptomatics_list = []
     date_list = []
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for day in days:
         date_list.append(day['fecha'])
-        if 'diagnosticados' in day: 
+        if 'diagnosticados' in day:
             asymptomatics = day['asintomaticos_numero']
             symptomatics = len(day['diagnosticados']) - asymptomatics
             asymptomatics_list.append(asymptomatics)
@@ -589,49 +594,54 @@ def evolution_of_symptomatics_and_asymptomatics_by_days(data):
         else:
             symptomatics_list.append(0)
             asymptomatics_list.append(0)
-    
+
     return {
         'symptomatics': {
             'name': 'Sintomáticos por día',
-            'value': symptomatics_list
+            'values': symptomatics_list,
         },
         'asymptomatics': {
             'name': 'Asintomáticos por día',
-            'value': asymptomatics_list
+            'values': asymptomatics_list,
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date_list,
         },
     }
-    
 
 def percent_evolution_of_symptomatics_and_asymptomatics_by_days(data):
     symptomatics_percent_list = []
     asymptomatics_percent_list = []
     date_list = []
     days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
     for day in days:
         date_list.append(day['fecha'])
-        if 'diagnosticados' in day: 
+        if 'diagnosticados' in day:
             asymptomatics = day['asintomaticos_numero']
             symptomatics = len(day['diagnosticados']) - asymptomatics
             total = asymptomatics + symptomatics
-            asymptomatics_percent_list.append(round((asymptomatics*100) / total, 2))
-            symptomatics_percent_list.append(round((symptomatics*100) / total, 2)) 
+            asymptomatics_percent_list.append(
+                round((asymptomatics*100) / total, 2))
+            symptomatics_percent_list.append(
+                round((symptomatics*100) / total, 2))
         else:
             symptomatics_percent_list.append(0.0)
             asymptomatics_percent_list.append(0.0)
-    
     return {
         'symptomatics': {
             'name': '% de sintomáticos por día',
-            'value': symptomatics_percent_list
+            'values': symptomatics_percent_list,
         },
         'asymptomatics': {
             'name': '% de asintomáticos por día',
-            'value': asymptomatics_percent_list
+            'values': asymptomatics_percent_list,
         },
         'date': {
             'name': 'Fecha',
-            'value': date_list
-        }
+            'values': date_list,
+        },
     }
 
 
@@ -644,24 +654,30 @@ def percent_evolution_of_symptomatics_and_asymptomatics_accumulated(data):
     days = list(data['data_cuba']['casos']['dias'].values())
     for day in days:
         date_list.append(day['fecha'])
-        if 'diagnosticados' in day: 
+        if 'diagnosticados' in day:
             asymptomatics += day['asintomaticos_numero']
-            symptomatics += len(day['diagnosticados']) - day['asintomaticos_numero']
+            symptomatics += len(day['diagnosticados']) - \
+                day['asintomaticos_numero']
             total = asymptomatics + symptomatics
-            asymptomatics_percent_list.append(round((asymptomatics*100) / total, 2))
-            symptomatics_percent_list.append(round((symptomatics*100) / total, 2)) 
+            asymptomatics_percent_list.append(
+                round((asymptomatics*100) / total, 2))
+            symptomatics_percent_list.append(
+                round((symptomatics*100) / total, 2))
         else:
             symptomatics_percent_list.append(symptomatics_percent_list[-1])
             asymptomatics_percent_list.append(asymptomatics_percent_list[-1])
-    
     return {
         'symptomatics': {
             'name': '% de sintomáticos acumulado',
-            'value': symptomatics_percent_list
+            'values': symptomatics_percent_list,
         },
         'asymptomatics': {
             'name': '% de asintomáticos acumulado',
-            'value': asymptomatics_percent_list
+            'values': asymptomatics_percent_list,
+        },
+        'date': {
+            'name': 'Fecha',
+            'values': date_list,
         },
     }
 
@@ -670,8 +686,10 @@ def critics_serious_evolution(data):
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     date = [day['fecha'] for day in days]
-    critics = [day['criticos_numero'] if 'criticos_numero' in day else 0 for day in days]
-    serious = [day['graves_numero'] if 'graves_numero' in day else 0 for day in days]
+    critics = [day['criticos_numero']
+               if 'criticos_numero' in day else 0 for day in days]
+    serious = [day['graves_numero']
+               if 'graves_numero' in day else 0 for day in days]
     return {
         'date': {
             'name': 'Fecha',
@@ -692,8 +710,10 @@ def percent_critics_serious_to_actives(data):
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
     date = [day['fecha'] for day in days]
-    critics = [day['criticos_numero'] if 'criticos_numero' in day else 0 for day in days]
-    serious = [day['graves_numero'] if 'graves_numero' in day else 0 for day in days]
+    critics = [day['criticos_numero']
+               if 'criticos_numero' in day else 0 for day in days]
+    serious = [day['graves_numero']
+               if 'graves_numero' in day else 0 for day in days]
     critics_serious = [x[0] + x[1] for x in zip(critics, serious)]
     total = 0
     deaths = 0
@@ -795,6 +815,7 @@ def affected_municipalities(data, json_file='data_cuba', case_type='diagnosticad
     return affected_municipalities_util(data, json_file, case_type, filter_func, truncate=True)
 
 # World
+
 
 def multiple_comparison_of_cuba_with_radar(data):
     def get_last(array):
@@ -1027,6 +1048,7 @@ def world_countries(data):
 
 # Extra
 
+
 def pesquisador(data):
     return {
         'url': 'http://autopesquisa.sld.cu/',
@@ -1036,8 +1058,51 @@ def pesquisador(data):
 
 # Deceases section
 
+
 def deceases_updated(data):
     return updated(data, json_file='data_deaths')
+
+def deceases_resume(data):
+    days = list(data['data_deaths']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    deaths = sum((
+        len(x['fallecidos'])
+        for x in days
+        if 'fallecidos' in x
+    ))
+    new_deaths = len(days[-1]['fallecidos']) \
+        if 'fallecidos' in days[-1] else 0
+    last15days = 0
+    for i in range(len(days) - 1, max(len(days) - 16, -1), -1):
+        temp = len(days[i]['fallecidos']) \
+            if 'fallecidos' in days[i] else 0
+        last15days += temp
+    last15days = last15days * 10**5 / CUBA_POPULATION
+    days_since_last_deceased = 0
+    for i in range(len(days) - 1, -1, -1):
+        if 'fallecidos' in days[i] and len(days[i]['fallecidos']) != 0:
+            break
+        days_since_last_deceased += 1
+    result = [
+        {
+            'name': 'Fallecidos',
+            'value': deaths,
+        },
+        {
+            'name': 'Fallecidos Nuevos',
+            'value': new_deaths,
+        },
+        {
+            'name': 'Tasa (por 100 mil) Últimos 15 Días',
+            'value': last15days,
+        },
+        {
+            'name': 'Días Desde El Último Fallecido',
+            'value': days_since_last_deceased,
+        },
+    ]
+    return result
+
 
 def deceases_map_data(data):
     return map_data(data, json_file='data_deaths', case_type='fallecidos')

@@ -722,8 +722,8 @@ def percent_of_symptomatics_and_asymptomatics(data):
     for day in days:
         if 'diagnosticados' in day:
             total += len(day['diagnosticados'])
-            symptomatics += day['asintomaticos_numero']
-            asymptomatics += len(day['diagnosticados']) - \
+            asymptomatics += day['asintomaticos_numero']
+            symptomatics += len(day['diagnosticados']) - \
                 day['asintomaticos_numero']
     symptomatics_percent = (symptomatics * 100) / total
     asymptomatics_percent = 100 - symptomatics_percent

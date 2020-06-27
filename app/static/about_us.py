@@ -1,4 +1,4 @@
-collaborators = [
+team_members = [
     {
       'name':'Jorge Alberto Reyes Carballeira',
       'description':'Ing. en Telecomunicaciones y Electrónica, graduado de la CUJAE. '
@@ -169,7 +169,7 @@ replicas = [
     # },
   ]
 
-promotors = [
+promoters = [
     {
       'name': 'MatCom',
       'url': 'http://www.matcom.uh.cu',
@@ -184,7 +184,7 @@ promotors = [
     },
   ]
 
-collabProjects = [
+collaborators = [
     {
       'name': 'CUSOBU',
       'url': 'https://www.cusobu.nat.cu',
@@ -217,9 +217,9 @@ thanks += 'Covid-19, en especial a los que arriesgan su vida luchando en '
 thanks += 'primera línea.'
 
 about_us = {
-  'collaborators': collaborators,
+  'team_members': team_members,
   'replicas': replicas,
-  'promotors': promotors,
-  'collabProjects': collabProjects,
+  'promoters': promoters,
+  'collaborators': collaborators,
   'thanks': thanks,
 }

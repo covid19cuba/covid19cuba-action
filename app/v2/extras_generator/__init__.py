@@ -1,5 +1,6 @@
 from hashlib import sha1
 from ...static.about_us import about_us as data_about_us
+from ...static.downloads import downloads as data_downloads
 from ...static.changelog import changelog as data_changelog
 from ...static.faqs import faqs as data_faqs
 from ...static.tips import tips as data_tips
@@ -9,10 +10,11 @@ from .bulletins_generator import bulletins
 
 def generate(debug=False):
     build_about_us(debug)
+    build_bulletins(debug)
     build_changelog(debug)
+    build_downloads(debug)
     build_faqs(debug)
     build_tips(debug)
-    build_bulletins(debug)
 
 
 def build_about_us(debug):
@@ -39,6 +41,26 @@ def about_us_state(data):
     return result
 
 
+def build_bulletins(debug):
+    dump_util('api/v2', bulletins, debug=debug)
+    build_bulletins_state(debug)
+
+
+def build_bulletins_state(debug):
+    dump_util('api/v2', bulletins_state, debug=debug)
+
+
+def bulletins_state(data):
+    result = {
+        'cache': None,
+    }
+    with open('api/v2/bulletins.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['cache'] = cache.hexdigest()
+    return result
+
+
 def build_changelog(debug):
     dump_util('api/v2', changelog, debug=debug)
     build_changelog_state(debug)
@@ -57,6 +79,30 @@ def changelog_state(data):
         'cache': None,
     }
     with open('api/v2/changelog.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['cache'] = cache.hexdigest()
+    return result
+
+
+def build_downloads(debug):
+    dump_util('api/v2', downloads, debug=debug)
+    build_downloads_state(debug)
+
+
+def downloads(_):
+    return data_downloads
+
+
+def build_downloads_state(debug):
+    dump_util('api/v2', downloads_state, debug=debug)
+
+
+def downloads_state(data):
+    result = {
+        'cache': None,
+    }
+    with open('api/v2/downloads.json', encoding='utf-8') as file:
         text = file.read()
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()
@@ -105,26 +151,6 @@ def tips_state(data):
         'cache': None,
     }
     with open('api/v2/tips.json', encoding='utf-8') as file:
-        text = file.read()
-        cache = sha1(text.encode())
-        result['cache'] = cache.hexdigest()
-    return result
-
-
-def build_bulletins(debug):
-    dump_util('api/v2', bulletins, debug=debug)
-    build_bulletins_state(debug)
-
-
-def build_bulletins_state(debug):
-    dump_util('api/v2', bulletins_state, debug=debug)
-
-
-def bulletins_state(data):
-    result = {
-        'cache': None,
-    }
-    with open('api/v2/bulletins.json', encoding='utf-8') as file:
         text = file.read()
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()

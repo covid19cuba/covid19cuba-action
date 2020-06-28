@@ -47,4 +47,6 @@ def generate(debug=False):
             indication['scenarios'].sort(key=lambda x: x['order'], reverse=True)
             item['indications'].append(indication)
         result.append(item)
-    return result
+    return {
+        'protocols': result,
+    }

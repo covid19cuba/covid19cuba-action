@@ -14,6 +14,9 @@ data_world = get(data_world_url)
 data_oxford_url = 'https://covid19cubadata.github.io/data/oxford-indexes.json'
 data_oxford = get(data_oxford_url)
 
+data_protocols_url = 'https://covid19cubadata.github.io/data/protocols.json'
+data_protocols = get(data_protocols_url)
+
 makedirs('data', exist_ok=True)
 
 with open('data/covid19-cuba.json', mode='w', encoding='utf-8') as file:
@@ -27,3 +30,6 @@ with open('data/paises-info-dias.json', mode='w', encoding='utf-8') as file:
 
 with open('data/oxford-indexes.json', mode='w', encoding='utf-8') as file:
     file.write(data_oxford.text)
+
+with open('data/protocols.json', mode='w', encoding='utf-8') as file:
+    file.write(data_protocols.text)

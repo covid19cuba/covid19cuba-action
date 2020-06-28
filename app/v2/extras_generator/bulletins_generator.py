@@ -3,7 +3,7 @@ from requests import get
 from urllib import request
 
 
-def bulletins(debug = False, base_url = 'https://covid19cubadata.github.io/'):
+def generate(debug = False, base_url = 'https://covid19cubadata.github.io/'):
     result = []
     source = get(f'{base_url}boletines').text
     soup = BeautifulSoup(source, 'html.parser')

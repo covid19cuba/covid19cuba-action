@@ -36,7 +36,7 @@ def generate(debug=False):
                     'id': indication_scenario_key,
                     'name': indication_scenario_value['nombre'],
                     'shortname': indication_scenario_value['nombre-corto'],
-                    'categoria': indication_scenario_value['categoria'],
+                    'category': indication_scenario_value['categoria'],
                     'abbreviation': indication_scenario_value['abreviatura'],
                     'order': indication_scenario_value['orden'],
                     'update': item['version'] > 1 and \

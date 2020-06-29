@@ -42,6 +42,7 @@ def generate(debug=False):
                     'update': item['version'] > 1 and \
                         (indication['update'] or indication_scenario_key not in \
                             data['protocolos'][str(item['version'] - 1)]['indicaciones']['general'][indication_key]['escenarios']),
+                    'details': indication_scenarios[indication_scenario_key],
                 }
                 indication['scenarios'].append(scenario)
             indication['scenarios'].sort(key=lambda x: x['order'], reverse=True)

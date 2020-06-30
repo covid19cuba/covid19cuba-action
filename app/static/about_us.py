@@ -215,6 +215,9 @@ thanks = 'El equipo de desarrollo de Covid19 Cuba Data agradece a todos '
 thanks += 'los que de una forma u otra ayudan a combatir la pandemia de la '
 thanks += 'Covid-19, en especial a los que arriesgan su vida luchando en '
 thanks += 'primera línea.'
+thanks += '\n\n'
+thanks += ''
+thanks += 'Descanse en paz Maikel Llamaret Heredia'
 
 about_us = {
   'team_members': team_members,

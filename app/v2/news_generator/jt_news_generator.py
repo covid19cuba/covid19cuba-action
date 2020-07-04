@@ -25,6 +25,7 @@ def generate(debug=False):
             'updated': entry['updated_parsed'][:-3],
             'summary': summary,
             'abstract': abstract,
+            'abstract_str': str(abstract),
             'source': 'Juventud Técnica',
         })
     result = {

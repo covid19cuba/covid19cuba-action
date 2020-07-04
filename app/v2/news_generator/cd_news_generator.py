@@ -50,6 +50,7 @@ def get_info(article):
         'updated': published,
         'summary': str(summary),
         'abstract': str(abstract),
+        'abstract_str': str(abstract),
         'source': 'Cubadebate',
     }
 

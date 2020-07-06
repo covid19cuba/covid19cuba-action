@@ -66,6 +66,7 @@ def generate(debug=False):
             'updated': updated,
             'summary': summary,
             'abstract': abstract,
+            'abstract_str': str(abstract),
             'source': 'Presidencia Cuba',
         })
     result = {

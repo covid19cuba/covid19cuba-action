@@ -106,6 +106,7 @@ def generate(debug=False):
             'updated': clean_date(updated),
             'summary': remove_junk(summary),
             'abstract': remove_junk(abstract),
+            'abstract_str': remove_junk(abstract),
             'source': 'Agencia Cubana de Noticias',
         })
     result = {

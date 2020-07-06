@@ -11,7 +11,7 @@ def generate(debug=False):
     for protocol in protocols:
         item = {
             'id': protocol['id'],
-            'link': protocol['file'],
+            'link': f'https://covid19cubadata.github.io/protocolos/{protocol["file"]}',
             'name': protocol['nombre'],
             'date': protocol['fecha'],
             'version': protocol['version'],

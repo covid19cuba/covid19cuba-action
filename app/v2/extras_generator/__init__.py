@@ -97,7 +97,17 @@ def build_downloads(debug):
 
 
 def downloads(_):
-    return data_downloads
+    result = data_downloads
+    protocols = generate_protocols()
+    downloads_protocols = []
+    for protocol in protocols['protocols']:
+        downloads_protocols.append({
+            'name': f'{protocol["name"]}. Versión {protocol["version"]}',
+            'link': protocol['link'],
+            'format': 'PDF',
+        })
+    result['downloads'] += downloads_protocols
+    return result
 
 
 def build_downloads_state(debug):

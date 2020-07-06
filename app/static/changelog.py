@@ -249,7 +249,7 @@ changelog = {
         },
         {
             'version': '1.0.0',
-            'date': '2020/07/1',
+            'date': '2020/07/01',
             'changed': [
                 'Reducción del tamaño de la aplicación a la mitad del tamaño de la versión anterior.',
             ],

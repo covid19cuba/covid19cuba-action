@@ -261,6 +261,7 @@ changelog = {
                 'Más fuentes de noticias como Juventud Técnica, la Agencia Cubana de Noticias, Cubadebate, entre otras.',
                 'Fráfica de radar de comparación de varios parámetros de Cuba con otros países en la sección de Mundo.',
                 'Sección de boletines del Centro de Estudios Demográficos (CEDEM) de la Universidad de La Habana enfocados en la temática de la COVID-19.',
+                'Sección con las medidas de cada fase de la etapa de recuperación post Covid-19, así como la fase en la que se encuentran las provincias.'
                 'Sección de descargas con las bases de datos utilizadas en diferentes formatos.',
                 'Sección con los protocolos de actuación, con alcance nacional, que contribuyen a la prevención, control y manejo de los casos relacionados con la enfermedad de la Covid-19.',
                 'Registro manual de las personas con que tuvo contacto (además de la fecha y el lugar) para mejorar y ayudar la labor de las autoridades satinarías en la lucha contra la pandemia.',

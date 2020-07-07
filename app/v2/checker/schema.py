@@ -5,8 +5,15 @@ schema = {
             'type': 'integer',
             'minimum': 1
         },
-        'note-text': {
-            'type': 'string'
+        'note': {
+            'anyOf': [
+                {
+                    'type': 'string',
+                },
+                {
+                    'type': 'null'
+                }
+            ]
         },
         'centros_aislamiento': {
             'type': 'object',

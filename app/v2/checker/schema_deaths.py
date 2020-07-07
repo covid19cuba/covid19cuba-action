@@ -5,8 +5,15 @@ schema_deaths = {
             'type': 'integer',
             'minimum': 1
         },
-        'note-text': {
-            'type': 'string'
+        'note': {
+            'anyOf': [
+                {
+                    'type': 'string',
+                },
+                {
+                    'type': 'null'
+                }
+            ]
         },
         'enfermedades': {
             'type': 'object',

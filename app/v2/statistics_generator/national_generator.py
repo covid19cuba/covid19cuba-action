@@ -186,7 +186,7 @@ def resume(data):
 
 
 def note(data):
-    return data['data_cuba']['note-text'] if 'note-text' in data['data_cuba'] else ''
+    return data['data_cuba']['note'] if 'note' in data['data_cuba'] else ''
 
 
 def map_data(data):

@@ -3,6 +3,7 @@ from ...static.about_us import about_us as data_about_us
 from ...static.downloads import downloads as data_downloads
 from ...static.changelog import changelog as data_changelog
 from ...static.faqs import faqs as data_faqs
+from ...static.phases import phases as data_phases
 from ...static.tips import tips as data_tips
 from ...utils import dump_util
 from .bulletins_generator import generate as generate_bulletins
@@ -15,6 +16,7 @@ def generate(debug=False):
     build_changelog(debug)
     build_downloads(debug)
     build_faqs(debug)
+    build_phases(debug)
     build_protocols(debug)
     build_tips(debug)
 
@@ -143,6 +145,30 @@ def faqs_state(data):
         'cache': None,
     }
     with open('api/v2/faqs.json', encoding='utf-8') as file:
+        text = file.read()
+        cache = sha1(text.encode())
+        result['cache'] = cache.hexdigest()
+    return result
+
+
+def build_phases(debug):
+    dump_util('api/v2', phases, debug=debug)
+    build_phases_state(debug)
+
+
+def phases(_):
+    return data_phases
+
+
+def build_phases_state(debug):
+    dump_util('api/v2', phases_state, debug=debug)
+
+
+def phases_state(data):
+    result = {
+        'cache': None,
+    }
+    with open('api/v2/phases.json', encoding='utf-8') as file:
         text = file.read()
         cache = sha1(text.encode())
         result['cache'] = cache.hexdigest()

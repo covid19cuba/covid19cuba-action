@@ -238,6 +238,7 @@ def check_municipality_province_codes_match(i, value, day, option_deaths=False):
     match = True
     if municipality_code:
         if province_code != municipality_code.split('.')[0] and \
+            municipality_code != '00.00' and \
             (municipality_code and province_code != '40.01'):
             match = False
     elif province_codes == '40.01':

@@ -2003,7 +2003,8 @@ phases = {
         }
     },
     'intro_explanation': 'Los índices sanitarios son los que marcan en Cuba el paso de los municipios y las provincias a cada fase de la recuperación. ¿Cuáles son los indicadores que se deben cumplir en cada etapa?',
-    'button_explanation': 'Índices sanitarios',
+    'title_explanation': 'Índices sanitarios',
+    'button_explanation': 'Ver indicadores',
     'content_explanation': '''Los índices sanitarios son los que marcan en Cuba el paso de los municipios y las provincias a cada fase de la recuperación. ¿Cuáles son los indicadores que se deben cumplir en cada etapa?
 
 **Los cinco indicadores sanitarios para la transición a la primera etapa de la recuperación son los siguientes:**

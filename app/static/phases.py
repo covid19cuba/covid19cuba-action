@@ -2001,5 +2001,84 @@ phases = {
             'category': 'actividadesverano',
             'phases': [3]
         }
-    }
+    },
+    'intro_explanation': 'Los índices sanitarios son los que marcan en Cuba el paso de los municipios y las provincias a cada fase de la recuperación. ¿Cuáles son los indicadores que se deben cumplir en cada etapa?',
+    'button_explanation': 'Índices sanitarios',
+    'content_explanation': '''Los índices sanitarios son los que marcan en Cuba el paso de los municipios y las provincias a cada fase de la recuperación. ¿Cuáles son los indicadores que se deben cumplir en cada etapa?
+
+**Los cinco indicadores sanitarios para la transición a la primera etapa de la recuperación son los siguientes:**
+
+1. Tasa de incidencia
+3. Índice reproductivo
+4. Casos activos
+5. Número de casos positivos con fuente de infección conocida en los últimos 15 días
+5. Eventos de transmisión local
+
+**¿Qué significan esos indicadores? ¿Qué límites deben cumplirse de esos indicadores en cada fase?**
+
+* **Tasa de Incidencia**
+
+Es el número de casos nuevos, dividido por el número de la población expuesta o en riesgo de contraer la enfermedad, en un lugar y un período específico.
+
+Como medidor de este indicador para cada fase se establece que  la provincia tenga un comportamiento hacia la disminución comparando la quincena actual contra la anterior, lo que se ha venido cumpliendo en el país de manera general.
+
+Cuba al cierre del martes tenía una tasa de incidencia de 0.69, marcadamente inferior a la de la quincena anterior que era de 1.46
+
+La Habana por su parte mostraba una tasa de 3.37, notoriamente inferior al 7.21 de la quincena anterior.
+
+* **Índice reproductivo**
+
+Se trata del número promedio de casos nuevos de la enfermedad causados por un individuo infectado, en el transcurso del período infeccioso o de contagio.
+
+Este parámetro proporciona una medida de la velocidad y severidad de la propagación de un patógeno; existe menos probabilidad de propagación cuando está por debajo de uno.
+
+Los medidores para este indicador son:
+
+> Ro: número reproductivo básico.
+
+Fase 1: Ro hasta 1
+
+Fase 2: Ro por debajo de 1
+
+Fase 3: Ro por debajo de 0.95
+
+Es un indicador de seguridad. Cuba estaba el viernes en 0.28 y La Habana  en 0.16
+
+* **Casos Activos**
+
+Son aquellos pacientes diagnosticados con COVID-19 que se mantienen ingresados. Se mide por el por ciento de activos contra confirmados.
+
+Fase 1: 5% o menos
+
+Fase 2: 3% o menos
+
+Fase 3: 1% o menos
+
+En general, el país cumple la fase uno, incluyendo La Habana. Casi todas las provincias ya tienen las condiciones para pasar a la fase dos por este indicador.
+
+Cuba tiene al cierre del martes sólo 42 casos activos.
+
+* **Casos positivos con fuente de infección conocida en los últimos 15 días**
+
+Es el porciento de casos confirmados en los que se identifica una fuente de infección, por contacto con casos confirmados o estadía en países con transmisión de la enfermedad. Permite identificar la calidad del estudio epidemiológico realizado y la transmisión de la enfermedad.
+
+En Cuba, en el 95.4% de casos se conoce la fuente de infección, según el cierre del martes.
+
+Fase 1: 90%
+
+Fase 2: 95%
+
+Fase 3: 98%
+
+* **Eventos de transmisión local**
+
+En la Mesa Redonda del pasado viernes el ministro de Salud Pública dijo que en ese momento existían dos que deben cerrar próximamente, “pero ello no limita a que puedan aparecer otros”.
+
+Portal Miranda recordó que Cuba no llegó a la fase epidémica, sino que se quedó en la de transmisión local autóctona.
+
+“Se puede tener transmisión local sin que por ello exista un retroceso como país, pues se puede trabajar en los focos que puedan estar presentes en un territorio determinado, un consejo popular, una cuadra o en un centro laboral”, explicó.
+
+En este sentido añadió que siempre se tendrán en cuenta elementos cualitativos sobre la dispersión de los casos y el control.
+
+**Fuente:** Ministro de Salud Pública''',
 }

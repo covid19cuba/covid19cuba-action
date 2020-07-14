@@ -1,6 +1,7 @@
 from json import dump
 from feedparser import parse
 from hashlib import sha1
+from bs4 import BeautifulSoup
 from ...utils import dump_util
 
 URL_JT_MEDIUM_FEED = 'https://medium.com/feed/juventud-t%C3%A9cnica/tagged/covid19'
@@ -25,7 +26,7 @@ def generate(debug=False):
             'updated': entry['updated_parsed'][:-3],
             'summary': summary,
             'abstract': abstract,
-            'abstract_str': str(abstract),
+            'abstract_str': BeautifulSoup(abstract, 'html.parser').text,
             'source': 'Juventud Técnica',
         })
     result = {

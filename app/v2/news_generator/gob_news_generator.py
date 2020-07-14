@@ -66,7 +66,7 @@ def generate(debug=False):
             'updated': updated,
             'summary': summary,
             'abstract': abstract,
-            'abstract_str': str(abstract),
+            'abstract_str': BeautifulSoup(abstract, 'html.parser').text,
             'source': 'Presidencia Cuba',
         })
     result = {

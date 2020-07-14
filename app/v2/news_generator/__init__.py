@@ -10,11 +10,11 @@ from ...utils import dump_util
 
 def generate(debug=False):
     news = []
-    try:
-        acn_news = generate_acn_news(debug)
-        news += acn_news
-    except Exception as e:
-        print(e)
+    # try:
+    #     acn_news = generate_acn_news(debug)
+    #     news += acn_news
+    # except Exception as e:
+    #     print(e)
     try:
         cd_news = generate_cd_news(debug)
         news += cd_news

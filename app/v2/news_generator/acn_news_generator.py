@@ -22,53 +22,6 @@ def extract_href(element):
     element = element[:element.find('">')]
     return element
 
-
-def remove_junk(string):
-    new_str = ''
-    flag = False
-    if string == None:
-        return string
-    for i in string:
-        if i == '<':
-            flag = True
-        if not flag:
-            new_str = new_str + i
-        if i == '>':
-            flag = False
-    new_str = new_str.split('\t')
-    string = ''
-    for i in new_str:
-        string = string + i
-    new_str = string.split('\n')
-    string = ''
-    for i in new_str:
-        string = string + i
-    new_str = string.split('\t')
-    string = ''
-    for i in new_str:
-        string = string + i
-    return string
-
-
-def get_datetime(arg):
-    return datetime.strptime(arg, '%Y-%m-%dT%H:%M:%S-04:00')
-
-
-def clean_date(string):
-    if string == None:
-        return string
-    string = string[string.find('content="') + len('content="'):]
-    _datetime = get_datetime(string[:string.find('"')])
-    return [
-        _datetime.year,
-        _datetime.month,
-        _datetime.day,
-        _datetime.hour,
-        _datetime.minute,
-        _datetime.second
-    ]
-
-
 def verify_none(element):
     if element == 'None':
         return None
@@ -100,13 +53,13 @@ def generate(debug=False):
         news.append({
             'id': link,
             'link': link,
-            'title': remove_junk(title),
-            'author': remove_junk(author),
-            'published': clean_date(created),
-            'updated': clean_date(updated),
-            'summary': remove_junk(summary),
-            'abstract': remove_junk(abstract),
-            'abstract_str': remove_junk(abstract),
+            'title': title,
+            'author': author,
+            'published': created,
+            'updated': updated,
+            'summary': summary,
+            'abstract': abstract,
+            'abstract_str': abstract,
             'source': 'Agencia Cubana de Noticias',
         })
     result = {

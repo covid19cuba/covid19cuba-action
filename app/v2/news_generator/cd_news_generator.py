@@ -50,7 +50,7 @@ def get_info(article):
         'updated': published,
         'summary': str(summary),
         'abstract': str(abstract),
-        'abstract_str': str(abstract),
+        'abstract_str': BeautifulSoup(abstract, 'html.parser').text,
         'source': 'Cubadebate',
     }
 

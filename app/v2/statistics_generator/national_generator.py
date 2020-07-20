@@ -37,6 +37,8 @@ def generate(debug=False):
         evolution_of_symptomatics_and_asymptomatics_by_days,
         percent_evolution_of_symptomatics_and_asymptomatics_by_days,
         percent_evolution_of_symptomatics_and_asymptomatics_accumulated,
+        people_under_surveillance_evolution,
+        hospitalized_people_evolution,
         critics_serious_evolution,
         percent_critics_serious_to_actives,
         effective_reproductive_number,
@@ -840,6 +842,63 @@ def percent_evolution_of_symptomatics_and_asymptomatics_accumulated(data):
         'date': {
             'name': 'Fecha',
             'values': date_list,
+        },
+    }
+
+
+def people_under_surveillance_evolution(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    date = [day['fecha'] for day in days]
+    hospitalized = [day['sujetos_riesgo']
+               if 'sujetos_riesgo' in day else 0 for day in days]
+    home_surveillance = [day['vigilancia_hogar']
+               if 'vigilancia_hogar' in day else 0 for day in days]
+    return {
+        'date': {
+            'name': 'Fecha',
+            'values': date,
+        },
+        'hospitalized': {
+            'name': 'Hospitalizados',
+            'values': hospitalized,
+        },
+        'home_surveillance': {
+            'name': 'Vigilancia en el hogar',
+            'values': home_surveillance,
+        },
+    }
+
+
+def hospitalized_people_evolution(data):
+    days = list(data['data_cuba']['casos']['dias'].values())
+    days.sort(key=lambda x: x['fecha'])
+    date = [day['fecha'] for day in days]
+    unconfirmed = [day['sujetos_riesgo']
+               if 'sujetos_riesgo' in day else 0 for day in days]
+    confirmed = []
+    total = 0
+    deaths = 0
+    recover = 0
+    evacuees = 0
+    for x in days:
+        total += len(x['diagnosticados']) if 'diagnosticados' in x else 0
+        deaths += x['muertes_numero'] if 'muertes_numero' in x else 0
+        recover += x['recuperados_numero'] if 'recuperados_numero' in x else 0
+        evacuees += x['evacuados_numero'] if 'evacuados_numero' in x else 0
+        confirmed.append(total - deaths - recover - evacuees)
+    return {
+        'date': {
+            'name': 'Fecha',
+            'values': date,
+        },
+        'unconfirmed': {
+            'name': 'Hospitalizados no confirmados',
+            'values': unconfirmed,
+        },
+        'confirmed': {
+            'name': 'Hospitalizados confirmados',
+            'values': confirmed,
         },
     }
 

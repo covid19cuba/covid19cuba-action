@@ -891,7 +891,7 @@ def percent_critics_serious_to_actives(data):
     result = [x[0] * 100 / x[1] for x in zip(critics_serious, actives)]
     return {
         'percents': {
-            'name': 'Por ciento de casos graves y críticos',
+            'name': 'Por ciento de casos\ngraves y críticos',
             'values': result,
         },
         'date': {

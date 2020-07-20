@@ -260,7 +260,7 @@ changelog = {
                 'Gráficas de la evolución de las personas en vigilancia en la sección de gráficas General de Cuba.',
                 'Gráficas de la evolución de las personas hospitalizadas en la sección de gráficas General de Cuba.',
                 'Sección de gráficos de casos Fallecidos en Cuba.',
-                'Más fuentes de noticias como Juventud Técnica, la Agencia Cubana de Noticias, Cubadebate, entre otras.',
+                'Más fuentes de noticias como Juventud Técnica, Presidencia Cuba, Cubadebate, entre otras.',
                 'Gráfica de radar de comparación de varios parámetros de Cuba con otros países en la sección de Mundo.',
                 'Sección de boletines del Centro de Estudios Demográficos (CEDEM) de la Universidad de La Habana enfocados en la temática de la COVID-19.',
                 'Sección con las medidas de cada fase de la etapa de recuperación post Covid-19, así como la fase en la que se encuentran las provincias.'

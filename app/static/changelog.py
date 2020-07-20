@@ -257,6 +257,8 @@ changelog = {
                 'Nuevas imágenes y descripciones al carrusel inicial de bienvenida.',
                 'Separación de hombres y mujeres en la gráfica de Distribución por rangos etarios en la sección de gráficas General de Cuba.',
                 'Gráficas de casos sintomáticos/asintomáticos en la sección de gráficas General de Cuba.',
+                'Gráficas de la evolución de las personas en vigilancia en la sección de gráficas General de Cuba.',
+                'Gráficas de la evolución de las personas hospitalizadas en la sección de gráficas General de Cuba.',
                 'Sección de gráficos de casos Fallecidos en Cuba.',
                 'Más fuentes de noticias como Juventud Técnica, la Agencia Cubana de Noticias, Cubadebate, entre otras.',
                 'Fráfica de radar de comparación de varios parámetros de Cuba con otros países en la sección de Mundo.',

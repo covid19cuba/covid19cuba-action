@@ -4,7 +4,6 @@ from hashlib import sha1
 from os import path
 from requests import get
 from bs4 import BeautifulSoup
-from feedparser import parse
 from ...utils import dump_util
 
 URL_ACN = 'http://www.acn.cu/busqueda?searchword=covid&ordering=newest&searchphrase=all&limit=0&areas[0]=categories&areas[1]=content&areas[2]=tags'
@@ -14,6 +13,51 @@ headers = {
 payload = {
     'query': 'test'
 }
+
+def remove_html_tags(string):
+    new_str = ''
+    flag = False
+    if string == None:
+        return string
+    for i in string:
+        if i == '<':
+            flag = True
+        if not flag:
+            new_str = new_str + i
+        if i == '>':
+            flag = False
+    new_str = new_str.split('\t')
+    string = ''
+    for i in new_str:
+        string = string + i
+    new_str = string.split('\n')
+    string = ''
+    for i in new_str:
+        string = string + i
+    new_str = string.split('\t')
+    string = ''
+    for i in new_str:
+        string = string + i
+    return string
+
+
+def get_datetime(arg):
+    return datetime.strptime(arg, '%Y-%m-%dT%H:%M:%S-04:00')
+
+
+def clean_date(string):
+    if string == None:
+        return string
+    string = string[string.find('content="') + len('content="'):]
+    _datetime = get_datetime(string[:string.find('"')])
+    return [
+        _datetime.year,
+        _datetime.month,
+        _datetime.day,
+        _datetime.hour,
+        _datetime.minute,
+        _datetime.second
+    ]
 
 
 def extract_href(element):
@@ -41,26 +85,27 @@ def generate(debug=False):
             break
         link ='http://www.acn.cu'+item
         r = get(link,data = payload ,headers = headers)
-        soup = BeautifulSoup(r.text,'lxml')
-        author = verify_none(str(soup.find('dd', {'class':'createdby hasTooltip'})))
+        soup = BeautifulSoup(r.text,'html.parser')
+        author =verify_none( str(soup.find('dd', {'class':'createdby hasTooltip'})))
         created = verify_none(str(soup.find('meta', {'itemprop':'datePublished'})))
         updated = verify_none(str(soup.find('meta', {'itemprop':'dateModified'})))
-        title = verify_none(str(soup.find('h1', {'class':'article-title'})))
-        abstract = verify_none(str(abstracts[i]))
-        summary = verify_none(str(soup.find('section', {'class':'article-content'})))
-        if None in [author, created, updated, title, abstract, summary]:
+        
+        title = str(soup.find('h1', {'class':'article-title'}))
+        abstract = str(abstracts[i])
+        summary = str(soup.find('section', {'class':'article-content'}))
+        
+        if title == 'None' or abstract == 'None' or summary == 'None': #verify required non None fields on the news
             continue
+        
         news.append({
             'id': link,
             'link': link,
-            'title': title,
-            'author': author,
-            'published': created,
-            'updated': updated,
+            'title': remove_html_tags(title),
+            'author': remove_html_tags(author),
+            'published': clean_date(created),
+            'updated': clean_date(updated),
             'summary': summary,
-            'abstract': abstract,
-            'abstract_str': abstract,
-            'source': 'Agencia Cubana de Noticias',
+            'abstract':abstract,
         })
     result = {
         'news': news,

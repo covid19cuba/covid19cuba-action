@@ -247,5 +247,36 @@ changelog = {
 
             ],
         },
+        {
+            'version': '1.0.0',
+            'date': '2020/07/01',
+            'changed': [
+                'Reducción del tamaño de la aplicación a la mitad del tamaño de la versión anterior.',
+            ],
+            'added': [
+                'Nuevas imágenes y descripciones al carrusel inicial de bienvenida.',
+                'Separación de hombres y mujeres en la gráfica de Distribución por rangos etarios en la sección de gráficas General de Cuba.',
+                'Gráficas de casos sintomáticos/asintomáticos en la sección de gráficas General de Cuba.',
+                'Gráficas de la evolución de las personas en vigilancia en la sección de gráficas General de Cuba.',
+                'Gráficas de la evolución de las personas hospitalizadas en la sección de gráficas General de Cuba.',
+                'Sección de gráficos de casos Fallecidos en Cuba.',
+                'Más fuentes de noticias como Juventud Técnica, Presidencia Cuba, Cubadebate, entre otras.',
+                'Gráfica de radar de comparación de varios parámetros de Cuba con otros países en la sección de Mundo.',
+                'Sección de boletines del Centro de Estudios Demográficos (CEDEM) de la Universidad de La Habana enfocados en la temática de la COVID-19.',
+                'Sección con las medidas de cada fase de la etapa de recuperación post Covid-19, así como la fase en la que se encuentran las provincias.'
+                'Sección de descargas con las bases de datos utilizadas en diferentes formatos.',
+                'Sección con los protocolos de actuación, con alcance nacional, que contribuyen a la prevención, control y manejo de los casos relacionados con la enfermedad de la Covid-19.',
+                'Registro manual de las personas con que tuvo contacto (además de la fecha y el lugar) para mejorar y ayudar la labor de las autoridades satinarías en la lucha contra la pandemia.',
+                'Sección de Atención a la Población con los números telefónicos de cada provincia para la Covid-19.',
+                'Configuración de proxy para los usuarios que utilizan una red corporativa, estudiantil, etc. en la que se necesite configurar un proxy.',
+                'Configuración de las notificaciones por tipo de notificación y por horario del día.',
+            ],
+            'fixed': [
+
+            ],
+            'deleted': [
+
+            ],
+        },
     ]
 }

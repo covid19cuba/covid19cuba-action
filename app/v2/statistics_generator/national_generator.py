@@ -611,10 +611,11 @@ def relation_of_tests_performed(data):
     positive = 0
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
-    for day in (x for x in days if 'diagnosticados' in x):
-        positive += len(day['diagnosticados'])
-        if 'tests_total' in day:
-            total = max(total, day['tests_total'])
+    for day in (x for x in days):
+        if 'diagnosticados' in day:
+            positive += len(day['diagnosticados'])
+        if 'test_total' in day:
+            total = max(total, day['diagnosticados'])
     return {
         'positive': {
             'name': 'Tests Positivos',
@@ -642,16 +643,18 @@ def tests_by_days(data):
     total = 0
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
-    for day in (x for x in days if 'diagnosticados' in x):
-        total += len(day['diagnosticados'])
+    for day in (x for x in days):
+        if 'diagnosticados' in day:
+            total += len(day['diagnosticados'])
         if 'tests_total' in day:
             prev_test_cases = day['tests_total']
             test_negative = day['tests_total'] - total
             prev_test_negative = test_negative
             prev_test_positive = total
             break
-    for day in (x for x in days if 'diagnosticados' in x):
-        total += len(day['diagnosticados'])
+    for day in (x for x in days):
+        if 'diagnosticados' in day:
+            total += len(day['diagnosticados'])
         if 'tests_total' in day:
             ntest_days.append(day['fecha'])
             ntest_cases.append(day['tests_total'] - prev_test_cases)
@@ -692,8 +695,9 @@ def percent_positive_tests(data):
     positive = 0
     days = list(data['data_cuba']['casos']['dias'].values())
     days.sort(key=lambda x: x['fecha'])
-    for day in (x for x in days if 'diagnosticados' in x):
-        positive += len(day['diagnosticados'])
+    for day in (x for x in days):
+        if 'diagnosticados' in day:
+            positive += len(day['diagnosticados'])
         if 'tests_total' in day:
             total = max(total, day['tests_total'])
             accum_positive.append(positive)

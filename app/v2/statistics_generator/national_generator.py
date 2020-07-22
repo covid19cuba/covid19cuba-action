@@ -614,8 +614,8 @@ def relation_of_tests_performed(data):
     for day in (x for x in days):
         if 'diagnosticados' in day:
             positive += len(day['diagnosticados'])
-        if 'test_total' in day:
-            total = max(total, day['diagnosticados'])
+        if 'tests_total' in day:
+            total = max(total, day['tests_total'])
     return {
         'positive': {
             'name': 'Tests Positivos',

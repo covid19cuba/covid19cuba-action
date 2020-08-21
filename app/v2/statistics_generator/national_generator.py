@@ -1050,6 +1050,8 @@ def affected_provinces(data):
     result_list = list(counter.values())
     result_list.sort(key=lambda x: x['value'], reverse=True)
     for item in result_list:
+        if item['code'] == '00':
+            continue
         item['total'] = total
         item['population'] = provinces_population[item['code']]
         del item['code']

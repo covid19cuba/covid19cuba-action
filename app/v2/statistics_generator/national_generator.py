@@ -728,9 +728,11 @@ def percent_of_symptomatics_and_asymptomatics(data):
     for day in days:
         if 'diagnosticados' in day:
             total += len(day['diagnosticados'])
-            asymptomatics += day['asintomaticos_numero']
+            asymptomatics += day['asintomaticos_numero'] \
+                if day['asintomaticos_numero'] else 0
             symptomatics += len(day['diagnosticados']) - \
-                day['asintomaticos_numero']
+                (day['asintomaticos_numero'] \
+                    if day['asintomaticos_numero'] else 0)
     symptomatics_percent = (symptomatics * 100) / total
     asymptomatics_percent = 100 - symptomatics_percent
     return {
@@ -754,7 +756,8 @@ def evolution_of_symptomatics_and_asymptomatics_by_days(data):
     for day in days:
         date_list.append(day['fecha'])
         if 'diagnosticados' in day:
-            asymptomatics = day['asintomaticos_numero']
+            asymptomatics = day['asintomaticos_numero'] \
+                if day['asintomaticos_numero'] else 0
             symptomatics = len(day['diagnosticados']) - asymptomatics
             asymptomatics_list.append(asymptomatics)
             symptomatics_list.append(symptomatics)
@@ -787,7 +790,8 @@ def percent_evolution_of_symptomatics_and_asymptomatics_by_days(data):
     for day in days:
         date_list.append(day['fecha'])
         if 'diagnosticados' in day:
-            asymptomatics = day['asintomaticos_numero']
+            asymptomatics = day['asintomaticos_numero'] \
+                if day['asintomaticos_numero'] else 0
             symptomatics = len(day['diagnosticados']) - asymptomatics
             total = asymptomatics + symptomatics
             asymptomatics_percent_list.append(
@@ -823,9 +827,11 @@ def percent_evolution_of_symptomatics_and_asymptomatics_accumulated(data):
     for day in days:
         date_list.append(day['fecha'])
         if 'diagnosticados' in day:
-            asymptomatics += day['asintomaticos_numero']
+            asymptomatics += day['asintomaticos_numero'] \
+                if day['asintomaticos_numero'] else 0
             symptomatics += len(day['diagnosticados']) - \
-                day['asintomaticos_numero']
+                (day['asintomaticos_numero'] \
+                if day['asintomaticos_numero'] else 0)
             total = asymptomatics + symptomatics
             asymptomatics_percent_list.append(
                 round((asymptomatics*100) / total, 2))

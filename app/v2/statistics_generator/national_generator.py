@@ -1598,6 +1598,8 @@ def deceases_affected_provinces(data):
     for deaths in (x['fallecidos'] for x in days if 'fallecidos' in x):
         for item in deaths:
             dpacode = item['dpacode_provincia_deteccion']
+            if dpacode == '00':
+                continue
             try:
                 result[dpacode]['value'] += 1
 

@@ -10,7 +10,16 @@ def generate(debug=False):
     for entry in feed.entries:
         summary = str(entry['summary'])
         print(f'Raw summary: {summary}')
-        index_summary = summary.rindex('<hr>')
+        try:
+            index_summary = summary.rindex('<hr>')
+        except ValueError:
+            try:
+                index_summary = summary.rindex('<hr/>')
+            except ValueError:
+                try:
+                    index_summary = summary.rindex('<hr />')
+                except ValueError:
+                    index_summary = len(summary)
         print(f'Index summary: {index_summary}')
         summary = summary[:index_summary]
         print(f'Summary: {summary}')

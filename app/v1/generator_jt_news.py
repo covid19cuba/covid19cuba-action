@@ -9,7 +9,6 @@ def generate(debug=False):
     news = []
     for entry in feed.entries:
         summary = str(entry['summary'])
-        print(f'Raw summary: {summary}')
         try:
             index_summary = summary.rindex('<hr>')
         except ValueError:
@@ -20,9 +19,7 @@ def generate(debug=False):
                     index_summary = summary.rindex('<hr />')
                 except ValueError:
                     index_summary = len(summary)
-        print(f'Index summary: {index_summary}')
         summary = summary[:index_summary]
-        print(f'Summary: {summary}')
         index_abstract = findnth(summary, '</p>', 2)
         print(f'Index abstract: {index_abstract}')
         abstract = summary[:index_abstract + 4]
@@ -50,5 +47,5 @@ def generate(debug=False):
 def findnth(haystack, needle, n):
     parts = haystack.split(needle, n + 1)
     if len(parts) <= n + 1:
-        return -1
+        return len(haystack)
     return len(haystack) - len(parts[-1]) - len(needle)

@@ -13,11 +13,21 @@ def run(debug=False):
     try:
         makedirs('api/v2', exist_ok=True)
         ok = check(debug)
+        print('Running extras generator v2 ...')
         generate_extras(debug)
+        print('Extras data v2 generated')
+        print('Running news generator v2 ...')
         generate_news(debug)
+        print('News data v2 generated')
+        print('Running statistics generator v2 ...')
         generate_statistics(debug)
+        print('Statistics data v2 generated')
+        print('Running full generator v2 ...')
         build_full('api/v2', debug)
+        print('Full data v2 generated')
+        print('Running state generator v2 ...')
         build_state(debug)
+        print('State data v2 generated')
         if ok:
             return True
     except Exception as e:

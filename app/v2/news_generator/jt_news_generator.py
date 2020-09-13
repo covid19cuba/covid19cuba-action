@@ -12,7 +12,16 @@ def generate(debug=False):
     news = []
     for entry in feed.entries:
         summary = str(entry['summary'])
-        index_summary = summary.rindex('<hr>')
+        try:
+            index_summary = summary.rindex('<hr>')
+        except ValueError:
+            try:
+                index_summary = summary.rindex('<hr/>')
+            except ValueError:
+                try:
+                    index_summary = summary.rindex('<hr />')
+                except ValueError:
+                    index_summary = len(summary)
         summary = summary[:index_summary]
         summary = " ".join(summary.split())
         index_abstract = findnth(summary, '</p>', 2)
@@ -57,7 +66,7 @@ def jt_news_state(data):
 
 
 def findnth(haystack, needle, n):
-    parts = haystack.split(needle, n+1)
-    if len(parts) <= n+1:
-        return -1
+    parts = haystack.split(needle, n + 1)
+    if len(parts) <= n + 1:
+        return len(parts)
     return len(haystack) - len(parts[-1]) - len(needle)

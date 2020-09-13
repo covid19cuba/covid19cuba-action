@@ -20,10 +20,9 @@ def generate(debug=False):
                 except ValueError:
                     index_summary = len(summary)
         summary = summary[:index_summary]
+        summary = " ".join(summary.split())
         index_abstract = findnth(summary, '</p>', 2)
-        print(f'Index abstract: {index_abstract}')
         abstract = summary[:index_abstract + 4]
-        print(f'Abstract: {abstract}')
         news.append({
             'id': entry['id'],
             'link': entry['link'],

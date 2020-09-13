@@ -5,16 +5,19 @@ URL_JT_MEDIUM_FEED = 'https://medium.com/feed/juventud-t%C3%A9cnica/tagged/covid
 
 
 def generate(debug=False):
-    print("Parsing feed")
     feed = parse(URL_JT_MEDIUM_FEED)
-    print("Feed parsed")
     news = []
     for entry in feed.entries:
         summary = str(entry['summary'])
+        print(f'Raw summary: {summary}')
         index_summary = summary.rindex('<hr>')
+        print(f'Index summary: {index_summary}')
         summary = summary[:index_summary]
+        print(f'Summary: {summary}')
         index_abstract = findnth(summary, '</p>', 2)
+        print(f'Index abstract: {index_abstract}')
         abstract = summary[:index_abstract + 4]
+        print(f'Abstract: {abstract}')
         news.append({
             'id': entry['id'],
             'link': entry['link'],
@@ -36,7 +39,7 @@ def generate(debug=False):
 
 
 def findnth(haystack, needle, n):
-    parts= haystack.split(needle, n+1)
+    parts = haystack.split(needle, n + 1)
     if len(parts) <= n + 1:
         return -1
     return len(haystack) - len(parts[-1]) - len(needle)

@@ -4,6 +4,7 @@ from ...static.countries import countries, countries_codes, trans_countries, cou
 from ...static.cuba_population import CUBA_POPULATION
 from ...static.moments import moments
 from ...static.provinces_population import provinces_population
+from ...static.zones import zones as data_zones
 from ...utils import dump_util
 
 
@@ -53,6 +54,7 @@ def generate(debug=False):
         world_countries,
         # Extra
         pesquisador,
+        zones,
         # Deceases section
         deceases_updated,
         deceases_resume,
@@ -1645,3 +1647,7 @@ def deceases_affected_municipalities(data):
         item['total'] = total_deaths
 
     return result_list
+
+
+def zones(_):
+    return data_zones

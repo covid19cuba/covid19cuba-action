@@ -14,9 +14,24 @@ def dump_util(path, func, **data):
     return result
 
 
-def send_msg(message, debug):
-    message = str(message)
-    if debug:
-        print(message)
-    else:
-        send(message)
+def send_msg(messages, debug):
+    group_messages = []
+    for i in range(0, len(messages) - 5, 5):
+        group_messages.append(messages[i : i + 5])
+    messages = []
+    for group in group_messages:
+        message = ''
+        for item in group:
+            message += item
+        messages.append(message)
+    for message in messages:
+        if debug:
+            print(message)
+        else:
+            send(message)
+
+
+class ExceptionGroup(Exception):
+    def __init__(self, messages, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.messages = messages

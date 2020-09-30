@@ -1,3 +1,4 @@
+from functools import reduce
 from json import dump, load, loads
 from hashlib import sha1
 from os import listdir, makedirs, path
@@ -8,7 +9,7 @@ from .generator_provinces import generate as generate_provinces
 from .generator_municipalities import generate as generate_municipalities
 from ..static.app_version import APP_VERSION_CODE
 from ..static.changelog import changelog as data_changelog
-from ..utils import dump_util, send_msg
+from ..utils import dump_util, send_msg, ExceptionGroup
 
 
 def run(debug=False):
@@ -41,8 +42,12 @@ def run(debug=False):
         print('JT news state data v1 generated')
         if ok:
             return True
+    except ExceptionGroup as e:
+        send_msg(e.messages, debug)
+        if debug:
+            raise Exception(reduce(lambda a, b: a + b, e.messages))
     except Exception as e:
-        send_msg(e, debug)
+        send_msg([str(e)], debug)
         if debug:
             raise e
     return False

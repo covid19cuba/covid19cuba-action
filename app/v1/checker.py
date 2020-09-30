@@ -4,7 +4,7 @@ from .schema import schema
 from .schema_deaths import schema_deaths
 from ..static.municipality_codes import municipality_codes
 from ..static.province_codes import province_codes
-from ..utils import send_msg
+from ..utils import send_msg, ExceptionGroup
 
 sex_ignored = {
     'cu-1392'
@@ -18,8 +18,8 @@ def check(debug=False):
     validator_deaths = Draft7Validator(schema_deaths)
     index_error = 1
     index_warning = 1
-    message_error = '\n'
-    message_warning = '\n'
+    message_errors = []
+    message_warnings = []
     for error in sorted(validator.iter_errors(data), key=str):
         location = error.path
         try:
@@ -39,11 +39,12 @@ def check(debug=False):
         except:
             pass
         end = f', {error.path}' if location != error.path else ''
-        message_error += '============================================\n'
+        message_error = '============================================\n'
         message_error += f'Error {index_error}:\n'
         message_error += f'Cause: {error.message}\n'
         message_error += f'Location: {location}{end}\n'
         message_error += '============================================\n'
+        message_errors.append(message_error)
         index_error += 1
     for error in sorted(validator_deaths.iter_errors(data_deaths), key=str):
         location = error.path
@@ -64,44 +65,49 @@ def check(debug=False):
         except:
             pass
         end = f', {error.path}' if location != error.path else ''
-        message_error += '============================================\n'
+        message_error = '============================================\n'
         message_error += f'Error {index_error}:\n'
         message_error += f'Cause: {error.message}\n'
         message_error += f'Location: {location}{end}\n'
         message_error += '============================================\n'
+        message_errors.append(message_error)
         index_error += 1
     for message, path in check_errors(data):
-        message_error += '============================================\n'
+        message_error = '============================================\n'
         message_error += f'Error {index_error}:\n'
         message_error += f'Cause: {message}\n'
         message_error += f'Location: {path}\n'
         message_error += '============================================\n'
+        message_errors.append(message_error)
         index_error += 1
     for message, path in check_deaths_errors(data_deaths):
-        message_error += '============================================\n'
+        message_error = '============================================\n'
         message_error += f'Error {index_error}:\n'
         message_error += f'Cause: {message}\n'
         message_error += f'Location: {path}\n'
         message_error += '============================================\n'
+        message_errors.append(message_error)
         index_error += 1
     for message, path in check_warnings(data):
-        message_warning += '============================================\n'
+        message_warning = '============================================\n'
         message_warning += f'Warning {index_warning}:\n'
         message_warning += f'Cause: {message}\n'
         message_warning += f'Location: {path}\n'
         message_warning += '============================================\n'
+        message_warnings.append(message_warning)
         index_warning += 1
     for message, path in check_deaths_warnings(data_deaths):
-        message_warning += '============================================\n'
+        message_warning = '============================================\n'
         message_warning += f'Warning {index_warning}:\n'
         message_warning += f'Cause: {message}\n'
         message_warning += f'Location: {path}\n'
         message_warning += '============================================\n'
+        message_warnings.append(message_warning)
         index_warning += 1
     if index_warning > 1:
-        send_msg(message_warning, debug)
+        send_msg(message_warnings, debug)
     if index_error > 1:
-        raise Exception(message_error)
+        raise ExceptionGroup(message_errors)
     return index_error == 1 and index_warning == 1
 
 

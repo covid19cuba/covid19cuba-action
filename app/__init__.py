@@ -11,4 +11,4 @@ def run(debug=False):
     ok = v2run(debug) and ok
     print(f'Api v2 generated {ok}')
     if ok:
-        send_msg('GitHub Action run successfully.', debug)
+        send_msg(['GitHub Action run successfully.'], debug)

@@ -1,3 +1,4 @@
+from functools import reduce
 from json import dump, load, loads
 from hashlib import sha1
 from os import listdir, makedirs, path
@@ -6,7 +7,7 @@ from .extras_generator import generate as generate_extras
 from .news_generator import generate as generate_news
 from .statistics_generator import generate as generate_statistics
 from ..static.app_version import APP_VERSION_CODE
-from ..utils import dump_util, send_msg
+from ..utils import dump_util, send_msg, ExceptionGroup
 
 
 def run(debug=False):
@@ -30,8 +31,12 @@ def run(debug=False):
         print('State data v2 generated')
         if ok:
             return True
+    except ExceptionGroup as e:
+        send_msg(e.messages, debug)
+        if debug:
+            raise Exception(reduce(lambda a, b: a + b, e.messages))
     except Exception as e:
-        send_msg(e, debug)
+        send_msg([str(e)], debug)
         if debug:
             raise e
     return False

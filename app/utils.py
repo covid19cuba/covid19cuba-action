@@ -16,8 +16,10 @@ def dump_util(path, func, **data):
 
 def send_msg(messages, debug):
     group_messages = []
-    for i in range(0, len(messages) - 5, 5):
-        group_messages.append(messages[i : i + 5])
+    for i in range(0, len(messages), 5):
+        segment = messages[i : i + 5]
+        if segment:
+            group_messages.append(segment)
     messages = []
     for group in group_messages:
         message = ''

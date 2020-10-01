@@ -44,11 +44,11 @@ def run(debug=False):
             return True
     except ExceptionGroup as e:
         send_msg(e.messages, debug)
-        if debug:
+        if not debug:
             raise Exception(reduce(lambda a, b: a + b, e.messages))
     except Exception as e:
         send_msg([str(e)], debug)
-        if debug:
+        if not debug:
             raise e
     return False
 

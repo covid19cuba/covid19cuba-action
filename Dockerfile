@@ -10,7 +10,6 @@ RUN pip3 install --target=/app python-telegram-bot
 RUN pip3 install --target=/app feedparser
 RUN pip3 install --target=/app requests
 RUN pip3 install --target=/app bs4
-RUN pip3 install --target=/app parsel
 
 # A distroless container image with Python and some basics like SSL certificates
 # https://github.com/GoogleContainerTools/distroless

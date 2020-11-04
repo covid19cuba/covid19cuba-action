@@ -566,6 +566,8 @@ def top_20_accumulated_countries(data):
     countries_info = comparison_of_accumulated_cases(data)['countries_info']
     result = []
     for key in countries_info:
+        if not key:
+            continue
         value = countries_info[key]
         confirmed = value['confirmed'][-1]
         recovered = value['recovered'][-1]
@@ -613,6 +615,8 @@ def comparison_of_accumulated_cases(data):
         actives.append(_total - _deaths - _recover - _evacuees)
     world['paises']['Cuba'] = confirmed[1:]
     for key in world['paises_info']:
+        if not key:
+            continue
         _value = world['paises_info'][key]
         _confirmed = _value['confirmed']
         _recovered = _value['recovered']
@@ -650,6 +654,8 @@ def comparison_of_accumulated_cases(data):
         if len(curves_stringency[i]) > 0:
             curves_stringency[i] = curves_stringency[i][:-1]
     for key in curves_stringency:
+        if not key:
+            continue
         world['paises_info'][key]['stringency'] = curves_stringency[key][
             max(len(curves_stringency[key]) -
                 len(world['paises_info'][key]['confirmed']), 0):
@@ -976,6 +982,8 @@ def world_countries(data):
     countries_info = comparison_of_accumulated_cases(data)['countries_info']
     result = []
     for key in countries_info:
+        if not key:
+            continue
         value = countries_info[key]
         confirmed = value['confirmed'][-1]
         recovered = value['recovered'][-1]

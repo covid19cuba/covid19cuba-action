@@ -1219,6 +1219,10 @@ def curves_comparison(data):
         if len(curves_stringency[i]) > 0:
             curves_stringency[i] = curves_stringency[i][:-1]
     for key in curves_stringency:
+        if not key:
+            continue
+        if key not in world['paises_info']:
+            continue
         world['paises_info'][key]['stringency'] = curves_stringency[key][
             max(len(curves_stringency[key]) -
                 len(world['paises_info'][key]['confirmed']), 0):

@@ -656,6 +656,8 @@ def comparison_of_accumulated_cases(data):
     for key in curves_stringency:
         if not key:
             continue
+        if key not in world['paises_info']:
+            continue
         world['paises_info'][key]['stringency'] = curves_stringency[key][
             max(len(curves_stringency[key]) -
                 len(world['paises_info'][key]['confirmed']), 0):

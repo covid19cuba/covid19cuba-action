@@ -5,3 +5,4 @@ python-telegram-bot==12.6.1
 bs4==4.8.0
 feedparser==5.2.1
 requests==2.22.0
+typing-extensions==3.7.4.3

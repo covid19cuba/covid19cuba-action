@@ -214,6 +214,10 @@ def check_sex_match(i, value, day, option_deaths=False):
 
 def check_province_match(i, value, day, option_deaths=False):
     province_code = value['dpacode_provincia_deteccion']
+    if 'provincia_detección' not in value:
+        message = f'"provincia_detección" not found.'
+        path = f'Id: {value["id"]}, {["casos", "dias", day, "fallecidos" if option_deaths else "diagnosticados", i, value["id"]]}'
+        return message, path
     province = value['provincia_detección']
     expected_province_code = province_codes.get(province_code)
     if province != expected_province_code and \

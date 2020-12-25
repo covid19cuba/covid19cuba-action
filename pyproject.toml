@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "covid19cuba-action"
+version = "2.0.0"
+description = "GitHub Action of Covid19 Cuba Data project to check data and generate other more comfortable and versioned data from the https://covid19cubadata.github.io original data."
+authors = ["leynier <leynier41@gmail.com>"]
+license = "GPL-3.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+jsonschema = "^3.2.0"
+python-telegram-bot = "^13.1"
+bs4 = "^0.0.1"
+feedparser = "^6.0.2"
+requests = "^2.25.1"
+Cython = "^0.29.21"
+importlib-metadata = "^3.3.0"
+typing-extensions = "^3.7.4"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

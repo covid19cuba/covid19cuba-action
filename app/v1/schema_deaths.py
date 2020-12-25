@@ -63,11 +63,18 @@ schema_deaths = {
                                                 ]
                                             },
                                             'sexo': {
-                                                'type': 'string',
-                                                'enum': [
-                                                    'hombre',
-                                                    'mujer',
-                                                    'no reportado'
+                                                'anyOf': [
+                                                    {
+                                                        'type': 'string',
+                                                        'enum': [
+                                                            'hombre',
+                                                            'mujer',
+                                                            'no reportado'
+                                                        ]
+                                                    },
+                                                    {
+                                                        'type': 'null'
+                                                    }
                                                 ]
                                             },
                                             'municipio_detección': {

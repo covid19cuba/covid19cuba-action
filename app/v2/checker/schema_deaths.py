@@ -61,8 +61,12 @@ schema_deaths = {
                                             'edad': {
                                                 'anyOf': [
                                                     {
-                                                        'type': 'integer',
-                                                        'minimum': 1
+                                                        'type': 'string',
+                                                        'enum': [
+                                                            'hombre',
+                                                            'mujer',
+                                                            'no reportado'
+                                                        ]
                                                     },
                                                     {
                                                         'type': 'null'

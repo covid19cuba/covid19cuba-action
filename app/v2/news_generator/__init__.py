@@ -6,8 +6,8 @@ from typing import Dict, Optional
 from ...utils import dump_util
 
 # from .acn_news_generator import generate as generate_acn_news
-from .cd_news_generator import generate as generate_cd_news
-from .gob_news_generator import generate as generate_gob_news
+# from .cd_news_generator import generate as generate_cd_news
+# from .gob_news_generator import generate as generate_gob_news
 from .jt_news_generator import generate as generate_jt_news
 
 
@@ -18,16 +18,16 @@ def generate(debug=False):
     #     news += acn_news
     # except Exception as e:
     #     print(e)
-    try:
-        cd_news = generate_cd_news(debug)
-        news += cd_news
-    except Exception as e:
-        print(e)
-    try:
-        gob_news = generate_gob_news(debug)
-        news += gob_news
-    except Exception as e:
-        print(e)
+    # try:
+    #     cd_news = generate_cd_news(debug)
+    #     news += cd_news
+    # except Exception as e:
+    #     print(e)
+    # try:
+    #     gob_news = generate_gob_news(debug)
+    #     news += gob_news
+    # except Exception as e:
+    #     print(e)
     try:
         jt_news = generate_jt_news(debug)
         news += jt_news

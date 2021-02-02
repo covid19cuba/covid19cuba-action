@@ -15,6 +15,9 @@ requests = "^2.25.1"
 Cython = "^0.29.21"
 importlib-metadata = "^3.3.0"
 typing-extensions = "^3.7.4"
+flake8 = "^3.8.4"
+black = "^20.8b1"
+isort = "^5.7.0"
 
 [tool.poetry.dev-dependencies]
 

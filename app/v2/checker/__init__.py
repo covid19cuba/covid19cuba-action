@@ -57,7 +57,7 @@ def check(debug=False):
                     break
             if loc < len(list(error.path)):
                 loc = list(error.path)[loc]
-            value = data
+            value = data_deaths
             for key in keys:
                 value = value[key]
             location = f'Id: {value[loc]["id"]}'

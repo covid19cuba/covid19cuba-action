@@ -287,7 +287,7 @@ def check_diseases_match(i, value, day, diseases):
     for disease in _diseases:
         if disease in diseases:
             continue
-        message = f"Invalid disease. {disease} not in {diseases}."
+        message = f"Invalid disease. '{disease}' not in {diseases}."
         path = (
             f'Id: {value["id"]}, {["casos", "dias", day, "fallecidos", i, value["id"]]}'
         )

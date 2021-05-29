@@ -8,7 +8,7 @@ from ..utils import ExceptionGroup, send_msg
 from .schema import schema
 from .schema_deaths import schema_deaths
 
-sex_ignored = {"cu-1392"}
+sex_ignored = {"cu-1392", "f-838"}
 
 
 def check(debug=False):

@@ -40,9 +40,9 @@ def get_info(article):
     abstract = article.find("div", {"class": "excerpt"}).p.text
     link = article.find("a").attrs["href"]
     page = get_page(link)
-    title = page.find("h2", {"class": "title"}).text
-    author = page.find("div", {"id": "taxonomies"}).find("a").text
-    published = get_datetime(page.find("time").attrs["datetime"])
+    title = page.find("h2", {"class": "title"}).text  # type: ignore
+    author = page.find("div", {"id": "taxonomies"}).find("a").text  # type: ignore
+    published = get_datetime(page.find("time").attrs["datetime"])  # type: ignore
     summary = page.find("div", {"class": "note_content"})
     return {
         "id": str(link),

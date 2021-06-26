@@ -83,8 +83,10 @@ def resume(data):
         len(
             list(
                 filter(
-                    lambda a: a.get("provincia_detección") == data["province"]
-                    and a.get("municipio_detección") == data["municipality"],
+                    lambda a: a.get("provincia_detección")  # type: ignore
+                    == data["province"]
+                    and a.get("municipio_detección")  # type: ignore
+                    == data["municipality"],
                     days[-1]["diagnosticados"],
                 )
             )
@@ -97,8 +99,10 @@ def resume(data):
             len(
                 list(
                     filter(
-                        lambda a: a.get("provincia_detección") == data["province"]
-                        and a.get("municipio_detección") == data["municipality"],
+                        lambda a: a.get("provincia_detección")  # type: ignore
+                        == data["province"]
+                        and a.get("municipio_detección")  # type: ignore
+                        == data["municipality"],
                         x["diagnosticados"],
                     )
                 )
@@ -113,8 +117,10 @@ def resume(data):
             len(
                 list(
                     filter(
-                        lambda a: a.get("provincia_detección") == data["province"]
-                        and a.get("municipio_detección") == data["municipality"],
+                        lambda a: a.get("provincia_detección")  # type: ignore
+                        == data["province"]
+                        and a.get("municipio_detección")  # type: ignore
+                        == data["municipality"],
                         days[i]["diagnosticados"],
                     )
                 )
@@ -133,8 +139,10 @@ def resume(data):
             len(
                 list(
                     filter(
-                        lambda a: a.get("provincia_detección") == data["province"]
-                        and a.get("municipio_detección") == data["municipality"],
+                        lambda a: a.get("provincia_detección")  # type: ignore
+                        == data["province"]
+                        and a.get("municipio_detección")  # type: ignore
+                        == data["municipality"],
                         days[i]["fallecidos"],
                     )
                 )
@@ -266,8 +274,10 @@ def evolution_of_cases_by_days(data):
             temp = len(
                 list(
                     filter(
-                        lambda a: a.get("provincia_detección") == data["province"]
-                        and a.get("municipio_detección") == data["municipality"],
+                        lambda a: a.get("provincia_detección")  # type: ignore
+                        == data["province"]
+                        and a.get("municipio_detección")  # type: ignore
+                        == data["municipality"],
                         x["diagnosticados"],
                     )
                 )
@@ -406,8 +416,10 @@ def deceases_resume(data):
         len(
             list(
                 filter(
-                    lambda a: a.get("provincia_detección") == data["province"]
-                    and a.get("municipio_detección") == data["municipality"],
+                    lambda a: a.get("provincia_detección")  # type: ignore
+                    == data["province"]
+                    and a.get("municipio_detección")  # type: ignore
+                    == data["municipality"],
                     days[-1]["fallecidos"],
                 )
             )
@@ -420,8 +432,10 @@ def deceases_resume(data):
             len(
                 list(
                     filter(
-                        lambda a: a.get("provincia_detección") == data["province"]
-                        and a.get("municipio_detección") == data["municipality"],
+                        lambda a: a.get("provincia_detección")  # type: ignore
+                        == data["province"]
+                        and a.get("municipio_detección")  # type: ignore
+                        == data["municipality"],
                         x["fallecidos"],
                     )
                 )
@@ -436,8 +450,10 @@ def deceases_resume(data):
             len(
                 list(
                     filter(
-                        lambda a: a.get("provincia_detección") == data["province"]
-                        and a.get("municipio_detección") == data["municipality"],
+                        lambda a: a.get("provincia_detección")  # type: ignore
+                        == data["province"]
+                        and a.get("municipio_detección")  # type: ignore
+                        == data["municipality"],
                         days[i]["fallecidos"],
                     )
                 )
@@ -478,8 +494,10 @@ def deceases_evolution_by_days(data):
             temp = len(
                 list(
                     filter(
-                        lambda a: a.get("provincia_detección") == data["province"]
-                        and a.get("municipio_detección") == data["municipality"],
+                        lambda a: a.get("provincia_detección")  # type: ignore
+                        == data["province"]
+                        and a.get("municipio_detección")  # type: ignore
+                        == data["municipality"],
                         x["fallecidos"],
                     )
                 )

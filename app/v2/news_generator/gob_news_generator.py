@@ -24,8 +24,8 @@ def get_page(url, headers):
 def get_author_and_summary(url, headers):
     bs = get_page(url, headers)
     summary = bs.find("article")
-    text = summary.find("div", {"class": "text-justify"})
-    author = summary.ul.find("span").text
+    text = summary.find("div", {"class": "text-justify"})  # type: ignore
+    author = summary.ul.find("span").text  # type: ignore
     summary = str(text)
     return str(author), str(summary)
 

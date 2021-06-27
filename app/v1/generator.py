@@ -497,6 +497,8 @@ def top_20_accumulated_countries(data):
         if not key:
             continue
         value = countries_info[key]
+        if not value["confirmed"] or not value["recovered"] or not value["deaths"]:
+            continue
         confirmed = value["confirmed"][-1]
         recovered = value["recovered"][-1]
         deaths = value["deaths"][-1]
@@ -880,6 +882,8 @@ def world_countries(data):
         if not key:
             continue
         value = countries_info[key]
+        if not value["confirmed"] or not value["recovered"] or not value["deaths"]:
+            continue
         confirmed = value["confirmed"][-1]
         recovered = value["recovered"][-1]
         deaths = value["deaths"][-1]

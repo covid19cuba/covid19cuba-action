@@ -1320,7 +1320,11 @@ def world_countries(data):
     countries_info = curves_comparison(data)["data"]
     result = []
     for key in countries_info:
+        if not key:
+            continue
         value = countries_info[key]
+        if not value["confirmed"] or not value["recovered"] or not value["deaths"]:
+            continue
         confirmed = value["confirmed"][-1]
         recovered = value["recovered"][-1]
         deaths = value["deaths"][-1]

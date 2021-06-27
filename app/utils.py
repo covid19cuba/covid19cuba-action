@@ -7,6 +7,7 @@ from .send_message import send
 def dump_util(path, func, **data):
     makedirs(path, exist_ok=True)
     result = func(data)
+    print(f"Running function: {func.__name__}")
     dump(
         result,
         open(f"{path}/{func.__name__}.json", mode="w", encoding="utf-8"),

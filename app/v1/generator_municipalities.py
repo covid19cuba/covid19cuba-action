@@ -8,6 +8,8 @@ from ..utils import dump_util
 
 def generate(debug=False):
     data_cuba = load(open("data/covid19-cuba.json", encoding="utf-8"))
+    data_cuba_1 = load(open("data/covid19-cuba-1.json", encoding="utf-8"))
+    data_cuba["casos"]["dias"].update(data_cuba_1["casos"]["dias"])
     function_list = [
         updated,
         resume,

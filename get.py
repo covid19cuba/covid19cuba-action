@@ -5,6 +5,9 @@ from requests import get
 data_cuba_url = "https://covid19cubadata.github.io/data/covid19-cuba.json"
 data_cuba = get(data_cuba_url)
 
+data_cuba_1_url = "https://covid19cubadata.github.io/data/covid19-cuba-1.json"
+data_cuba_1 = get(data_cuba_1_url)
+
 data_deaths_url = "https://covid19cubadata.github.io/data/covid19-fallecidos.json"
 data_deaths = get(data_deaths_url)
 
@@ -21,6 +24,9 @@ makedirs("data", exist_ok=True)
 
 with open("data/covid19-cuba.json", mode="w", encoding="utf-8") as file:
     file.write(data_cuba.text)
+
+with open("data/covid19-cuba-1.json", mode="w", encoding="utf-8") as file:
+    file.write(data_cuba_1.text)
 
 with open("data/covid19-fallecidos.json", mode="w", encoding="utf-8") as file:
     file.write(data_deaths.text)

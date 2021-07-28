@@ -14,6 +14,8 @@ from ..utils import dump_util
 
 def generate(debug=False):
     data_cuba = load(open("data/covid19-cuba.json", encoding="utf-8"))
+    data_cuba_1 = load(open("data/covid19-cuba-1.json", encoding="utf-8"))
+    data_cuba["casos"]["dias"].update(data_cuba_1["casos"]["dias"])
     data_deaths = load(open("data/covid19-fallecidos.json", encoding="utf-8"))
     data_world = load(open("data/paises-info-dias.json", encoding="utf-8"))
     data_oxford = load(open("data/oxford-indexes.json", encoding="utf-8"))

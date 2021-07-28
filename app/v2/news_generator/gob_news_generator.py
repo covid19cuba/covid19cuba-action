@@ -52,11 +52,11 @@ def generate(debug=False):
     article_list = page.find_all("article", {"class": "grid-item"})
     news = []
     for article in article_list:
-        link = base_url + article.a.attrs["href"]
-        title = article.find("div", {"class": "p-20"}).h5.text
+        link = base_url + article.a.attrs["href"]  # type: ignore
+        title = article.find("div", {"class": "p-20"}).h5.text  # type: ignore
         author, summary = get_author_and_summary(link, HEADERS)
         summary = " ".join(summary.split())
-        published = get_datetime(article.find("time").attrs["datetime"])
+        published = get_datetime(article.find("time").attrs["datetime"])  # type: ignore
         updated = published
         index_abstract = findnth(summary, "</p>", 2)
         abstract = summary[: index_abstract + 4]

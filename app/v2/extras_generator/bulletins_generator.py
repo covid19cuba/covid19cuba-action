@@ -9,8 +9,8 @@ def generate(debug=False, base_url="https://covid19cubadata.github.io/"):
     source = get(f"{base_url}boletines").text
     soup = BeautifulSoup(source, "html.parser")
     for elem in soup.findAll("a"):
-        description = elem.text
-        link = elem.get("href")
+        description = elem.text  # type: ignore
+        link = elem.get("href")  # type: ignore
         number = description[description.find("No.") + 4]
         size = int(request.urlopen(base_url + link).info()["Content-Length"]) / 10 ** 6
         result.append({"id": number, "info": description, "url": link, "size": size})
